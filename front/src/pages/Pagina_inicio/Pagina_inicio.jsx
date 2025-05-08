@@ -14,6 +14,7 @@ export const Pagina_inicio = ({}) => {
 	return (
 		<div className='pagina_inicio'>
  			<h1>Hola Mundo desde el home</h1>
+ 			<h1>Plataforma de seguros</h1>
 			 <button onClick={inicio_login}>Ingresar</button>
  		</div>
 	);

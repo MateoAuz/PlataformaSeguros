@@ -13,7 +13,8 @@ export const Login = ({}) => {
 	};
 	return (
 		<div className='login'>
- 			<h1>Hola Mundo desde el login</h1>
+ 			<h1>Inicio de sesion</h1>
+ 			<h1>Usuario</h1>
 			 <Button className='btn_ejemplo' onClick={regresar} variant='outlined' color="error">Salir</Button>
  		</div>
 	);

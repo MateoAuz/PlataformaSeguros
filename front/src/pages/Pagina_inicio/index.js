@@ -1,0 +1,1 @@
+export {Pagina_inicio } from './Pagina_inicio';

@@ -1,0 +1,35 @@
+.not_found {
+    height: 45vh;
+    background: linear-gradient(to bottom right, #1565c0, #1e88e5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 180px;
+}
+
+.not_found_card {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+.not_found_title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #d32f2f;
+}
+
+.not_found_subtitle {
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #212121;
+}
+
+.not_found_text {
+    margin-bottom: 25px;
+    color: #616161;
+}

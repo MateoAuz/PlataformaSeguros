@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import {BrowserRouter, Routes, Route} from "react-router-dom"
 import { Pagina_inicio } from './pages/Pagina_inicio/index';
 import { Login } from './pages/Login/index';
+import { NOT_FOUND } from './pages/NOT_FOUND/index';
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<Pagina_inicio/>}/>
-          <Route path='*' element={<>NOT FOUND</>}/>
+          <Route path='*' element={<NOT_FOUND/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/dashboard' element={<>Pagina del dashboard</>}/>
         </Routes>

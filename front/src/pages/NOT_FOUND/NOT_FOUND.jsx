@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import './NOT_FOUND.css';
-import { Box, Typography, Button, Container } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 

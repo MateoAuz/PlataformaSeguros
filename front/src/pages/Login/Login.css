@@ -1,8 +1,263 @@
-.login {
-  
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;400;600;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
 }
 
-.btn_ejemplo{
-    width: 300px;
-    
+.body-background {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 100vh;
+  padding-right: 5%;
+  padding-top: 60px;
+  background-image: url('fondo_login.png');
+}
+
+/* Animación de rotación */
+@property --a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rotating {
+  0% { --a: 0deg; }
+  100% { --a: 360deg; }
+}
+
+/* Contenedor principal */
+.box {
+  position: relative;
+  width: 320px;
+  height: 180px;
+  background: repeating-conic-gradient(
+    from var(--a),
+    #64ebc0 0%,
+    #00bfff 5%,
+    transparent 5%,
+    transparent 40%,
+    #00bfff 50%
+  );
+  filter: drop-shadow(0 15px 50px #000);
+  animation: rotating 5s linear infinite;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: width 5s, height 5s;
+}
+
+.box:hover {
+  width: 360px;
+  height: 400px;
+}
+
+/* Capas internas del bloque */
+.box::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: repeating-conic-gradient(
+    from var(--a),
+    #1e90ff 0%,
+    #1e90ff 5%,
+    transparent 5%,
+    transparent 40%,
+    #1e90ff 50%
+  );
+  filter: drop-shadow(0 15px 50px #000);
+  border-radius: 20px;
+  animation: rotating 5s linear infinite;
+  animation-delay: -1s;
+}
+
+.box::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: #46464f;
+  border-radius: 15px;
+  border: 8px solid #46464f;
+}
+
+/* Logo sobre el bloque */
+.logo-seguro {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 20%;
+  border: 3px solid white;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+}
+
+/* Login interno */
+.login {
+  position: absolute;
+  inset: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 1000;
+  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  transition: 0.5s;
+  color: #fff;
+  overflow: hidden;
+}
+
+.box:hover .login {
+  inset: 40px;
+}
+
+.loginBx {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translateY(95px);
+  gap: 15px;
+  width: 85%;
+  transition: 0.5s;
+}
+
+.box:hover .loginBx {
+  transform: translateY(0px);
+}
+
+.loginBx h2 {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.loginBx h2 i {
+  color: #00bfff;
+  text-shadow: 0 0 5px #00bfff, 0 0 30px #00bfff;
+}
+
+.loginBx input {
+  width: 100%;
+  padding: 10px 20px;
+  outline: none;
+  font-size: 1em;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.1);
+  border: 2px solid #fff;
+  border-radius: 30px;
+  margin-bottom: 10px;
+}
+
+.loginBx input::placeholder {
+  color: #999;
+}
+
+.loginBx input[type='submit'] {
+  background: #c27e39;
+  border: none;
+  font-weight: 500;
+  color: #111;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.loginBx input[type='submit']:hover {
+  background-color: #076a58;
+  color: white;
+  box-shadow: 0 4px 10px rgba(7, 106, 88, 0.4);
+}
+
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.input-field i {
+  color: #00bfff;
+  font-size: 1.1em;
+}
+
+.login-button,
+.MuiButton-root {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 30px;
+}
+
+/* Encabezado superior */
+.header-seguro-refinado {
+  position: fixed;
+  top: 35px;
+  left: 50px;
+  width: 850px;
+  height: 50px;
+  background: linear-gradient(90deg, #183e8a, #076a58);
+  border-radius: 0 0 12px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  z-index: 10000;
+}
+
+.titulo-contenido {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.titulo-seguro {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.frase-seguro {
+  font-weight: 300;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.boton-retornar {
+  margin-left: auto;
+  background-color: white;
+  color: #076a58;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.boton-retornar:hover {
+  background-color: #e0e0e0;
 }

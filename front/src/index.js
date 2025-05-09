@@ -7,6 +7,9 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <footer className="footer-bar">
+      Plataforma de Gestión de Seguros Médicos © 2025 - Todos los derechos reservados
+    </footer>
     <App />
   </React.StrictMode>
 );

@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
-import Button from '@mui/material/Button';
 import logo from './logo.png';
 import { useNavigate } from 'react-router-dom';
 

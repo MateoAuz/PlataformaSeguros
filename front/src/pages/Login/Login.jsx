@@ -16,21 +16,50 @@ export const Login = () => {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 
-	const handleLogin = (e) => {
+	const handleLogin = async (e) => {
 		e.preventDefault();
 
 		if (username.trim() === '' || password.trim() === '') {
-		setError('Todos los campos son obligatorios.');
-		return;
+			setError('Todos los campos son obligatorios.');
+			return;
 		}
 
-		if (username === 'admin' && password === '1234') {
-		alert('Inicio de sesión exitoso');
-		setError('');
-		} else {
-		setError('Credenciales incorrectas.');
+		try {
+			const res = await fetch("http://localhost:3030/login", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ correo: username, password })
+			});
+
+			const data = await res.json();
+
+			if (!res.ok) {
+			setError(data.error || 'Error al iniciar sesión');
+			return;
+			}
+
+			localStorage.setItem("tipoUsuario", data.tipo);
+
+			switch (data.tipo) {
+			case 0:
+				navigate('/admin', { replace: true });
+				break;
+			case 1:
+				navigate('/agente', { replace: true });
+				break;
+			case 2:
+				navigate('/cliente', { replace: true });
+				break;
+			default:
+				setError('Tipo de usuario no reconocido');
+			}
+
+		} catch (err) {
+			console.error(err);
+			setError('Error de conexión al servidor');
 		}
 	};
+
 
   return (
 	<>

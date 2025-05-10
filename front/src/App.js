@@ -1,10 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
-import Button from '@mui/material/Button';
 import {BrowserRouter, Routes, Route} from "react-router-dom"
 import { Pagina_inicio } from './pages/Pagina_inicio/index';
 import { Login } from './pages/Login/index';
 import { NOT_FOUND } from './pages/NOT_FOUND/index';
+import { DashboardAdmin } from './pages/admin/DashboardAdmin';
 
 function App() {
   return (
@@ -14,7 +13,7 @@ function App() {
           <Route path='/' element={<Pagina_inicio/>}/>
           <Route path='*' element={<NOT_FOUND/>}/>
           <Route path='/login' element={<Login/>}/>
-          <Route path='/dashboard' element={<>Pagina del dashboard</>}/>
+          <Route path='/admin' element={<DashboardAdmin/>} />
         </Routes>
       </BrowserRouter>
     </div>

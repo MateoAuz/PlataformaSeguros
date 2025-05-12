@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
-import logo from './logo.png';
 import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
@@ -71,7 +70,7 @@ export const Login = () => {
 	
 		<div className="body-background">
 		<div className="box">
-		<img src={logo} alt="Logo Seguros" className="logo-seguro" />
+		<img src="/logo.png" alt="Logo Seguros" className="logo-seguro" />
 			<div className="login">
 			<div className="loginBx">
 				<h2>

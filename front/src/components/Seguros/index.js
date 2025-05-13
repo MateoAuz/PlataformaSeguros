@@ -1,0 +1,1 @@
+export {Seguros } from './Seguros';

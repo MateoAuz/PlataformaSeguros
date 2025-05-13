@@ -4,6 +4,7 @@ import './Pagina_inicio.css';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, Container } from '@mui/material';
+import { useContext } from 'react';
 
 export const Pagina_inicio = ({ }) => {
 	const navigate = useNavigate();

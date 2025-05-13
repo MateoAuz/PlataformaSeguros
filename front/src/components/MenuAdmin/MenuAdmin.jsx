@@ -22,13 +22,14 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import { useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
 
 
-
-export const MenuAdmin = ({ }) => {
+export const MenuAdmin = ({ children }) => {
 	const [auth, setAuth] = useState(true);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [drawerOpen, setDrawerOpen] = useState(true);
 
 	const handleMenu = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -42,8 +43,15 @@ export const MenuAdmin = ({ }) => {
 		setDrawerOpen((prev) => !prev);
 	};
 
+	const navigate = useNavigate();
+
+	const inicio_login = () => {
+		navigate('/login', { replace: true });
+	};
+
 	return (
 		<Box >
+
 			<AppBar
 				position="fixed"
 				sx={{
@@ -61,6 +69,13 @@ export const MenuAdmin = ({ }) => {
 						onClick={toggleDrawer}
 					>
 						<MenuIcon />
+					</IconButton>
+					<IconButton
+						color="inherit"
+						onClick={() => navigate('/admin')}
+						sx={{ mr: 1 }}
+					>
+						<HomeIcon />
 					</IconButton>
 					<img src="/logo.png" alt="Logo" className='logo' style={{ height: '50px', marginRight: '10px' }} />
 					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -87,8 +102,8 @@ export const MenuAdmin = ({ }) => {
 								open={Boolean(anchorEl)}
 								onClose={handleClose}
 							>
-								<MenuItem onClick={handleClose}>Cambiar Contraseña</MenuItem>
-								<MenuItem onClick={handleClose}>Cerrar sesión</MenuItem>
+								<MenuItem onClick={handleClose}>Perfil</MenuItem>
+								<MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
 							</Menu>
 						</div>
 					)}
@@ -105,7 +120,7 @@ export const MenuAdmin = ({ }) => {
 					'& .MuiDrawer-paper': {
 						width: 250,
 						boxSizing: 'border-box',
-						backgroundColor: '#2C4C40',
+						backgroundColor: '#63A6B0',
 						color: 'white'
 					},
 				}}
@@ -113,45 +128,33 @@ export const MenuAdmin = ({ }) => {
 				<Toolbar />
 				<Box sx={{ overflow: 'auto' }}>
 					<List>
-						<ListItem button>
-							<ListItemIcon>
-								<PeopleIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/usuarios')}>
+							<ListItemIcon><PeopleIcon /></ListItemIcon>
 							<ListItemText primary="Usuarios" />
 						</ListItem>
 
-						<ListItem button>
-							<ListItemIcon>
-								<SecurityIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/seguros')}>
+							<ListItemIcon><SecurityIcon /></ListItemIcon>
 							<ListItemText primary="Seguros" />
 						</ListItem>
 
-						<ListItem button>
-							<ListItemIcon>
-								<PersonIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/clientes')}>
+							<ListItemIcon><PersonIcon /></ListItemIcon>
 							<ListItemText primary="Clientes" />
 						</ListItem>
 
-						<ListItem button>
-							<ListItemIcon>
-								<AssignmentIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/contratacion')}>
+							<ListItemIcon><AssignmentIcon /></ListItemIcon>
 							<ListItemText primary="Contratación" />
 						</ListItem>
 
-						<ListItem button>
-							<ListItemIcon>
-								<RateReviewIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/revision')}>
+							<ListItemIcon><RateReviewIcon /></ListItemIcon>
 							<ListItemText primary="Revisión" />
 						</ListItem>
 
-						<ListItem button>
-							<ListItemIcon>
-								<BarChartIcon />
-							</ListItemIcon>
+						<ListItem button onClick={() => navigate('/admin/reportes')}>
+							<ListItemIcon><BarChartIcon /></ListItemIcon>
 							<ListItemText primary="Reporte" />
 						</ListItem>
 					</List>
@@ -161,13 +164,15 @@ export const MenuAdmin = ({ }) => {
 
 			<Box
 				component="main"
-				sx={{ flexGrow: 1, p: 3, marginLeft: drawerOpen ? '250px' : '0', transition: 'margin 0.3s' }}
+				sx={{
+					flexGrow: 1,
+					p: 3,
+					marginLeft: drawerOpen ? '250px' : '0',
+					transition: 'margin 0.3s',
+				}}
 			>
 				<Toolbar />
-				{/* Aquí va el contenido principal */}
-				<Typography paragraph>
-					Bienvenido al sistema de gestión educativa.
-				</Typography>
+				{children}
 			</Box>
 		</Box>
 	);

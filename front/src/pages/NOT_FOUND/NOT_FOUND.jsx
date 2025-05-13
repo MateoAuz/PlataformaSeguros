@@ -1,9 +1,7 @@
 "use client";
-import React from 'react';
 import './NOT_FOUND.css';
 import { Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 export const NOT_FOUND = ({ }) => {
 	const navigate = useNavigate();

@@ -1,49 +1,262 @@
 "use client";
-import React from 'react';
-import './Pagina_inicio.css';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Typography, Container } from '@mui/material';
-import { useContext } from 'react';
+import {
+	AppBar,
+	Toolbar,
+	Typography,
+	Container,
+	Box,
+	Button,
+	Card,
+	CardContent,
+	Grid,
+	CardActions,
+	MobileStepper,
+	Paper,
+	useTheme,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	DialogActions
+} from '@mui/material';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
-export const Pagina_inicio = ({ }) => {
+const images = [
+	{
+		label: 'Seguro de Vida',
+		imgPath: '/imagenes/seguro_vida.png',
+	},
+	{
+		label: 'Seguro de Salud',
+		imgPath: '/imagenes/seguro_salud.png',
+	},
+];
+
+export const Pagina_inicio = () => {
 	const navigate = useNavigate();
+	const theme = useTheme();
+	const maxSteps = images.length;
+
+	const [activeStep, setActiveStep] = useState(0);
+	const [openDialog, setOpenDialog] = useState(false);
+	const [contenido, setContenido] = useState({ titulo: '', descripcion: '' });
+
+	const handleNext = () => {
+		setActiveStep((prevActiveStep) => prevActiveStep + 1);
+	};
+
+	const handleBack = () => {
+		setActiveStep((prevActiveStep) => prevActiveStep - 1);
+	};
 
 	const inicio_login = () => {
 		navigate('/login', { replace: true });
 	};
 
+	const mostrarDialogo = (titulo, descripcion) => {
+		setContenido({ titulo, descripcion });
+		setOpenDialog(true);
+	};
+
 	return (
-		<Box
-			sx={{
-				height: '100vh',
-				background: 'linear-gradient(to bottom right, #e3f2fd, #90caf9)',
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				px: 2,
-			}}
-		>
-			<Container
-				maxWidth="sm"
+		<Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
+			{/* NAVBAR */}
+			<AppBar position="static" sx={{ bgcolor: '#0D2B81' }}>
+				<Toolbar
+					sx={{
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+						flexWrap: 'nowrap', // evita salto de línea entre hijos
+					}}
+				>
+					<Typography
+						variant="h5"
+						fontWeight="bold"
+						color="white"
+						noWrap // evita que el texto se parta en 2 líneas
+						sx={{ flexGrow: 1 }}
+					>
+					Sistemas Seguros
+					</Typography>
+
+					<Button
+						variant="contained"
+						color="error"
+						size="small"
+						onClick={inicio_login}
+						sx={{
+							textTransform: 'none',
+							fontWeight: 'bold',
+							borderRadius: 2,
+							px: 2,                  // padding horizontal (izq-der)
+							py: 0.5,                // padding vertical (arriba-abajo)
+							minWidth: 'unset',      // evita tamaño mínimo por defecto
+							width: 'auto',          // evita que se estire
+							whiteSpace: 'nowrap',   // evita salto de línea
+						}}
+					>
+						Iniciar sesión
+					</Button>
+				</Toolbar>
+			</AppBar>
+
+
+
+
+			{/* HERO SECTION */}
+			<Container maxWidth="md" sx={{
+				bgcolor: '#f5f5f5',
+				textAlign: 'center',
+				py: 6,
+				borderRadius: 2,
+				boxShadow: 3
+			}}>
+				<Typography variant="h3" gutterBottom fontWeight="bold" color="#0D2B81">
+					Bienvenido a Vida Plena
+				</Typography>
+				<Typography variant="h6" color="text.secondary" mb={4}>
+					Administra tus seguros de vida y salud con facilidad, seguridad y confianza.
+				</Typography>
+			</Container>
+
+
+			{/* MISION Y VISION CON HOVER */}
+			<Container maxWidth="lg" sx={{ py: 4 }}>
+				<Typography variant="h4" textAlign="center" gutterBottom>
+					Misión y Visión
+				</Typography>
+
+				<Box
+					sx={{
+						display: 'flex',
+						flexDirection: 'row',
+						justifyContent: 'center',
+						gap: 4,
+						flexWrap: 'wrap',
+					}}
+				>
+					<Box
+						sx={{
+							flex: 1,
+							minWidth: 280,
+							border: '2px solid #0D2B81',
+							borderRadius: 2,
+							backgroundColor: '#FFF3E0',
+							padding: 3,
+							boxShadow: 2
+						}}
+					>
+						<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
+							Misión
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Brindar soluciones de seguros innovadoras, confiables y accesibles para proteger la salud
+							y el futuro de nuestros usuarios, mediante una plataforma moderna, transparente y segura.
+						</Typography>
+					</Box>
+
+					<Box
+						sx={{
+							flex: 1,
+							minWidth: 280,
+							border: '2px solid #0D2B81',
+							borderRadius: 2,
+							backgroundColor: '#FFF3E0',
+							padding: 3,
+							boxShadow: 2
+						}}
+					>
+						<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
+							Visión
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Ser la plataforma líder en la gestión digital de seguros médicos en el país,
+							reconocida por su calidad de servicio, innovación tecnológica y compromiso con el bienestar
+							de cada cliente.
+						</Typography>
+					</Box>
+				</Box>
+
+			</Container>
+
+
+
+
+
+			{/* CARRUSEL */}
+			<Container maxWidth="md" sx={{ py: 6 }}>
+				<Paper
+					sx={{
+						height: 250,
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						overflow: 'hidden',
+						borderRadius: 3,
+						boxShadow: 4,
+						border: '2px solid #0D2B81'
+					}}
+				>
+					<img
+						src={images[activeStep].imgPath}
+						alt={images[activeStep].label}
+						style={{ width: '100%', objectFit: 'cover' }}
+					/>
+				</Paper>
+
+				<MobileStepper
+					variant="dots"
+					steps={maxSteps}
+					position="static"
+					activeStep={activeStep}
+					sx={{ bgcolor: 'transparent', justifyContent: 'center' }}
+					nextButton={
+						<Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+							Siguiente
+							<KeyboardArrowRight />
+						</Button>
+					}
+					backButton={
+						<Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+							<KeyboardArrowLeft />
+							Anterior
+						</Button>
+					}
+				/>
+			</Container>
+
+			{/* FOOTER */}
+			<Box
 				sx={{
-					bgcolor: 'white',
-					p: 5,
-					borderRadius: 3,
-					boxShadow: 4,
+					bgcolor: '#20603D',
+					color: 'white',
+					py: 5, // aumentamos el padding vertical
 					textAlign: 'center',
+					position: 'relative',
+					zIndex: 2,
 				}}
 			>
-				<Typography variant="h4" fontWeight={700} gutterBottom color="primary">
-					Plataforma de Seguros
+				<Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>
+					Contáctanos
 				</Typography>
-				<Typography variant="body1" color="text.secondary" mb={4}>
-					Bienvenido, accede para gestionar tu cobertura, planes y beneficios.
+				<Typography variant="body2" sx={{ mb: 0.5 }}>
+					📍 Dirección: Av. Los Shyris y Amazonas, Ambato - Ecuador
 				</Typography>
-				<Button variant="contained" color="error" onClick={inicio_login}>
-					Ingresar
-				</Button>
-			</Container>
+				<Typography variant="body2">
+					✉️ Correo: contacto@vidaplena.ec &nbsp; | &nbsp; ☎️ Teléfono: +593 3 240 1234
+				</Typography>
+				<Typography variant="caption" display="block" mt={2}>
+					© 2025 Vida Plena – Todos los derechos reservados
+				</Typography>
+			</Box>
+
 		</Box>
 	);
 };

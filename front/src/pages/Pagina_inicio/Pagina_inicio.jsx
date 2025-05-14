@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, useTheme } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, useTheme, Fade, Grow } from '@mui/material';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 
@@ -22,8 +22,6 @@ export const Pagina_inicio = () => {
 	const maxSteps = images.length;
 
 	const [activeStep, setActiveStep] = useState(0);
-	const [openDialog, setOpenDialog] = useState(false);
-	const [contenido, setContenido] = useState({ titulo: '', descripcion: '' });
 
 	const handleNext = () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -35,11 +33,6 @@ export const Pagina_inicio = () => {
 
 	const inicio_login = () => {
 		navigate('/login', { replace: true });
-	};
-
-	const mostrarDialogo = (titulo, descripcion) => {
-		setContenido({ titulo, descripcion });
-		setOpenDialog(true);
 	};
 
 	return (
@@ -87,7 +80,6 @@ export const Pagina_inicio = () => {
 
 
 
-
 			{/* HERO SECTION */}
 			<Container maxWidth="md" sx={{
 				bgcolor: '#f5f5f5',
@@ -120,54 +112,60 @@ export const Pagina_inicio = () => {
 						flexWrap: 'wrap',
 					}}
 				>
-					<Box
-						sx={{
-							flex: 1,
-							minWidth: 280,
-							border: '2px solid #0D2B81',
-							borderRadius: 2,
-							backgroundColor: '#FFF3E0',
-							padding: 3,
-							boxShadow: 2
-						}}
-					>
-						<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
-							Misión
-						</Typography>
-						<Typography variant="body2" color="text.secondary">
-							Ofrecer soluciones de seguros médicos innovadoras, accesibles y seguras, 
-							que garanticen el bienestar y la protección de nuestros usuarios a través 
-							de una plataforma tecnológica transparente y confiable.
-						</Typography>
-					</Box>
+					{/* Misión */}
+					<Grow in={true} timeout={1000}>
+						<Box
+							sx={{
+								flex: 1,
+								minWidth: 280,
+								border: '2px solid #0D2B81',
+								borderRadius: 2,
+								backgroundColor: '#FFF3E0',
+								padding: 3,
+								boxShadow: 2,
+							}}
+						>
+							<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
+								Misión
+							</Typography>
+							<Typography variant="body2" color="text.secondary">
+								Ofrecer soluciones de seguros médicos innovadoras, accesibles y seguras,
+								que garanticen el bienestar y la protección de nuestros usuarios a través
+								de una plataforma tecnológica transparente y confiable.
+							</Typography>
+						</Box>
+					</Grow>
 
-					<Box
-						sx={{
-							flex: 1,
-							minWidth: 280,
-							border: '2px solid #0D2B81',
-							borderRadius: 2,
-							backgroundColor: '#FFF3E0',
-							padding: 3,
-							boxShadow: 2
-						}}
-					>
-						<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
-							Visión
-						</Typography>
-						<Typography variant="body2" color="text.secondary">
-							Consolidarnos como la plataforma digital líder en gestión de seguros médicos
-							en Ecuador, destacando por la excelencia en el servicio, la innovación continua 
-							y el compromiso humano con cada cliente.
-						</Typography>
-					</Box>
+					{/* Visión */}
+					<Grow in={true} timeout={1200}>
+						<Box
+							sx={{
+								flex: 1,
+								minWidth: 280,
+								border: '2px solid #0D2B81',
+								borderRadius: 2,
+								backgroundColor: '#FFF3E0',
+								padding: 3,
+								boxShadow: 2,
+							}}
+						>
+							<Typography variant="h6" fontWeight="bold" color="#0D2B81" gutterBottom>
+								Visión
+							</Typography>
+							<Typography variant="body2" color="text.secondary">
+								Consolidarnos como la plataforma digital líder en gestión de seguros médicos
+								en Ecuador, destacando por la excelencia en el servicio, la innovación continua
+								y el compromiso humano con cada cliente.
+							</Typography>
+						</Box>
+					</Grow>
 				</Box>
-
 			</Container>
 
 
 			{/* CARRUSEL */}
 			<Container maxWidth="md" sx={{ py: 6 }}>
+				{/* Imagen con fade animado */}
 				<Paper
 					sx={{
 						height: 480,
@@ -177,14 +175,21 @@ export const Pagina_inicio = () => {
 						overflow: 'hidden',
 						borderRadius: 3,
 						boxShadow: 4,
-						border: '2px solid #0D2B81'
+						border: '2px solid #0D2B81',
+						position: 'relative',
 					}}
 				>
-					<img
-						src={images[activeStep].imgPath}
-						alt={images[activeStep].label}
-						style={{ width: '100%', objectFit: 'cover' }}
-					/>
+					<Fade in={true} timeout={800} key={images[activeStep].imgPath}>
+						<img
+							src={images[activeStep].imgPath}
+							alt={images[activeStep].label}
+							style={{
+								width: '100%',
+								height: '100%',
+								objectFit: 'cover',
+							}}
+						/>
+					</Fade>
 				</Paper>
 
 				<Typography

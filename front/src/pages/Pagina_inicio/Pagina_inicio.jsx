@@ -1,40 +1,18 @@
 "use client";
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import {
-	AppBar,
-	Toolbar,
-	Typography,
-	Container,
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Grid,
-	CardActions,
-	MobileStepper,
-	Paper,
-	useTheme,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogContentText,
-	DialogActions
-} from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, useTheme } from '@mui/material';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 
 const images = [
 	{
 		label: 'Seguro de Vida',
-		imgPath: '/imagenes/seguro_vida.png',
+		imgPath: '/img/seguro_vida.png', // CORREGIDO
 	},
 	{
 		label: 'Seguro de Salud',
-		imgPath: '/imagenes/seguro_salud.png',
+		imgPath: '/img/seguro_salud.png', // CORREGIDO
 	},
 ];
 
@@ -83,7 +61,7 @@ export const Pagina_inicio = () => {
 						noWrap // evita que el texto se parta en 2 líneas
 						sx={{ flexGrow: 1 }}
 					>
-					Sistemas Seguros
+						Sistemas Seguros
 					</Typography>
 
 					<Button
@@ -157,8 +135,9 @@ export const Pagina_inicio = () => {
 							Misión
 						</Typography>
 						<Typography variant="body2" color="text.secondary">
-							Brindar soluciones de seguros innovadoras, confiables y accesibles para proteger la salud
-							y el futuro de nuestros usuarios, mediante una plataforma moderna, transparente y segura.
+							Ofrecer soluciones de seguros médicos innovadoras, accesibles y seguras, 
+							que garanticen el bienestar y la protección de nuestros usuarios a través 
+							de una plataforma tecnológica transparente y confiable.
 						</Typography>
 					</Box>
 
@@ -177,9 +156,9 @@ export const Pagina_inicio = () => {
 							Visión
 						</Typography>
 						<Typography variant="body2" color="text.secondary">
-							Ser la plataforma líder en la gestión digital de seguros médicos en el país,
-							reconocida por su calidad de servicio, innovación tecnológica y compromiso con el bienestar
-							de cada cliente.
+							Consolidarnos como la plataforma digital líder en gestión de seguros médicos
+							en Ecuador, destacando por la excelencia en el servicio, la innovación continua 
+							y el compromiso humano con cada cliente.
 						</Typography>
 					</Box>
 				</Box>
@@ -187,14 +166,11 @@ export const Pagina_inicio = () => {
 			</Container>
 
 
-
-
-
 			{/* CARRUSEL */}
 			<Container maxWidth="md" sx={{ py: 6 }}>
 				<Paper
 					sx={{
-						height: 250,
+						height: 480,
 						display: 'flex',
 						alignItems: 'center',
 						justifyContent: 'center',
@@ -211,12 +187,22 @@ export const Pagina_inicio = () => {
 					/>
 				</Paper>
 
+				<Typography
+					variant="body1"
+					color="#0D2B81"
+					textAlign="center"
+					fontWeight="bold"
+					mt={2}
+				>
+					{images[activeStep].label}
+				</Typography>
+
 				<MobileStepper
 					variant="dots"
 					steps={maxSteps}
 					position="static"
 					activeStep={activeStep}
-					sx={{ bgcolor: 'transparent', justifyContent: 'center' }}
+					sx={{ bgcolor: 'transparent', justifyContent: 'center', mt: 2 }}
 					nextButton={
 						<Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
 							Siguiente

@@ -4,6 +4,7 @@ import { Pagina_inicio } from './pages/Pagina_inicio/index';
 import { Login } from './pages/Login/index';
 import { NOT_FOUND } from './pages/NOT_FOUND/index';
 import { DashboardAdmin } from './pages/admin/DashboardAdmin';
+import { DashboardAgente } from './pages/agente/DashboardAgente';
 import { UserProvider } from './context/UserContext';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path='*' element={<NOT_FOUND/>}/>
             <Route path='/login' element={<Login/>}/>
             <Route path="/admin/*" element={<DashboardAdmin />} />
+            <Route path="/agente/*" element={<DashboardAgente />} />
           </Routes>
         </BrowserRouter>
       </UserProvider>

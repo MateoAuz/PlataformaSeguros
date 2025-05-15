@@ -1,0 +1,171 @@
+"use client";
+import React, { useState } from 'react';
+import './MenuAgente.css';
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import PeopleIcon from '@mui/icons-material/People';
+import SecurityIcon from '@mui/icons-material/Security';
+import PersonIcon from '@mui/icons-material/Person';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import { useNavigate } from 'react-router-dom';
+import HomeIcon from '@mui/icons-material/Home';
+
+
+export const MenuAgente = ({ children }) => {
+	const [auth, setAuth] = useState(true);
+	const [anchorEl, setAnchorEl] = useState(null);
+	const [drawerOpen, setDrawerOpen] = useState(true);
+
+	const handleMenu = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
+
+	const toggleDrawer = () => {
+		setDrawerOpen((prev) => !prev);
+	};
+
+	const navigate = useNavigate();
+
+	const inicio_login = () => {
+		navigate('/login', { replace: true });
+	};
+
+	return (
+		<Box >
+
+			<AppBar
+				position="fixed"
+				sx={{
+					zIndex: (theme) => theme.zIndex.drawer + 1,
+					backgroundColor: '#002980'
+				}}
+			>
+				<Toolbar>
+					<IconButton
+						size="large"
+						edge="start"
+						color="inherit"
+						aria-label="menu"
+						sx={{ mr: 2 }}
+						onClick={toggleDrawer}
+					>
+						<MenuIcon />
+					</IconButton>
+					<IconButton
+						color="inherit"
+						onClick={() => navigate('/agente')}
+						sx={{ mr: 1 }}
+					>
+						<HomeIcon />
+					</IconButton>
+					<img src="/logo.png" alt="Logo" className='logo' style={{ height: '50px', marginRight: '10px' }} />
+					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+						SISTEMA DE SEGUROS "Vida Plena"
+					</Typography>
+					{auth && (
+						<div>
+							<IconButton
+								size="large"
+								aria-label="account of current user"
+								aria-controls="menu-appbar"
+								aria-haspopup="true"
+								onClick={handleMenu}
+								color="inherit"
+							>
+								<AccountCircle />
+							</IconButton>
+							<Menu
+								id="menu-appbar"
+								anchorEl={anchorEl}
+								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+								keepMounted
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								open={Boolean(anchorEl)}
+								onClose={handleClose}
+							>
+								<MenuItem onClick={handleClose}>Perfil</MenuItem>
+								<MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
+							</Menu>
+						</div>
+					)}
+				</Toolbar>
+			</AppBar>
+
+			<Drawer
+				variant="persistent"
+				anchor="left"
+				open={drawerOpen}
+				sx={{
+					width: 250,
+					flexShrink: 0,
+					'& .MuiDrawer-paper': {
+						width: 250,
+						boxSizing: 'border-box',
+						backgroundColor: '#63A6B0',
+						color: 'white'
+					},
+				}}
+			>
+				<Toolbar />
+				<Box sx={{ overflow: 'auto' }}>
+					<List>
+						<ListItem button onClick={() => navigate('/agente/clientes')}>
+							<ListItemIcon><PersonIcon /></ListItemIcon>
+							<ListItemText primary="Clientes" />
+						</ListItem>
+
+						<ListItem button onClick={() => navigate('/agente/contratacion')}>
+							<ListItemIcon><AssignmentIcon /></ListItemIcon>
+							<ListItemText primary="Contratación" />
+						</ListItem>
+
+						<ListItem button onClick={() => navigate('/agente/revision')}>
+							<ListItemIcon><RateReviewIcon /></ListItemIcon>
+							<ListItemText primary="Revisión" />
+						</ListItem>
+
+						<ListItem button onClick={() => navigate('/agente/reportes')}>
+							<ListItemIcon><BarChartIcon /></ListItemIcon>
+							<ListItemText primary="Reporte" />
+						</ListItem>
+					</List>
+				</Box>
+
+			</Drawer>
+
+			<Box
+				component="main"
+				sx={{
+					flexGrow: 1,
+					p: 3,
+					marginLeft: drawerOpen ? '250px' : '0',
+					transition: 'margin 0.3s',
+				}}
+			>
+				<Toolbar />
+				{children}
+			</Box>
+		</Box>
+	);
+};
+
+MenuAgente.propTypes = {};

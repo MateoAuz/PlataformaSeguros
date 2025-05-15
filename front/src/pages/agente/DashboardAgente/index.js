@@ -1,0 +1,1 @@
+export { DashboardAgente } from './DashboardAgente';

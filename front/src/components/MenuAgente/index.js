@@ -1,0 +1,1 @@
+export { MenuAgente } from './MenuAgente';

@@ -137,7 +137,7 @@ export const Pagina_inicio = () => {
 					</Grow>
 
 					{/* Visión */}
-					<Grow in={true} timeout={1200}>
+					<Grow in={true} timeout={1000}>
 						<Box
 							sx={{
 								flex: 1,

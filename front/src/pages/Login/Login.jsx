@@ -3,18 +3,22 @@ import React, { useState } from 'react';
 import './Login.css';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
 
 export const Login = () => {
-
 	const navigate = useNavigate();
-	const regresar = () =>{
-		navigate('/',{replace:true});
-	};
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
+
+	const isEmailValid = (email) => {
+		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return regex.test(email);
+	};
+
+	const regresar = () => {
+		navigate('/', { replace: true });
+	};
 
 	const handleLogin = async (e) => {
 		e.preventDefault();
@@ -24,90 +28,99 @@ export const Login = () => {
 			return;
 		}
 
+		if (!isEmailValid(username)) {
+			setError('El correo no tiene un formato válido.');
+			return;
+		}
+
 		try {
+			console.log("Enviando:", { correo: username, password });
+
 			const res = await fetch("http://localhost:3030/login", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ correo: username, password })
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ correo: username, password })
 			});
 
 			const data = await res.json();
+			console.log("Respuesta del backend:", data);
 
 			if (!res.ok) {
-			setError(data.error || 'Error al iniciar sesión');
-			return;
+				setError(data.error || 'Error al iniciar sesión');
+				return;
 			}
 
-			localStorage.setItem("tipoUsuario", data.tipo);
+			// Guardar tipo de usuario
+			localStorage.setItem("tipoUsuario", data.usuario.tipo);
 
-			switch (data.tipo) {
-			case 0:
-				navigate('/admin', { replace: true });
-				break;
-			case 1:
-				navigate('/agente', { replace: true });
-				break;
-			case 2:
-				navigate('/cliente', { replace: true });
-				break;
-			default:
-				setError('Tipo de usuario no reconocido');
+			switch (data.usuario.tipo) {
+				case 0:
+					navigate('/admin', { replace: true });
+					break;
+				case 1:
+					navigate('/agente', { replace: true });
+					break;
+				case 2:
+					navigate('/cliente', { replace: true });
+					break;
+				default:
+					setError('Tipo de usuario no reconocido');
 			}
 
 		} catch (err) {
-			console.error(err);
+			console.error("Error de conexión:", err);
 			setError('Error de conexión al servidor');
 		}
 	};
 
+	return (
+		<>
+			<header className="header-seguro-refinado">
+				<span className="titulo-seguro">Seguros VidaPlena</span>
+				<span className="frase-seguro">| Protegiendo tu salud y bienestar cada día</span>
+				<button className='boton-retornar' onClick={regresar}>Retornar</button>
+			</header>
 
-  return (
-	<>
-		<header className="header-seguro-refinado">
-			<span className="titulo-seguro">Seguros VidaPlena</span>
-			<span className="frase-seguro">| Protegiendo tu salud y bienestar cada día</span>
-			<button className='boton-retornar' onClick={regresar}>Retornar</button>
-		</header>
-	
-		<div className="body-background">
-		<div className="box">
-		<img src="/logo.png" alt="Logo Seguros" className="logo-seguro" />
-			<div className="login">
-			<div className="loginBx">
-				<h2>
-				<FaSignInAlt /> Login
-				</h2>
-				<form onSubmit={handleLogin} style={{ width: '100%' }}>
-				<div className="input-field">
-					<i><FaUser /></i>
-					<input
-					type="text"
-					placeholder="Correo"
-					value={username}
-					onChange={(e) => setUsername(e.target.value)}
-					/>
+			<div
+				className="body-background"
+				style={{
+					backgroundImage: `url(${process.env.PUBLIC_URL}/img/fondo_login.png)`,
+				}}>
+				<div className="box">
+					<img src="/logo.png" alt="Logo Seguros" className="logo-seguro" />
+					<div className="login">
+						<div className="loginBx">
+							<h2><FaSignInAlt /> Login</h2>
+							<form onSubmit={handleLogin} style={{ width: '100%' }}>
+								<div className="input-field">
+									<i><FaUser /></i>
+									<input
+										type="text"
+										placeholder="Correo"
+										value={username}
+										onChange={(e) => setUsername(e.target.value)}
+									/>
+								</div>
+								<div className="input-field">
+									<i><FaLock /></i>
+									<input
+										type="password"
+										placeholder="Contraseña"
+										value={password}
+										onChange={(e) => setPassword(e.target.value)}
+									/>
+								</div>
+								{error && (
+									<p style={{ color: 'red', fontSize: '13px', marginTop: '10px' }}>
+										{error}
+									</p>
+								)}
+								<input type="submit" value="Iniciar Sesión" />
+							</form>
+						</div>
+					</div>
 				</div>
-				<div className="input-field">
-					<i><FaLock /></i>
-					<input
-					type="password"
-					placeholder="Contraseña"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					/>
-				</div>
-				{error && (
-					<p style={{ color: 'red', fontSize: '13px', marginTop: '10px' }}>
-					{error}
-					</p>
-				)}
-				<input type="submit" value="Iniciar Sesión" />
-
-				</form>
 			</div>
-			</div>
-		</div>
-		</div>
-	</>
-  );
+		</>
+	);
 };

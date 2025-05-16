@@ -14,7 +14,6 @@
   min-height: 100vh;
   padding-right: 5%;
   padding-top: 60px;
-  background-image: url('fondo_login.png');
 }
 
 /* Animación de rotación */
@@ -129,7 +128,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  transform: translateY(95px);
+  transform: translateY(100px);
   gap: 15px;
   width: 85%;
   transition: 0.5s;

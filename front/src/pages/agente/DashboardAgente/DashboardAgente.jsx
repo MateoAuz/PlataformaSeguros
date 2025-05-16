@@ -1,7 +1,6 @@
 "use client";
 import React from 'react';
 import './DashboardAgente.css';
-import PropTypes from 'prop-types';
 import { MenuAgente } from '../../../components/MenuAgente';
 import { Routes, Route } from 'react-router-dom';
 import { Bienvenida } from '../../../components/Bienvenida';

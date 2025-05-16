@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, useTheme, Fade, Grow } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, Fade, Grow } from '@mui/material';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 
@@ -18,7 +18,6 @@ const images = [
 
 export const Pagina_inicio = () => {
 	const navigate = useNavigate();
-	const theme = useTheme();
 	const maxSteps = images.length;
 
 	const [activeStep, setActiveStep] = useState(0);

@@ -8,11 +8,11 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 const images = [
 	{
 		label: 'Seguro de Vida',
-		imgPath: '/img/seguro_vida.png', // CORREGIDO
+		imgPath: '/img/seguro_vida.png', 
 	},
 	{
 		label: 'Seguro de Salud',
-		imgPath: '/img/seguro_salud.png', // CORREGIDO
+		imgPath: '/img/seguro_salud.png', 
 	},
 ];
 
@@ -44,14 +44,14 @@ export const Pagina_inicio = () => {
 						display: 'flex',
 						justifyContent: 'space-between',
 						alignItems: 'center',
-						flexWrap: 'nowrap', // evita salto de línea entre hijos
+						flexWrap: 'nowrap', 
 					}}
 				>
 					<Typography
 						variant="h5"
 						fontWeight="bold"
 						color="white"
-						noWrap // evita que el texto se parta en 2 líneas
+						noWrap 
 						sx={{ flexGrow: 1 }}
 					>
 						Sistemas Seguros
@@ -66,11 +66,11 @@ export const Pagina_inicio = () => {
 							textTransform: 'none',
 							fontWeight: 'bold',
 							borderRadius: 2,
-							px: 2,                  // padding horizontal (izq-der)
-							py: 0.5,                // padding vertical (arriba-abajo)
-							minWidth: 'unset',      // evita tamaño mínimo por defecto
-							width: 'auto',          // evita que se estire
-							whiteSpace: 'nowrap',   // evita salto de línea
+							px: 2,                 
+							py: 0.5,               
+							minWidth: 'unset',      
+							width: 'auto',         
+							whiteSpace: 'nowrap',   
 						}}
 					>
 						Iniciar sesión

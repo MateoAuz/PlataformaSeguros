@@ -6,8 +6,9 @@ import { NOT_FOUND } from './pages/NOT_FOUND/index';
 import { DashboardAdmin } from './pages/admin/DashboardAdmin';
 import { DashboardAgente } from './pages/agente/DashboardAgente';
 import { UserProvider } from './context/UserContext';
-import { Clientes } from './components/Clientes';
-import { PClientes } from './pages/cliente/PClientes';
+import { PClientes } from './pages/Cliente/PClientes';
+
+
 
 function App() {
   return (

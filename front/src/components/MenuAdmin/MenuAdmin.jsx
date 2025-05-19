@@ -46,8 +46,11 @@ export const MenuAdmin = ({ children }) => {
 	const navigate = useNavigate();
 
 	const inicio_login = () => {
+		localStorage.removeItem("usuario"); // 👈 borra la persistencia
+		setAuth(false); // opcional
 		navigate('/login', { replace: true });
 	};
+
 
 	return (
 		<Box >
@@ -102,7 +105,15 @@ export const MenuAdmin = ({ children }) => {
 								open={Boolean(anchorEl)}
 								onClose={handleClose}
 							>
-								<MenuItem onClick={handleClose}>Perfil</MenuItem>
+								<MenuItem
+									onClick={() => {
+										handleClose();
+										navigate('/admin/perfil');
+									}}
+								>
+									Perfil
+								</MenuItem>
+
 								<MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
 							</Menu>
 						</div>

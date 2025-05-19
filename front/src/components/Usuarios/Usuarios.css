@@ -1,3 +1,6 @@
 .usuarios {
-  
+  padding: 24px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
 }

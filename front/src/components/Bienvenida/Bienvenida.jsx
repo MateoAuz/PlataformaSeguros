@@ -1,70 +1,106 @@
+// src/components/Bienvenida/Bienvenida.jsx
 "use client";
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './Bienvenida.css';
 import { UserContext } from '../../context/UserContext';
 import { Typography, Grid, Paper, Button, Alert, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { contarClientes, crearUsuario } from '../../services/UserService';
+import BotonAccion from '../BotonAccion/BotonAccion';
+import { FormularioUsuario } from '../Usuarios/FormularioUsuario/FormularioUsuario';
 
 export const Bienvenida = () => {
-	const { usuario } = useContext(UserContext);
-	const navigate = useNavigate();
+  const { usuario } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [totalClientes, setTotalClientes] = useState(0);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
 
-	const fechaActual = new Date().toLocaleDateString();
-	const horaActual = new Date().toLocaleTimeString();
+  const fechaActual = new Date().toLocaleDateString();
+  const horaActual = new Date().toLocaleTimeString();
 
-	return (
-		<div className="bienvenida">
-			<Typography variant="h4" gutterBottom>
-				Bienvenido(a), {usuario?.nombre || 'Usuario'}
-			</Typography>
+  useEffect(() => {
+    const obtenerClientes = async () => {
+      try {
+        const res = await contarClientes();
+        setTotalClientes(res.data.total);
+      } catch (err) {
+        console.error('❌ Error al contar clientes:', err);
+      }
+    };
 
-			<Typography variant="body1" gutterBottom>
-				Gracias por utilizar la plataforma <strong>Vida Plena</strong>. Aquí podrás gestionar seguros, clientes y más.
-			</Typography>
+    obtenerClientes();
+  }, []);
 
-			<Typography variant="body2" color="textSecondary" gutterBottom>
-				{fechaActual} - {horaActual}
-			</Typography>
+  const handleAgregar = () => {
+    setUsuarioSeleccionado(null);
+    setModalAbierto(true);
+  };
 
-			<Grid container spacing={3} sx={{ mt: 2 }}>
-				<Grid item xs={12} sm={4}>
-					<Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
-						<Typography variant="h6" color="warning.main">Seguros activos</Typography>
-						<Typography variant="h4" color="text.primary">42</Typography>
-					</Paper>
-				</Grid>
-				<Grid item xs={12} sm={4}>
-					<Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
-						<Typography variant="h6" color="warning.main">Clientes registrados</Typography>
-						<Typography variant="h4" color="text.primary">128</Typography>
-					</Paper>
-				</Grid>
-				<Grid item xs={12} sm={4}>
-					<Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
-						<Typography variant="h6" color="warning.main">Contrataciones pendientes</Typography>
-						<Typography variant="h4" color="text.primary">5</Typography>
-					</Paper>
-				</Grid>
-			</Grid>
+  const handleGuardar = async (nuevoUsuario) => {
+    try {
+      await crearUsuario(nuevoUsuario);
+      setModalAbierto(false);
+    } catch (err) {
+      console.error('Error al crear usuario desde bienvenida:', err);
+    }
+  };
 
+  return (
+    <div className="bienvenida">
+      <Typography variant="h4" gutterBottom>
+        Bienvenido(a), {usuario?.nombre ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario'}
+      </Typography>
 
-			{/* Accesos rápidos */}
-			<Box sx={{ mt: 4 }}>
-				<Typography variant="h6" gutterBottom>Accesos rápidos</Typography>
-				<Button variant="contained" sx={{ mr: 2 }} onClick={() => navigate('/admin/clientes')}>
-					Gestionar Clientes
-				</Button>
-				<Button variant="outlined" onClick={() => navigate('/admin/reporte')}>
-					Ver Reportes
-				</Button>
-			</Box>
+      <Typography variant="body1" gutterBottom>
+        Gracias por utilizar la plataforma <strong>Vida Plena</strong>. Aquí podrás gestionar seguros, clientes y más.
+      </Typography>
 
-			{/* Alerta informativa */}
-			<Alert severity="info" sx={{ mt: 4 }}>
-				Tienes 5 contrataciones pendientes de revisión.
-			</Alert>
-		</div>
-	);
+      <Typography variant="body2" color="textSecondary" gutterBottom>
+        {fechaActual} - {horaActual}
+      </Typography>
+
+      <Grid container spacing={3} sx={{ mt: 2 }}>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
+            <Typography variant="h6" color="warning.main">Seguros activos</Typography>
+            <Typography variant="h4" color="text.primary">42</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
+            <Typography variant="h6" color="warning.main">Clientes registrados</Typography>
+            <Typography variant="h4" color="text.primary">{totalClientes}</Typography>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
+            <Typography variant="h6" color="warning.main">Contrataciones pendientes</Typography>
+            <Typography variant="h4" color="text.primary">5</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h6" gutterBottom>Accesos rápidos</Typography>
+        {usuario?.tipo === 0 && (
+          <BotonAccion texto="Nuevo Usuario" onClick={handleAgregar} sx={{ ml: 2 }} />
+        )}
+
+      </Box>
+
+      <Alert severity="info" sx={{ mt: 4 }}>
+        Tienes 5 contrataciones pendientes de revisión.
+      </Alert>
+
+      <FormularioUsuario
+        open={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        onSubmit={handleGuardar}
+        usuario={usuarioSeleccionado}
+      />
+    </div>
+  );
 };
 
-Bienvenida.propTypes = {};
+export default Bienvenida;

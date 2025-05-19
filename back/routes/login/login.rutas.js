@@ -1,44 +1,52 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const db = require('../../db/connection');
 
-
-
 router.post('/', (req, res) => {
-    console.log("Cuerpo recibido:", req.body);
+  const { correo, password } = req.body;
 
-    const { correo, password } = req.body;
+  if (!correo || !password) {
+    return res.status(400).json({ mensaje: 'Correo y contraseña son obligatorios' });
+  }
 
-    if (!correo || !password) {
-        return res.status(400).json({ mensaje: 'Correo y contraseña son obligatorios' });
+  const query = `
+    SELECT id_usuario, correo, username, nombre, apellido, password, tipo, activo, cedula, telefono
+    FROM usuario
+    WHERE correo = ?
+    LIMIT 1
+  `;
+
+  db.query(query, [correo], async (err, results) => {
+    if (err) {
+      console.error('Error en la consulta SQL:', err);
+      return res.status(500).json({ error: 'Error interno del servidor.' });
     }
 
-    const query = `
-        SELECT id_usuario, correo, tipo, activo
-        FROM usuario
-        WHERE correo = ? AND password = ? AND activo = 1
-        LIMIT 1
-    `;
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Usuario no encontrado.' });
+    }
 
-    console.log("Ejecutando query con:", correo, password);
+    const usuario = results[0];
 
-    db.query(query, [correo, password], (err, results) => {
-        if (err) {
-            console.error("ERROR en la consulta SQL:", err);
-            return res.status(500).json({ error: 'Error interno del servidor.' });
-        }
+    if (usuario.activo !== 1) {
+      return res.status(403).json({ error: 'La cuenta está desactivada.' });
+    }
 
-        console.log("Resultado de la consulta:", results);
+    const coincide = await bcrypt.compare(password, usuario.password);
 
-        if (results.length === 0) {
-            return res.status(401).json({ error: 'Credenciales incorrectas o cuenta inactiva.' });
-        }
+    if (!coincide) {
+      return res.status(401).json({ error: 'Contraseña incorrecta.' });
+    }
 
-        return res.status(200).json({
-            mensaje: 'Login exitoso',
-            usuario: results[0]
-        });
+    // Puedes omitir el hash antes de responder
+    delete usuario.password;
+
+    return res.status(200).json({
+      mensaje: 'Login exitoso',
+      usuario
     });
+  });
 });
 
 module.exports = router;

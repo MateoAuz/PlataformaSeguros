@@ -1,11 +1,13 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './Login.css';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 
 export const Login = () => {
 	const navigate = useNavigate();
+	const { setUsuario } = useContext(UserContext);
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -50,9 +52,13 @@ export const Login = () => {
 				return;
 			}
 
-			// Guardar tipo de usuario
+			// Guardar datos del usuario en el contexto
+			setUsuario(data.usuario);
+
+			// También puedes guardar tipo en localStorage si es necesario
 			localStorage.setItem("tipoUsuario", data.usuario.tipo);
 
+			// Redirección por tipo de usuario
 			switch (data.usuario.tipo) {
 				case 0:
 					navigate('/admin', { replace: true });

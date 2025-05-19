@@ -1,0 +1,1 @@
+export { default as BotonAccion } from './BotonAccion';

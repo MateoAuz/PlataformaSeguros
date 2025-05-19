@@ -18,7 +18,7 @@ const loginRutas = require('./routes/login/login.rutas');
 const seguroRutas = require('./routes/seguro/seguro.rutas');
 
 app.use('/usuario', usuarioRutas);
-app.use('/login', loginRutas); // ← esta es la que falla ahora
+app.use('/login', loginRutas);
 app.use('/seguro', seguroRutas);
 
 // Ruta base

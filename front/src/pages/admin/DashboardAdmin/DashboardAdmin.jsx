@@ -12,6 +12,7 @@ import { Clientes } from '../../../components/Clientes';
 import { Contratacion } from '../../../components/Contratacion';
 import { Revision } from '../../../components/Revision';
 import { Reportes } from '../../../components/Reportes';
+import { PerfilUsuario } from '../../../components/PerfilUsuario/PerfilUsuario';
 
 
 export const DashboardAdmin = ({ }) => {
@@ -28,6 +29,7 @@ export const DashboardAdmin = ({ }) => {
 					<Route path="contratacion" element={<Contratacion />} />
 					<Route path="revision" element={<Revision />} />
 					<Route path="reportes" element={<Reportes />} />
+					<Route path="perfil" element={<PerfilUsuario />} />
 				</Routes>
 			</MenuAdmin>
 		</div>

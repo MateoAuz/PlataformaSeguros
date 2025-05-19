@@ -1,0 +1,1 @@
+export {UsuariosInactivos } from './UsuariosInactivos';

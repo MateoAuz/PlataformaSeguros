@@ -19,7 +19,7 @@ const seguroRutas = require('./routes/seguro/seguro.rutas');
 
 app.use('/usuario', usuarioRutas);
 app.use('/login', loginRutas);
-app.use('/seguro', seguroRutas);
+app.use('/seguros', seguroRutas);
 
 // Ruta base
 app.get("/", (req, res) => {

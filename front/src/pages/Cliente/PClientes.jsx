@@ -1,22 +1,25 @@
 "use client";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, useTheme, Fade, Grow } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, Button, MobileStepper, Paper, Fade, Grow } from '@mui/material';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import Seguros from '../../components/Seguros/Seguros';
+
+
 
 const images = [
 	{
 		label: 'Seguridad',
-		imgPath: '/img/1.jpg', 
+		imgPath: '/img/1.jpg',
 	},
 	{
 		label: 'Familia',
-		imgPath: '/img/2.jpg', 
+		imgPath: '/img/2.jpg',
 	},
-    {
+	{
 		label: 'Confianza',
-		imgPath: '/img/3.jpg', 
+		imgPath: '/img/3.jpg',
 	},
 ];
 
@@ -24,7 +27,6 @@ const images = [
 
 export const PClientes = () => {
 	const navigate = useNavigate();
-	const theme = useTheme();
 	const maxSteps = images.length;
 
 	const [activeStep, setActiveStep] = useState(0);
@@ -46,14 +48,14 @@ export const PClientes = () => {
 						display: 'flex',
 						justifyContent: 'space-between',
 						alignItems: 'center',
-						flexWrap: 'nowrap', 
+						flexWrap: 'nowrap',
 					}}
 				>
 					<Typography
 						variant="h5"
 						fontWeight="bold"
 						color="#0D2B81"
-						noWrap 
+						noWrap
 						sx={{ flexGrow: 1 }}
 					>
 						Plataforma de seguros médicos - Clientes
@@ -66,22 +68,22 @@ export const PClientes = () => {
 						sx={{
 							fontWeight: 'bold',
 							borderRadius: 3,
-							px: 2,                  
-							py: 0.5,                
-							minWidth: 'unset',      
-							width: 'auto',          
-							whiteSpace: 'nowrap',   
+							px: 2,
+							py: 0.5,
+							minWidth: 'unset',
+							width: 'auto',
+							whiteSpace: 'nowrap',
 						}}
 					>
 						<Typography
-						variant="h7"
-						fontWeight="bold"
-						color="#0D2B81"
-						noWrap 
-						sx={{ flexGrow: 1 }}
-					>
-						Más Información
-					</Typography>
+							variant="h7"
+							fontWeight="bold"
+							color="#0D2B81"
+							noWrap
+							sx={{ flexGrow: 1 }}
+						>
+							Más Información
+						</Typography>
 					</Button>
 				</Toolbar>
 			</AppBar>
@@ -152,14 +154,14 @@ export const PClientes = () => {
 					sx={{ bgcolor: 'transparent', justifyContent: 'center', mt: 2 }}
 					nextButton={
 						<Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
-							
+
 							<KeyboardArrowRight />
 						</Button>
 					}
 					backButton={
 						<Button size="small" onClick={handleBack} disabled={activeStep === 0}>
 							<KeyboardArrowLeft />
-							
+
 						</Button>
 					}
 				/>
@@ -237,10 +239,31 @@ export const PClientes = () => {
 							<Typography variant="body2" color="text.secondary">
 								There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessar
 							</Typography>
+
 						</Box>
 					</Grow>
 				</Box>
 			</Container>
+
+			<Container maxWidth="lg" sx={{ py: 4 }}>
+				<Box
+					sx={{
+						bgcolor: '#D7F1EF',
+						borderRadius: 2,
+						boxShadow: 7,
+						p: 4,
+						mt: 4,
+					}}
+				>
+					<Typography variant="h4" textAlign="center" color="#0D2B81" gutterBottom fontWeight="bold">
+						Lista de Seguros Disponibles
+					</Typography>
+					<Seguros />
+				</Box>
+			</Container>
+
+
+
 
 			<Box
 				sx={{

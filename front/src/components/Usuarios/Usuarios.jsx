@@ -79,65 +79,66 @@ export const Usuarios = () => {
     }
   };
 
-  return (
-    <div className="usuarios">
-      <SeccionTitulo titulo="Gestión de Usuarios">
-        <BotonAccion texto="Nuevo Usuario" onClick={handleAgregar} />
-      </SeccionTitulo>
+return (
+  <Box sx={{ px: { xs: 1, sm: 2, md: 4 }, py: 2 }}>
+    <SeccionTitulo titulo="Gestión de Usuarios">
+      <BotonAccion texto="Nuevo Usuario" onClick={handleAgregar} />
+    </SeccionTitulo>
 
-      <UsuariosInactivos />
+    <UsuariosInactivos />
 
-      <Paper sx={{ p: 2, mt: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Apellido</TableCell>
-              <TableCell>Correo</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Tipo</TableCell>
-              <TableCell align="right">Acciones</TableCell>
+    <Paper sx={{ p: { xs: 1, sm: 2 }, mt: 2, overflowX: 'auto' }}>
+      <Table sx={{ minWidth: 600 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Nombre</TableCell>
+            <TableCell>Apellido</TableCell>
+            <TableCell>Correo</TableCell>
+            <TableCell>Username</TableCell>
+            <TableCell>Tipo</TableCell>
+            <TableCell align="right">Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {usuarios.map((usuario) => (
+            <TableRow key={usuario.id_usuario}>
+              <TableCell>{usuario.nombre}</TableCell>
+              <TableCell>{usuario.apellido}</TableCell>
+              <TableCell>{usuario.correo}</TableCell>
+              <TableCell>{usuario.username}</TableCell>
+              <TableCell>
+                {usuario.tipo === 0 ? 'Administrador' : usuario.tipo === 1 ? 'Agente' : 'Cliente'}
+              </TableCell>
+              <TableCell align="right">
+                <IconButton color="primary" onClick={() => handleEditar(usuario)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error" onClick={() => solicitarDesactivacion(usuario.id_usuario)}>
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {usuarios.map((usuario) => (
-              <TableRow key={usuario.id_usuario}>
-                <TableCell>{usuario.nombre}</TableCell>
-                <TableCell>{usuario.apellido}</TableCell>
-                <TableCell>{usuario.correo}</TableCell>
-                <TableCell>{usuario.username}</TableCell>
-                <TableCell>
-                  {usuario.tipo === 0 ? 'Administrador' : usuario.tipo === 1 ? 'Agente' : 'Cliente'}
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton color="primary" onClick={() => handleEditar(usuario)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => solicitarDesactivacion(usuario.id_usuario)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
 
-      <FormularioUsuario
-        open={modalAbierto}
-        onClose={() => setModalAbierto(false)}
-        onSubmit={handleGuardar}
-        usuario={usuarioSeleccionado}
-      />
+    <FormularioUsuario
+      open={modalAbierto}
+      onClose={() => setModalAbierto(false)}
+      onSubmit={handleGuardar}
+      usuario={usuarioSeleccionado}
+    />
 
-      <ConfirmarDialogo
-        open={dialogoAbierto}
-        onClose={() => setDialogoAbierto(false)}
-        onConfirm={confirmarDesactivacion}
-        mensaje="¿Estás seguro de que deseas desactivar este usuario?"
-      />
-    </div>
-  );
+    <ConfirmarDialogo
+      open={dialogoAbierto}
+      onClose={() => setDialogoAbierto(false)}
+      onConfirm={confirmarDesactivacion}
+      mensaje="¿Estás seguro de que deseas desactivar este usuario?"
+    />
+  </Box>
+);
+
 };
 
 Usuarios.propTypes = {};

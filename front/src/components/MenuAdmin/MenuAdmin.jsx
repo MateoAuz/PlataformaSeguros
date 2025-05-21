@@ -2,34 +2,31 @@
 import React, { useState } from 'react';
 import './MenuAdmin.css';
 import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import {
+	AppBar, Box, Toolbar, Typography, IconButton,
+	MenuItem, Menu, Drawer, List, ListItem, ListItemText,
+	ListItemIcon, useTheme, useMediaQuery
+} from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import PeopleIcon from '@mui/icons-material/People';
 import SecurityIcon from '@mui/icons-material/Security';
 import PersonIcon from '@mui/icons-material/Person';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import { useNavigate } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
 
+import { useNavigate } from 'react-router-dom';
 
 export const MenuAdmin = ({ children }) => {
 	const [auth, setAuth] = useState(true);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [drawerOpen, setDrawerOpen] = useState(true);
+
+	const theme = useTheme();
+	const esPantallaChica = useMediaQuery(theme.breakpoints.down('sm'));
+	const [drawerOpen, setDrawerOpen] = useState(!esPantallaChica);
 
 	const handleMenu = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -40,21 +37,24 @@ export const MenuAdmin = ({ children }) => {
 	};
 
 	const toggleDrawer = () => {
-		setDrawerOpen((prev) => !prev);
+		setDrawerOpen(prev => !prev);
 	};
 
 	const navigate = useNavigate();
 
 	const inicio_login = () => {
-		localStorage.removeItem("usuario"); // 👈 borra la persistencia
-		setAuth(false); // opcional
+		localStorage.removeItem("usuario");
+		setAuth(false);
 		navigate('/login', { replace: true });
 	};
 
+	const handleNavigate = (ruta) => {
+		navigate(ruta);
+		if (esPantallaChica) setDrawerOpen(false);
+	};
 
 	return (
-		<Box >
-
+		<Box sx={{ display: 'flex' }}>
 			<AppBar
 				position="fixed"
 				sx={{
@@ -80,8 +80,12 @@ export const MenuAdmin = ({ children }) => {
 					>
 						<HomeIcon />
 					</IconButton>
-					<img src="/logo.png" alt="Logo" className='logo' style={{ height: '50px', marginRight: '10px' }} />
-					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+					<img src="/logo.png" alt="Logo" className="logo" style={{ height: '50px', marginRight: '10px' }} />
+					<Typography
+						variant="h6"
+						component="div"
+						sx={{ flexGrow: 1, fontSize: { xs: '0.95rem', sm: '1.25rem' } }}
+					>
 						SISTEMA DE SEGUROS "Vida Plena"
 					</Typography>
 					{auth && (
@@ -105,15 +109,9 @@ export const MenuAdmin = ({ children }) => {
 								open={Boolean(anchorEl)}
 								onClose={handleClose}
 							>
-								<MenuItem
-									onClick={() => {
-										handleClose();
-										navigate('/admin/perfil');
-									}}
-								>
+								<MenuItem onClick={() => { handleClose(); navigate('/admin/perfil'); }}>
 									Perfil
 								</MenuItem>
-
 								<MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
 							</Menu>
 						</div>
@@ -122,64 +120,59 @@ export const MenuAdmin = ({ children }) => {
 			</AppBar>
 
 			<Drawer
-				variant="persistent"
-				anchor="left"
+				variant={esPantallaChica ? 'temporary' : 'persistent'}
 				open={drawerOpen}
+				onClose={toggleDrawer}
 				sx={{
-					width: 250,
-					flexShrink: 0,
+					display: { xs: 'block', sm: 'block' },
 					'& .MuiDrawer-paper': {
 						width: 250,
 						boxSizing: 'border-box',
 						backgroundColor: '#63A6B0',
-						color: 'white'
+						color: 'white',
 					},
 				}}
 			>
 				<Toolbar />
 				<Box sx={{ overflow: 'auto' }}>
 					<List>
-						<ListItem button onClick={() => navigate('/admin/usuarios')}>
-							<ListItemIcon><PeopleIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/usuarios')}>
+							<ListItemIcon><PeopleIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Usuarios" />
 						</ListItem>
-
-						<ListItem button onClick={() => navigate('/admin/seguros')}>
-							<ListItemIcon><SecurityIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/seguros')}>
+							<ListItemIcon><SecurityIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Seguros" />
 						</ListItem>
-
-						<ListItem button onClick={() => navigate('/admin/clientes')}>
-							<ListItemIcon><PersonIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/clientes')}>
+							<ListItemIcon><PersonIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Clientes" />
 						</ListItem>
-
-						<ListItem button onClick={() => navigate('/admin/contratacion')}>
-							<ListItemIcon><AssignmentIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/contratacion')}>
+							<ListItemIcon><AssignmentIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Contratación" />
 						</ListItem>
-
-						<ListItem button onClick={() => navigate('/admin/revision')}>
-							<ListItemIcon><RateReviewIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/revision')}>
+							<ListItemIcon><RateReviewIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Revisión" />
 						</ListItem>
-
-						<ListItem button onClick={() => navigate('/admin/reportes')}>
-							<ListItemIcon><BarChartIcon /></ListItemIcon>
+						<ListItem button onClick={() => handleNavigate('/admin/reportes')}>
+							<ListItemIcon><BarChartIcon sx={{ color: 'white' }} /></ListItemIcon>
 							<ListItemText primary="Reporte" />
 						</ListItem>
 					</List>
 				</Box>
-
 			</Drawer>
 
 			<Box
 				component="main"
 				sx={{
 					flexGrow: 1,
-					p: 3,
-					marginLeft: drawerOpen ? '250px' : '0',
-					transition: 'margin 0.3s',
+					p: { xs: 2, sm: 3 },
+					ml: esPantallaChica ? 0 : (drawerOpen ? '250px' : 0),
+					transition: 'all 0.3s ease',
+					width: '100%',
+					boxSizing: 'border-box',
 				}}
 			>
 				<Toolbar />
@@ -189,4 +182,6 @@ export const MenuAdmin = ({ children }) => {
 	);
 };
 
-MenuAdmin.propTypes = {};
+MenuAdmin.propTypes = {
+	children: PropTypes.node
+};

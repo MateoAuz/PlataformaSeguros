@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
   }
 
   const query = `
-    SELECT id_usuario, correo, username, nombre, apellido, password, tipo, activo, cedula, telefono
+    SELECT id_usuario, correo, username, nombre, apellido, tipo, activo, cedula, telefono
     FROM usuario
     WHERE correo = ?
     LIMIT 1

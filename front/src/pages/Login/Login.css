@@ -8,12 +8,14 @@
 }
 
 .body-background {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding-right: 5%;
-  padding-top: 60px;
+  padding: 0;
 }
 
 /* Animación de rotación */
@@ -28,7 +30,6 @@
   100% { --a: 360deg; }
 }
 
-/* Contenedor principal */
 .box {
   position: relative;
   width: 320px;
@@ -55,7 +56,6 @@
   height: 400px;
 }
 
-/* Capas internas del bloque */
 .box::before {
   content: '';
   position: absolute;
@@ -84,7 +84,6 @@
   border: 8px solid #46464f;
 }
 
-/* Logo sobre el bloque */
 .logo-seguro {
   position: absolute;
   top: -70px;
@@ -100,7 +99,6 @@
   z-index: 1001;
 }
 
-/* Login interno */
 .login {
   position: absolute;
   inset: 50px;
@@ -144,8 +142,7 @@
   font-weight: 600;
   width: 100%;
   text-align: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
   font-size: 18px;
   line-height: 1.2;
   display: flex;
@@ -209,64 +206,57 @@
   border-radius: 30px;
 }
 
-/* Encabezado superior */
+/* Header */
 .header-seguro-refinado {
-  position: fixed;
-  top: 35px;
-  left: 50px;
-  width: 850px;
-  height: 50px;
-  background: linear-gradient(90deg, #183e8a, #076a58);
-  border-radius: 0 0 12px 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  color: white;
+  position: relative;
+  width: 100%;
+  background-color: rgb(205, 205, 205);
+  color: #111;
+  padding: 12px 20px;
   font-size: 15px;
   font-weight: 500;
-  z-index: 10000;
-}
-
-.titulo-contenido {
   display: flex;
+  justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
 }
 
 .titulo-seguro {
   font-weight: 700;
   font-size: 17px;
+  color: #0D2B81;
 }
 
 .frase-seguro {
-  font-weight: 300;
+  font-weight: 400;
   font-size: 14px;
   opacity: 0.9;
+  color: #333;
 }
 
 .boton-retornar {
-  margin-left: auto;
-  background-color: white;
-  color: #076a58;
+  background-color: #076a58;
+  color: white;
   border: none;
-  padding: 6px 14px;
+  padding: 6px 16px;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-left: auto;
 }
 
 .boton-retornar:hover {
-  background-color: #e0e0e0;
+  background-color: #064f44;
 }
 
 @media (max-width: 600px) {
   .header-seguro-refinado {
-    top: 10px;
-    left: 10px;
-    width: calc(100% - 20px);
-    height: auto;
     flex-direction: column;
     align-items: flex-start;
     padding: 10px;
@@ -289,4 +279,3 @@
     margin-top: 5px;
   }
 }
-

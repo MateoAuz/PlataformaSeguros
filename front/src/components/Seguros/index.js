@@ -1,1 +1,1 @@
-export {Seguros } from './Seguros';
+export { default as Seguros } from './Seguros';

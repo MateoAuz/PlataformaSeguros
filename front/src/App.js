@@ -8,8 +8,6 @@ import { DashboardAgente } from './pages/agente/DashboardAgente';
 import { UserProvider } from './context/UserContext';
 import { PClientes } from './pages/Cliente/PClientes';
 
-
-
 function App() {
   return (
     <div className="App">

@@ -45,7 +45,7 @@ export const Login = () => {
 			});
 
 			const data = await res.json();
-			console.log("Respuesta del backend:", data);
+			//console.log("Respuesta del backend:", data);
 
 			if (!res.ok) {
 				setError(data.error || 'Error al iniciar sesión');

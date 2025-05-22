@@ -1,1 +1,1 @@
-export {PClientes } from './PClientes';
+export {DashboardCliente } from './DashboardCliente';

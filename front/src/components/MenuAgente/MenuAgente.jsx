@@ -47,7 +47,8 @@ export const MenuAgente = ({ children }) => {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: '#002980'
+          background: 'linear-gradient(90deg, #1565c0 0%, rgb(19, 108, 79) 100%)',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
         }}
       >
         <Toolbar>
@@ -104,19 +105,19 @@ export const MenuAgente = ({ children }) => {
       </AppBar>
 
       <Drawer
-					variant={esPantallaChica ? 'temporary' : 'persistent'}
-					open={drawerOpen}
-					onClose={toggleDrawer}
-					sx={{
-						display: { xs: 'block', sm: 'block' },
-						'& .MuiDrawer-paper': {
-							width: 250,
-							boxSizing: 'border-box',
-							backgroundColor: '#63A6B0',
-							color: 'white',
-						},
-					}}
-				>
+        variant={esPantallaChica ? 'temporary' : 'persistent'}
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        sx={{
+          display: { xs: 'block', sm: 'block' },
+          '& .MuiDrawer-paper': {
+            width: 250,
+            boxSizing: 'border-box',
+            backgroundColor: '#215780',
+            color: 'white',
+          },
+        }}
+      >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
           <List>
@@ -144,16 +145,16 @@ export const MenuAgente = ({ children }) => {
       </Drawer>
 
       <Box
-					component="main"
-					sx={{
-						flexGrow: 1,
-						p: { xs: 2, sm: 3 },
-						ml: esPantallaChica ? 0 : (drawerOpen ? '250px' : 0),
-						transition: 'all 0.3s ease',
-						width: '100%',
-						boxSizing: 'border-box',
-					}}
-				>
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, sm: 3 },
+          ml: esPantallaChica ? 0 : (drawerOpen ? '250px' : 0),
+          transition: 'all 0.3s ease',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
         <Toolbar />
         {children}
       </Box>

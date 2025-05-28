@@ -61,60 +61,72 @@ export const Seguros = () => {
   };
 
   return (
-    <Box sx={{ px: { xs: 1, sm: 2, md: 4 }, py: 2 }}>
+    <Box sx={{ backgroundColor: '#f9f9f9', minHeight: '100vh', px: { xs: 1, sm: 2, md: 4 }, py: 2 }}>
       <SeccionTitulo titulo="Gestión de Seguros">
         <BotonAccion texto="Nuevo Seguro" onClick={handleAgregar} />
       </SeccionTitulo>
 
       <SegurosInactivos />
 
-      <Paper sx={{ p: { xs: 1, sm: 2 }, mt: 2, overflowX: 'auto' }}>
+      <Paper sx={{ p: { xs: 1, sm: 2 }, mt: 2, overflowX: 'auto', borderRadius: 2 }} elevation={2}>
         <Table sx={{ minWidth: 600 }}>
-          <TableHead>
-  <TableRow>
-    <TableCell>Nombre</TableCell>
-    <TableCell>Precio</TableCell>
-    <TableCell>Tipo</TableCell>
-    <TableCell>Tipo de Pago</TableCell>
-    <TableCell>Cobertura</TableCell>
-    <TableCell>Beneficios</TableCell>
-    <TableCell>Documentos Requeridos</TableCell>
-    <TableCell>Descripción</TableCell>
-    <TableCell align="right">Acciones</TableCell>
-  </TableRow>
-</TableHead>
+          <TableHead sx={{ backgroundColor: '#FFF3E0' }}>
+            <TableRow>
+              {[
+                'Nombre',
+                'Precio',
+                'Tipo',
+                'Tipo de Pago',
+                'Cobertura',
+                'Beneficios',
+                'Documentos Requeridos',
+                'Descripción',
+                'Acciones'
+              ].map((texto, idx) => (
+                <TableCell
+                  key={texto}
+                  align={idx === 8 ? 'right' : 'center'}
+                  sx={{ fontSize: '0.95rem', color: '#000000' }}
+                >
+                  {texto}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+
 
           <TableBody>
-  {seguros.map((seguro) => (
-    <TableRow key={seguro.id_seguro}>
-      <TableCell>{seguro.nombre}</TableCell>
-      <TableCell>{seguro.precio}</TableCell>
-      <TableCell>{seguro.tipo}</TableCell>
-      <TableCell>{seguro.tiempo_pago}</TableCell>
-      <TableCell>{seguro.cobertura}</TableCell>
-
-      <TableCell>
-        {(seguro.beneficios || []).map(b => b.nombre).join(', ') || '—'}
-      </TableCell>
-
-      <TableCell>
-        {(seguro.requisitos || []).map(r => r.nombre).join(', ') || '—'}
-      </TableCell>
-
-      <TableCell>{seguro.descripcion}</TableCell>
-
-      <TableCell align="right">
-        <IconButton color="primary" onClick={() => handleEditar(seguro)}>
-          <EditIcon />
-        </IconButton>
-        <IconButton color="error" onClick={() => solicitarDesactivacion(seguro.id_seguro)}>
-          <DeleteIcon />
-        </IconButton>
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
-
+            {seguros.map((seguro, index) => (
+              <TableRow
+                key={seguro.id_seguro}
+                sx={{
+                  backgroundColor: index % 2 === 0 ? '#ffffff' : '#fffaf4',
+                  '&:hover': { backgroundColor: '#fff8f0', transition: '0.2s' }
+                }}
+              >
+                <TableCell>{seguro.nombre}</TableCell>
+                <TableCell>{seguro.precio}</TableCell>
+                <TableCell>{seguro.tipo}</TableCell>
+                <TableCell>{seguro.tiempo_pago}</TableCell>
+                <TableCell>{seguro.cobertura}</TableCell>
+                <TableCell>
+                  {(seguro.beneficios || []).map(b => b.nombre).join(', ') || '—'}
+                </TableCell>
+                <TableCell>
+                  {(seguro.requisitos || []).map(r => r.nombre).join(', ') || '—'}
+                </TableCell>
+                <TableCell>{seguro.descripcion}</TableCell>
+                <TableCell align="right">
+                  <IconButton color="primary" onClick={() => handleEditar(seguro)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => solicitarDesactivacion(seguro.id_seguro)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </Paper>
 
@@ -133,6 +145,7 @@ export const Seguros = () => {
       />
     </Box>
   );
+
 };
 
 export default Seguros;

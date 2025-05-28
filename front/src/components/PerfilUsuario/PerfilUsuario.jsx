@@ -77,9 +77,7 @@ export const PerfilUsuario = () => {
           <Stack spacing={2}>
             <TextField label="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} fullWidth />
             <TextField label="Apellido" name="apellido" value={formData.apellido} onChange={handleChange} fullWidth />
-            <TextField label="Correo" name="correo" value={formData.correo} onChange={handleChange} fullWidth />
             <TextField label="Username" name="username" value={formData.username} onChange={handleChange} fullWidth />
-            <TextField label="Cédula" name="cedula" value={formData.cedula} onChange={handleChange} fullWidth />
             <TextField label="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} fullWidth />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
               <Button variant="contained" onClick={handleGuardar}>Guardar</Button>

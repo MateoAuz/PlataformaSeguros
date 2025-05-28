@@ -2,13 +2,15 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import {MenuCliente} from '../../components/Cliente/MenuCliente';
-import { SegurosCliente } from "../../components/Cliente/SegurosCliente";
+import SegurosCliente from "../../components/Cliente/SegurosCliente";
 import { ContratacionCliente } from "../../components/Cliente/ContratacionCliente";
 import PagosCliente from '../../components/Cliente/PagosCliente';
-import { ReembolsosCliente } from "../../components/Cliente/ReembolsosCliente";
+import ReembolsosCliente  from "../../components/Cliente/ReembolsosCliente";
 import HistorialCliente from '../../components/Cliente/HistorialCliente';
-import { NotificacionesCliente } from "../../components/Cliente/NotificacionesCliente";
-import { Cliente } from "../../components/Cliente/Cliente";
+import NotificacionesCliente from "../../components/Cliente/NotificacionesCliente";
+import Cliente  from "../../components/Cliente/Cliente";
+import { PerfilUsuario } from '../../components/PerfilUsuario/PerfilUsuario';
+
 
 export const DashboardCliente = () => {
   return (
@@ -22,6 +24,7 @@ export const DashboardCliente = () => {
           <Route path="reembolsos" element={<ReembolsosCliente />} />
           <Route path="historial" element={<HistorialCliente />} />
           <Route path="notificaciones" element={<NotificacionesCliente />} />
+          <Route path="perfil" element={<PerfilUsuario />} />
         </Routes>
       </MenuCliente>
     </div>

@@ -14,7 +14,6 @@ import {
   Paper,
   Button,
   Chip,
-  CircularProgress,
   Snackbar,
   Alert
 } from "@mui/material";
@@ -31,70 +30,19 @@ const estadoLabels = {
 const PagosCliente = () => {
   const { user } = useContext(UserContext);
   const [pagos, setPagos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "info"
-  });
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
   useEffect(() => {
     if (!user?.id_usuario) return;
     getPagos(user.id_usuario)
-      .then((res) => setPagos(res.data))
-      .catch((err) => {
+      .then(res => setPagos(res.data))
+      .catch(err => {
         console.error("Error al cargar pagos:", err);
-        setSnackbar({
-          open: true,
-          message: "No se pudieron cargar los pagos",
-          severity: "error"
-        });
-      })
-      .finally(() => setLoading(false));
+        setSnackbar({ open: true, message: "No se pudieron cargar los pagos", severity: "error" });
+      });
   }, [user]);
 
-  const handleConfirmar = async (pago) => {
-    try {
-      await confirmarDebito(pago.id_pago_seguro);
-      setPagos((prev) =>
-        prev.map((p) =>
-          p.id_pago_seguro === pago.id_pago_seguro
-            ? { ...p, estado_pago: 1 }
-            : p
-        )
-      );
-      setSnackbar({
-        open: true,
-        message: "Débito automático confirmado",
-        severity: "success"
-      });
-    } catch (err) {
-      console.error(err);
-      setSnackbar({
-        open: true,
-        message: "Error al confirmar débito",
-        severity: "error"
-      });
-    }
-  };
-
-  const handleDescargar = (pago) => {
-    window.open(
-      `http://localhost:3030/pagos/orden/${pago.id_pago_seguro}`,
-      "_blank"
-    );
-  };
-
-  // Loader
-  if (loading) {
-    return (
-      <Box textAlign="center" mt={6}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  // Mensaje si no hay pagos
+  // si no hay ningún pago, mostramos mensaje
   if (pagos.length === 0) {
     return (
       <Box textAlign="center" mt={6}>
@@ -105,7 +53,7 @@ const PagosCliente = () => {
     );
   }
 
-  // Tabla de pagos
+  // si existen pagos, renderizamos la tabla
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom color="#0D2B81">
@@ -123,7 +71,7 @@ const PagosCliente = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pagos.map((pago) => {
+            {pagos.map(pago => {
               let key = "proximo";
               if (pago.estado_pago === 1) key = "realizado";
               else if (pago.estado_pago === 2) key = "vencido";
@@ -131,12 +79,8 @@ const PagosCliente = () => {
 
               return (
                 <TableRow key={pago.id_pago_seguro}>
-                  <TableCell>
-                    {new Date(pago.fecha_pago).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    ${pago.cantidad.toFixed(2)}
-                  </TableCell>
+                  <TableCell>{new Date(pago.fecha_pago).toLocaleDateString()}</TableCell>
+                  <TableCell align="right">${pago.cantidad.toFixed(2)}</TableCell>
                   <TableCell align="center">
                     <Chip label={label} color={color} />
                   </TableCell>
@@ -144,7 +88,12 @@ const PagosCliente = () => {
                     <Button
                       size="small"
                       startIcon={<GetAppIcon />}
-                      onClick={() => handleDescargar(pago)}
+                      onClick={() =>
+                        window.open(
+                          `http://localhost:3030/pagos/orden/${pago.id_pago_seguro}`,
+                          "_blank"
+                        )
+                      }
                     >
                       Orden
                     </Button>
@@ -152,7 +101,17 @@ const PagosCliente = () => {
                       size="small"
                       sx={{ ml: 1 }}
                       disabled={pago.estado_pago !== 0}
-                      onClick={() => handleConfirmar(pago)}
+                      onClick={() => confirmarDebito(pago).then(() => {
+                        // refrescar estado localmente...
+                        setPagos(prev =>
+                          prev.map(p =>
+                            p.id_pago_seguro === pago.id_pago_seguro
+                              ? { ...p, estado_pago: 1 }
+                              : p
+                          )
+                        );
+                        setSnackbar({ open: true, message: "Débito automático confirmado", severity: "success" });
+                      })}
                     >
                       Débito auto.
                     </Button>
@@ -167,14 +126,10 @@ const PagosCliente = () => {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
-        onClose={() =>
-          setSnackbar((prev) => ({ ...prev, open: false }))
-        }
+        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
       >
         <Alert
-          onClose={() =>
-            setSnackbar((prev) => ({ ...prev, open: false }))
-          }
+          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
           severity={snackbar.severity}
           sx={{ width: "100%" }}
         >

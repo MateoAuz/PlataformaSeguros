@@ -11,17 +11,15 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
-  CircularProgress
+  Button
 } from '@mui/material';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { UserContext } from '../../context/UserContext';
 import { getContratos, descargarContrato } from '../../services/ContratoService';
 
-export const HistorialCliente = () => {
+const HistorialCliente = () => {
   const { user } = useContext(UserContext);
   const [contratos, setContratos] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.id_usuario) return;
@@ -29,18 +27,10 @@ export const HistorialCliente = () => {
       .then(res => setContratos(res.data))
       .catch(err => {
         console.error('Error al cargar contratos:', err);
-      })
-      .finally(() => setLoading(false));
+      });
   }, [user]);
 
-  if (loading) {
-    return (
-      <Box textAlign="center" mt={6}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
+  // si no hay contratos, mostramos mensaje
   if (contratos.length === 0) {
     return (
       <Box textAlign="center" mt={6}>
@@ -51,6 +41,7 @@ export const HistorialCliente = () => {
     );
   }
 
+  // si tenemos contratos, renderizamos la tabla
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom color="#0D2B81">
@@ -68,16 +59,12 @@ export const HistorialCliente = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {contratos.map((ct) => (
+            {contratos.map(ct => (
               <TableRow key={ct.id_usuario_seguro}>
                 <TableCell>{ct.nombre}</TableCell>
+                <TableCell>{new Date(ct.fecha_contrato).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  {new Date(ct.fecha_contrato).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  {ct.fecha_fin
-                    ? new Date(ct.fecha_fin).toLocaleDateString()
-                    : '—'}
+                  {ct.fecha_fin ? new Date(ct.fecha_fin).toLocaleDateString() : '—'}
                 </TableCell>
                 <TableCell align="center">
                   {ct.estado === 1
@@ -91,10 +78,7 @@ export const HistorialCliente = () => {
                     size="small"
                     startIcon={<GetAppIcon />}
                     onClick={() =>
-                      window.open(
-                        descargarContrato(ct.id_usuario_seguro),
-                        '_blank'
-                      )
+                      window.open(descargarContrato(ct.id_usuario_seguro), '_blank')
                     }
                   >
                     Descargar

@@ -1,0 +1,10 @@
+// middleware/auth.js
+function checkAdminOrAgent(req, res, next) {
+  const user = req.user; // Asegúrate de que este campo esté disponible con autenticación
+  if (!user || !['admin', 'agente'].includes(user.tipo)) {
+    return res.status(403).json({ message: 'Acceso denegado' });
+  }
+  next();
+}
+
+module.exports = { checkAdminOrAgent };

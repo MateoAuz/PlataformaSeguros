@@ -1,16 +1,138 @@
 "use client";
-import React from 'react';
-import './Seguros.css';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import {
+  Box, Typography, Table, TableHead, TableRow, TableCell,
+  TableBody, Paper, IconButton
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const Seguros = ({}) => {
-	return (
-		<div className='seguros'>
- 			Seguros works!
- 		</div>
-	);
+import { getSeguros, desactivarSeguro } from '../../services/SeguroService';
+import { FormularioSeguro } from './FormularioSeguro/FormularioSeguro';
+import BotonAccion from '../BotonAccion/BotonAccion';
+import SeccionTitulo from '../SeccionTitulo/SeccionTitulo';
+import ConfirmarDialogo from '../ConfirmarDialogo/ConfirmarDialogo';
+import SegurosInactivos from './SegurosInactivos';
+
+export const Seguros = () => {
+  const [seguros, setSeguros] = useState([]);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [seguroSeleccionado, setSeguroSeleccionado] = useState(null);
+  const [dialogoAbierto, setDialogoAbierto] = useState(false);
+  const [idParaDesactivar, setIdParaDesactivar] = useState(null);
+
+  const cargarSeguros = async () => {
+    try {
+      const res = await getSeguros();
+      setSeguros(res.data);
+    } catch (err) {
+      console.error('Error al cargar seguros:', err);
+    }
+  };
+
+  useEffect(() => {
+    cargarSeguros();
+  }, []);
+
+  const handleAgregar = () => {
+    setSeguroSeleccionado(null);
+    setModalAbierto(true);
+  };
+
+  const handleEditar = (seguro) => {
+    setSeguroSeleccionado(seguro);
+    setModalAbierto(true);
+  };
+
+  const solicitarDesactivacion = (id) => {
+    setIdParaDesactivar(id);
+    setDialogoAbierto(true);
+  };
+
+  const confirmarDesactivacion = async () => {
+    try {
+      await desactivarSeguro(idParaDesactivar);
+      cargarSeguros();
+    } catch (err) {
+      console.error('Error al desactivar seguro:', err);
+    } finally {
+      setDialogoAbierto(false);
+    }
+  };
+
+  return (
+    <Box sx={{ px: { xs: 1, sm: 2, md: 4 }, py: 2 }}>
+      <SeccionTitulo titulo="Gestión de Seguros">
+        <BotonAccion texto="Nuevo Seguro" onClick={handleAgregar} />
+      </SeccionTitulo>
+
+      <SegurosInactivos />
+
+      <Paper sx={{ p: { xs: 1, sm: 2 }, mt: 2, overflowX: 'auto' }}>
+        <Table sx={{ minWidth: 600 }}>
+          <TableHead>
+  <TableRow>
+    <TableCell>Nombre</TableCell>
+    <TableCell>Precio</TableCell>
+    <TableCell>Tipo</TableCell>
+    <TableCell>Tipo de Pago</TableCell>
+    <TableCell>Cobertura</TableCell>
+    <TableCell>Beneficios</TableCell>
+    <TableCell>Documentos Requeridos</TableCell>
+    <TableCell>Descripción</TableCell>
+    <TableCell align="right">Acciones</TableCell>
+  </TableRow>
+</TableHead>
+
+          <TableBody>
+  {seguros.map((seguro) => (
+    <TableRow key={seguro.id_seguro}>
+      <TableCell>{seguro.nombre}</TableCell>
+      <TableCell>{seguro.precio}</TableCell>
+      <TableCell>{seguro.tipo}</TableCell>
+      <TableCell>{seguro.tiempo_pago}</TableCell>
+      <TableCell>{seguro.cobertura}</TableCell>
+
+      <TableCell>
+        {(seguro.beneficios || []).map(b => b.nombre).join(', ') || '—'}
+      </TableCell>
+
+      <TableCell>
+        {(seguro.requisitos || []).map(r => r.nombre).join(', ') || '—'}
+      </TableCell>
+
+      <TableCell>{seguro.descripcion}</TableCell>
+
+      <TableCell align="right">
+        <IconButton color="primary" onClick={() => handleEditar(seguro)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton color="error" onClick={() => solicitarDesactivacion(seguro.id_seguro)}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
+        </Table>
+      </Paper>
+
+      <FormularioSeguro
+        open={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        seguro={seguroSeleccionado}
+        onSuccess={cargarSeguros}
+      />
+
+      <ConfirmarDialogo
+        open={dialogoAbierto}
+        onClose={() => setDialogoAbierto(false)}
+        onConfirm={confirmarDesactivacion}
+        mensaje="¿Estás seguro de que deseas desactivar este seguro?"
+      />
+    </Box>
+  );
 };
-
-Seguros.propTypes = {};
 
 export default Seguros;

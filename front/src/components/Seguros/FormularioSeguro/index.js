@@ -1,0 +1,1 @@
+export {FormularioSeguro } from './FormularioSeguro';

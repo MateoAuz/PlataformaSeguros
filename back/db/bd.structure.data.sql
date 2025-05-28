@@ -16,6 +16,35 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `beneficiario`
+--
+
+DROP TABLE IF EXISTS `beneficiario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `beneficiario` (
+  `id_beneficiario` int NOT NULL AUTO_INCREMENT,
+  `id_usuario_seguro` int DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `cedula` varchar(10) DEFAULT NULL,
+  `parentesco` varchar(50) DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  PRIMARY KEY (`id_beneficiario`),
+  KEY `id_usuario_seguro` (`id_usuario_seguro`),
+  CONSTRAINT `beneficiario_ibfk_1` FOREIGN KEY (`id_usuario_seguro`) REFERENCES `usuario_seguro` (`id_usuario_seguro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `beneficiario`
+--
+
+LOCK TABLES `beneficiario` WRITE;
+/*!40000 ALTER TABLE `beneficiario` DISABLE KEYS */;
+/*!40000 ALTER TABLE `beneficiario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `beneficio`
 --
 
@@ -28,7 +57,7 @@ CREATE TABLE `beneficio` (
   `detalle` text,
   PRIMARY KEY (`id_beneficio`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,6 +66,7 @@ CREATE TABLE `beneficio` (
 
 LOCK TABLES `beneficio` WRITE;
 /*!40000 ALTER TABLE `beneficio` DISABLE KEYS */;
+INSERT INTO `beneficio` VALUES (6,'Revisión dental','-');
 /*!40000 ALTER TABLE `beneficio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,7 +111,7 @@ CREATE TABLE `requisito` (
   `detalle` text,
   PRIMARY KEY (`id_requisito`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,6 +120,7 @@ CREATE TABLE `requisito` (
 
 LOCK TABLES `requisito` WRITE;
 /*!40000 ALTER TABLE `requisito` DISABLE KEYS */;
+INSERT INTO `requisito` VALUES (3,'Cédula de identidad','-');
 /*!40000 ALTER TABLE `requisito` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,12 +164,15 @@ DROP TABLE IF EXISTS `seguro`;
 CREATE TABLE `seguro` (
   `id_seguro` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) DEFAULT NULL,
-  `precio` varchar(20) DEFAULT NULL,
+  `precio` decimal(10,2) DEFAULT NULL,
   `tiempo_pago` varchar(50) DEFAULT NULL,
   `descripcion` text,
   `tipo` varchar(50) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT '1' COMMENT '1 = Activo, 0 = Inactivo',
+  `cobertura` decimal(10,2) DEFAULT NULL,
+  `num_beneficiarios` int DEFAULT NULL,
   PRIMARY KEY (`id_seguro`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,6 +181,7 @@ CREATE TABLE `seguro` (
 
 LOCK TABLES `seguro` WRITE;
 /*!40000 ALTER TABLE `seguro` DISABLE KEYS */;
+INSERT INTO `seguro` VALUES (1,'Oro',250.00,'Mensual','Seguro de prueba','Salud',1,10000.00,2);
 /*!40000 ALTER TABLE `seguro` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -166,7 +201,7 @@ CREATE TABLE `seguro_beneficio` (
   KEY `id_beneficio_per` (`id_beneficio_per`),
   CONSTRAINT `seguro_beneficio_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_beneficio_ibfk_2` FOREIGN KEY (`id_beneficio_per`) REFERENCES `beneficio` (`id_beneficio`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,6 +210,7 @@ CREATE TABLE `seguro_beneficio` (
 
 LOCK TABLES `seguro_beneficio` WRITE;
 /*!40000 ALTER TABLE `seguro_beneficio` DISABLE KEYS */;
+INSERT INTO `seguro_beneficio` VALUES (1,1,6);
 /*!40000 ALTER TABLE `seguro_beneficio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -194,7 +230,7 @@ CREATE TABLE `seguro_requisito` (
   KEY `id_requisito_per` (`id_requisito_per`),
   CONSTRAINT `seguro_requisito_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_requisito_ibfk_2` FOREIGN KEY (`id_requisito_per`) REFERENCES `requisito` (`id_requisito`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,6 +239,7 @@ CREATE TABLE `seguro_requisito` (
 
 LOCK TABLES `seguro_requisito` WRITE;
 /*!40000 ALTER TABLE `seguro_requisito` DISABLE KEYS */;
+INSERT INTO `seguro_requisito` VALUES (1,1,3);
 /*!40000 ALTER TABLE `seguro_requisito` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -228,7 +265,7 @@ CREATE TABLE `usuario` (
   UNIQUE KEY `correo` (`correo`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cedula` (`cedula`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -237,7 +274,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (5,'mateoAuz@gmail.com','MateoAuz','$2b$10$xiRLD7uT54bW6VCjdEQBM.xzoHn/CxIWctgHDkxarFwgC.0Mf13Cu','Mateo','Auz',0,1,'1234567890','0987654321'),(6,'mauricioGuevara@gmail.com','MauricioGuevara','$2b$10$00f6dzyUrAdfg5AJ3En7y.XDY300sltwlGl.JG1HwAzhxBu92FoQW','Maurico','Guevara',1,0,'1808647634','0987714718'),(7,'santiagoMora@gmail.com','SantioMora','$2b$10$lspWjL/tDLqtNZgiSebSzeE7KgLAgVn3RZzFMZyxv4YLSkehCeF.6','Santiago','Mora',1,1,'1808123634','0983507919'),(8,'holasboring@gmail.com','BorisRex','$2b$10$xHBszzHkchv7ghhp5b4CXeRcmR9czm2oj8qc3697mtvVjS7oAHw8.','Boris','Vinces',2,1,'1808647693','0982414718');
+INSERT INTO `usuario` VALUES (9,'teoauz@gmail.com','MateoAuz','$2b$10$lO2QhhVNf43Vs2rD0n59TOgJlUXgt7ln7C7nrlvwEOfd7ZRab5kje','Mateo','Auz',0,1,'1234567890','0987654321'),(10,'mauricioGuevara@gmail.com','MauricioGuevara','$2b$10$PBzPfwtO1QqZCuHA42YGIujARqnges6xWzpKzE/h0vtn6NynmGb4e','Maurico','Guevara',1,0,'1808647634','0987714718'),(11,'santiagoMora@gmail.com','SantioMora','$2b$10$iUHf.z9aEdBLv3bGQzgoLOmNPzfg7WwBCoOMDMoGlZfaq3PcSuFXe','Santiago','Mora',1,1,'1808123634','0983507919'),(12,'holasboring@gmail.com','BorisRex','$2b$10$V/Vf0kHo62ZQpKQbHGFRkevr0TcZiyy2jvsVkQ0FUaRtsvk71FUKK','Boris','Vinces',2,1,'1808647693','0982414718');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,4 +319,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-18 20:10:26
+-- Dump completed on 2025-05-28  3:06:53

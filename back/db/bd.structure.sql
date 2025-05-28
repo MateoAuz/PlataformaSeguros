@@ -16,6 +16,26 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `beneficiario`
+--
+
+DROP TABLE IF EXISTS `beneficiario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `beneficiario` (
+  `id_beneficiario` int NOT NULL AUTO_INCREMENT,
+  `id_usuario_seguro` int DEFAULT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `cedula` varchar(10) DEFAULT NULL,
+  `parentesco` varchar(50) DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  PRIMARY KEY (`id_beneficiario`),
+  KEY `id_usuario_seguro` (`id_usuario_seguro`),
+  CONSTRAINT `beneficiario_ibfk_1` FOREIGN KEY (`id_usuario_seguro`) REFERENCES `usuario_seguro` (`id_usuario_seguro`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `beneficio`
 --
 
@@ -28,7 +48,7 @@ CREATE TABLE `beneficio` (
   `detalle` text,
   PRIMARY KEY (`id_beneficio`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +83,7 @@ CREATE TABLE `requisito` (
   `detalle` text,
   PRIMARY KEY (`id_requisito`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,12 +117,15 @@ DROP TABLE IF EXISTS `seguro`;
 CREATE TABLE `seguro` (
   `id_seguro` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) DEFAULT NULL,
-  `precio` varchar(20) DEFAULT NULL,
+  `precio` decimal(10,2) DEFAULT NULL,
   `tiempo_pago` varchar(50) DEFAULT NULL,
   `descripcion` text,
   `tipo` varchar(50) DEFAULT NULL,
+  `estado` tinyint(1) DEFAULT '1' COMMENT '1 = Activo, 0 = Inactivo',
+  `cobertura` decimal(10,2) DEFAULT NULL,
+  `num_beneficiarios` int DEFAULT NULL,
   PRIMARY KEY (`id_seguro`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +144,7 @@ CREATE TABLE `seguro_beneficio` (
   KEY `id_beneficio_per` (`id_beneficio_per`),
   CONSTRAINT `seguro_beneficio_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_beneficio_ibfk_2` FOREIGN KEY (`id_beneficio_per`) REFERENCES `beneficio` (`id_beneficio`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +163,7 @@ CREATE TABLE `seguro_requisito` (
   KEY `id_requisito_per` (`id_requisito_per`),
   CONSTRAINT `seguro_requisito_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_requisito_ibfk_2` FOREIGN KEY (`id_requisito_per`) REFERENCES `requisito` (`id_requisito`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -165,7 +188,7 @@ CREATE TABLE `usuario` (
   UNIQUE KEY `correo` (`correo`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `cedula` (`cedula`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,4 +223,4 @@ CREATE TABLE `usuario_seguro` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-18 20:09:43
+-- Dump completed on 2025-05-28  3:06:28

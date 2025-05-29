@@ -1,0 +1,57 @@
+.barra-navegacion {
+  background: linear-gradient(to right, #1976D2, #1565C0, #20603D) !important;
+}
+
+.barra-contenido {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.barra-izquierda,
+.barra-centro,
+.barra-derecha {
+  display: flex;
+  align-items: center;
+}
+
+.barra-izquierda {
+  gap: 18px;
+  flex: 3;
+}
+
+.barra-centro {
+  flex: 2;
+  justify-content: center;
+  gap: 18px;
+}
+
+.barra-derecha {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.logo-barra {
+  height: 60px;
+}
+
+.titulo {
+  font-weight: bold;
+  color: white;
+  margin-left: 10px;
+}
+
+.barra-centro button {
+  color: white;
+  font-weight: bold;
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  transition: background-color 0.3s ease;
+}
+
+.barra-centro button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}

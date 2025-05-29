@@ -22,7 +22,11 @@ const HistorialReembolsos = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user?.id_usuario) return;
+    if (!user?.id_usuario) {
+      setLoading(false); // <- evita que quede en loading infinito
+      return;
+    }
+
     getReembolsos(user.id_usuario)
       .then(res => setReembolsos(res.data))
       .catch(err => console.error('Error al obtener historial:', err))

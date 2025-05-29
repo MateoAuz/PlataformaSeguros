@@ -24,6 +24,7 @@ export const ContratacionCliente = () => {
       .catch(err => console.error('Error al obtener seguros:', err));
   }, []);
 
+
   if (loading) {
     return <CircularProgress sx={{ mt: 5 }} />;
   }

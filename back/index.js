@@ -16,6 +16,10 @@ const seguroRutas = require('./routes/seguro/seguro.rutas');
 const coberturaRouter = require('./routes/cobertura/cobertura.rutas');
 const beneficioRouter = require('./routes/beneficio/beneficio.rutas');
 const requisitoRouter = require('./routes/requisito/requisito.rutas');
+const contratoRouter = require('./routes/contrato/contrato.rutas');
+
+
+
 
 
 app.use('/usuario', usuarioRutas);
@@ -24,6 +28,7 @@ app.use('/seguros', seguroRutas);
 app.use('/cobertura', coberturaRouter);
 app.use('/beneficio', beneficioRouter);
 app.use('/requisito', requisitoRouter);
+app.use('/contratos', contratoRouter);
 
 // Ruta base
 app.get("/", (req, res) => {

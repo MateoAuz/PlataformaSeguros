@@ -62,7 +62,7 @@ export const SegurosCliente = () => {
 
             <Grid container spacing={3}>
                 {seguros.map((s) => (
-                    <Grid item xs={12} sm={6} md={4} key={s.id_usuario_seguro}>
+                    <Grid item xs={12} sm={6} md={4} key={s.id_usuario_seguro_per}>
                         <Card sx={{ backgroundColor: '#f5f5f5' }}>
                             <CardContent>
                                 <Typography variant="h6">{s.nombre}</Typography>

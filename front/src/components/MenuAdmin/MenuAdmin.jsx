@@ -38,7 +38,7 @@ export const MenuAdmin = ({ children }) => {
   const inicio_login = () => {
     localStorage.removeItem("usuario");
     setAuth(false);
-    navigate('/login', { replace: true });
+    window.location.href = "/login"; // 🔄 fuerza recarga completa
   };
 
   const handleNavigate = (ruta) => {

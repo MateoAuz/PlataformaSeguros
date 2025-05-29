@@ -8,11 +8,11 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 const images = [
 	{
 		label: 'Seguro de Vida',
-		imgPath: '/img/seguro_vida.png', 
+		imgPath: '/img/seguro_vida.png',
 	},
 	{
 		label: 'Seguro de Salud',
-		imgPath: '/img/seguro_salud.png', 
+		imgPath: '/img/seguro_salud.png',
 	},
 ];
 
@@ -37,20 +37,24 @@ export const Pagina_inicio = () => {
 	return (
 		<Box sx={{ bgcolor: '#f5f5f5', minHeight: '100vh' }}>
 			{/* NAVBAR */}
-			<AppBar position="static" sx={{ bgcolor: '#0D2B81' }}>
+			<AppBar position="static" sx={{
+				zIndex: (theme) => theme.zIndex.drawer + 1,
+				background: 'linear-gradient(90deg, #1565c0 0%, rgb(19, 108, 79) 100%)',
+				boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+			}}>
 				<Toolbar
 					sx={{
 						display: 'flex',
 						justifyContent: 'space-between',
 						alignItems: 'center',
-						flexWrap: 'nowrap', 
+						flexWrap: 'nowrap',
 					}}
 				>
 					<Typography
 						variant="h5"
 						fontWeight="bold"
 						color="white"
-						noWrap 
+						noWrap
 						sx={{ flexGrow: 1 }}
 					>
 						Sistemas Seguros
@@ -65,11 +69,11 @@ export const Pagina_inicio = () => {
 							textTransform: 'none',
 							fontWeight: 'bold',
 							borderRadius: 2,
-							px: 2,                 
-							py: 0.5,               
-							minWidth: 'unset',      
-							width: 'auto',         
-							whiteSpace: 'nowrap',   
+							px: 2,
+							py: 0.5,
+							minWidth: 'unset',
+							width: 'auto',
+							whiteSpace: 'nowrap',
 						}}
 					>
 						Iniciar sesión

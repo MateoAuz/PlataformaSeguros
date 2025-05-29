@@ -38,7 +38,7 @@ export const MenuAgente = ({ children }) => {
   const inicio_login = () => {
     localStorage.removeItem("usuario");
     setAuth(false);
-    navigate('/login', { replace: true });
+    window.location.href = "/login";
   };
 
   return (

@@ -279,3 +279,10 @@
     margin-top: 5px;
   }
 }
+
+.mensaje-error {
+  color: #ff684d; /* Rojo más suave y profesional */
+  font-size: 13px;
+  margin-top: 10px;
+  text-align: center;
+}

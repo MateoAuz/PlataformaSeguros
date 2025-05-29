@@ -116,11 +116,7 @@ export const Login = () => {
 										onChange={(e) => setPassword(e.target.value)}
 									/>
 								</div>
-								{error && (
-									<p style={{ color: 'red', fontSize: '13px', marginTop: '10px' }}>
-										{error}
-									</p>
-								)}
+								{error && <p className="mensaje-error">{error}</p>}
 								<input type="submit" value="Iniciar Sesión" />
 							</form>
 						</div>

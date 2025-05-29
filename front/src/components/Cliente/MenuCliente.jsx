@@ -25,7 +25,7 @@ export const MenuCliente = ({ children }) => {
     const inicio_login = () => {
         localStorage.removeItem("usuario");
         setAuth(false);
-        navigate('/login', { replace: true });
+        window.location.href = "/login";
     };
 
     return (
@@ -49,9 +49,9 @@ export const MenuCliente = ({ children }) => {
                         <Button onClick={() => navigate('/cliente/pagos')}>PAGOS</Button>
                         <Button onClick={() => navigate('/cliente/notificaciones')}>NOTIFICACIONES</Button>
                     </Box>
-                  
+
                     <Box className="barra-derecha">
-                       <IconButton onClick={handleMenu} color="inherit">
+                        <IconButton onClick={handleMenu} color="inherit">
                             <AccountCircle />
                         </IconButton>
                         <Menu

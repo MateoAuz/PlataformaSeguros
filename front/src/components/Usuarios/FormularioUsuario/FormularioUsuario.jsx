@@ -53,7 +53,10 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.correo)) errores.correo = 'Correo inválido';
 
     if (!formData.username.trim()) errores.username = 'Usuario requerido';
-    if (!formData.password.trim()) errores.password = 'Contraseña requerida';
+    if (!usuario && !formData.password?.trim()) {
+      errores.password = 'Contraseña requerida';
+    }
+
 
     if (!formData.cedula.trim()) errores.cedula = 'Cédula requerida';
     else if (!/^\d{10}$/.test(formData.cedula)) errores.cedula = 'Debe tener 10 dígitos';
@@ -65,11 +68,13 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
     return Object.keys(errores).length === 0;
   };
 
+
   const handleSubmit = () => {
     if (!validar()) return;
     onSubmit(formData);
     onClose();
   };
+
 
   if (!formData) return null;
 

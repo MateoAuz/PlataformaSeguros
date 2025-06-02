@@ -27,4 +27,26 @@ router.post('/', (req, res) => {
   );
 });
 
+// Obtener requisitos por id de seguro
+router.get('/por-seguro/:id', (req, res) => {
+  const idSeguro = req.params.id;
+
+  const query = `
+    SELECT r.id_requisito, r.nombre, r.detalle
+    FROM requisito r
+    JOIN seguro_requisito sr ON sr.id_requisito_per = r.id_requisito
+    WHERE sr.id_seguro_per = ?
+  `;
+
+  db.query(query, [idSeguro], (err, results) => {
+    if (err) {
+      console.error('Error al obtener requisitos por seguro:', err);
+      return res.status(500).send('Error al obtener requisitos del seguro');
+    }
+
+    res.json(results);
+  });
+});
+
+
 module.exports = router;

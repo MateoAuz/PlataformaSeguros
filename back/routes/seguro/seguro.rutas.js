@@ -170,4 +170,56 @@ router.post('/coberturas', (req, res) => {
   });
 });
 
+// Obtener seguros disponibles para contratar por usuario (solo activos y no contratados/pendientes)
+router.get('/disponibles/:id_usuario', async (req, res) => {
+  const id_usuario = req.params.id_usuario;
+
+  // Solo seguros activos que el usuario no ha contratado ni están pendientes
+  const sql = `
+    SELECT * FROM seguro 
+    WHERE estado = 1 
+    AND id_seguro NOT IN (
+      SELECT id_seguro_per
+      FROM usuario_seguro
+      WHERE id_usuario_per = ? AND (estado = 0 OR estado = 1)
+    )
+  `;
+
+  db.query(sql, [id_usuario], async (err, results) => {
+    if (err) return res.status(500).send('Error al obtener seguros disponibles');
+
+    // Adjunta beneficios y requisitos igual que en el endpoint "/"
+    const segurosConExtras = await Promise.all(results.map(async (seguro) => {
+      const beneficios = await new Promise((resolve) => {
+        db.query(
+          `SELECT b.nombre FROM beneficio b
+            JOIN seguro_beneficio sb ON sb.id_beneficio_per = b.id_beneficio
+            WHERE sb.id_seguro_per = ?`,
+          [seguro.id_seguro],
+          (err, resB) => resolve(resB || [])
+        );
+      });
+
+      const requisitos = await new Promise((resolve) => {
+        db.query(
+          `SELECT r.nombre FROM requisito r
+            JOIN seguro_requisito sr ON sr.id_requisito_per = r.id_requisito
+            WHERE sr.id_seguro_per = ?`,
+          [seguro.id_seguro],
+          (err, resR) => resolve(resR || [])
+        );
+      });
+
+      return {
+        ...seguro,
+        beneficios,
+        requisitos
+      };
+    }));
+
+    res.json(segurosConExtras);
+  });
+});
+
+
 module.exports = router;

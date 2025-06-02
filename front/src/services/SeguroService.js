@@ -1,33 +1,36 @@
 import axios from 'axios';
 
+const API_BASE = 'http://localhost:3030';
 const API = 'http://localhost:3030/seguros';
+// Obtener todos los seguros activos (sin filtro de usuario)
+export const getSeguros = () => axios.get(`${API_BASE}/seguros`);
 
-// Obtener todos los seguros activos
-export const getSeguros = () => axios.get(API);
+// Obtener seguros disponibles para un usuario
+export const getSegurosDisponibles = (idUsuario) =>
+  axios.get(`${API_BASE}/seguros/disponibles/${idUsuario}`);
 
 // Crear un nuevo seguro
-export const crearSeguro = (datos) => axios.post('http://localhost:3030/seguros', datos);
-
+export const crearSeguro = (datos) => axios.post(`${API_BASE}/seguros`, datos);
 
 // Editar un seguro existente
-export const editarSeguro = (id, datos) => axios.put(`${API}/${id}`, datos);
+export const editarSeguro = (id, datos) => axios.put(`${API_BASE}/seguros/${id}`, datos);
 
 // Desactivar un seguro (cambiar su estado a inactivo)
-export const desactivarSeguro = (id) => axios.put(`${API}/desactivar/${id}`);
+export const desactivarSeguro = (id) => axios.put(`${API_BASE}/seguros/desactivar/${id}`);
 
 // Obtener seguros inactivos
-export const getSegurosInactivos = () => axios.get(`${API}/inactivos`);
+export const getSegurosInactivos = () => axios.get(`${API_BASE}/seguros/inactivos`);
 
 // Activar un seguro
-export const activarSeguro = (id) => axios.put(`${API}/activar/${id}`);
+export const activarSeguro = (id) => axios.put(`${API_BASE}/seguros/activar/${id}`);
 
-// Asociaciones (a implementar en backend)
+// Asociaciones
 export const asociarCoberturas = (id_seguro, ids) =>
-  axios.post(`${API}/coberturas`, { id_seguro, ids });
+  axios.post(`${API_BASE}/seguros/coberturas`, { id_seguro, ids });
 
 export const asociarBeneficios = (id_seguro, ids) =>
-  axios.post(`${API}/beneficios`, { id_seguro, ids });
+  axios.post(`${API_BASE}/seguros/beneficios`, { id_seguro, ids });
 
 export const asociarRequisitos = (id_seguro, ids) =>
-  axios.post(`${API}/requisitos`, { id_seguro, ids });
+  axios.post(`${API_BASE}/seguros/requisitos`, { id_seguro, ids });
 

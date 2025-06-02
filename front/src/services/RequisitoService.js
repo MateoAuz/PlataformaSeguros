@@ -1,8 +1,6 @@
-// src/services/RequisitoService.js
 import axios from 'axios';
+const API_BASE = 'http://localhost:3030';
 
-// RequisitoService.js
-export const getRequisitosPorSeguro = async (id_seguro) => {
-  return await axios.get(`http://localhost:3030/requisito/por-seguro/${id_seguro}`);
+export const getRequisitosPorSeguro = (idSeguro) => {
+  return axios.get(`${API_BASE}/requisito/por-seguro/${idSeguro}`);
 };
-

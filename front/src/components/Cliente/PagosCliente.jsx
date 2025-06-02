@@ -1,139 +1,158 @@
-// src/components/Cliente/PagosCliente.jsx
 "use client";
-
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from 'react';
 import {
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Chip,
-  Snackbar,
-  Alert
-} from "@mui/material";
-import GetAppIcon from "@mui/icons-material/GetApp";
-import { UserContext } from "../../context/UserContext";
-import { getPagos, confirmarDebito } from "../../services/PagoService";
-
-const estadoLabels = {
-  realizado: { label: "Realizado", color: "success" },
-  proximo: { label: "Próximo", color: "warning" },
-  vencido: { label: "Vencido", color: "error" }
-};
+  Box, Typography, Select, MenuItem, InputLabel,
+  FormControl, Button, TextField, Paper, Grid, Snackbar, Alert, Table, TableHead, TableRow, TableCell, TableBody, TableContainer
+} from '@mui/material';
+import axios from 'axios';
+import { UserContext } from '../../context/UserContext';
 
 const PagosCliente = () => {
-  const { user } = useContext(UserContext);
+  const { usuario } = useContext(UserContext);
+  const [seguros, setSeguros] = useState([]);
   const [pagos, setPagos] = useState([]);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+  const [contratoSeleccionado, setContratoSeleccionado] = useState('');
+  const [cantidad, setCantidad] = useState('');
+  const [archivo, setArchivo] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const [alerta, setAlerta] = useState({ open: false, tipo: 'success' });
 
   useEffect(() => {
-    if (!user?.id_usuario) return;
-    getPagos(user.id_usuario)
-      .then(res => setPagos(res.data))
-      .catch(err => {
-        console.error("Error al cargar pagos:", err);
-        setSnackbar({ open: true, message: "No se pudieron cargar los pagos", severity: "error" });
-      });
-  }, [user]);
+    if (usuario?.id_usuario) {
+      axios.get(`http://localhost:3030/contratos/cliente/${usuario.id_usuario}`)
+        .then(res => setSeguros(res.data))
+        .catch(err => console.error('Error cargando seguros:', err));
 
-  // si no hay ningún pago, mostramos mensaje
-  if (pagos.length === 0) {
-    return (
-      <Box textAlign="center" mt={6}>
-        <Typography variant="h6" color="text.secondary">
-          No hay pagos registrados todavía.
-        </Typography>
-      </Box>
-    );
-  }
+      axios.get(`http://localhost:3030/pagos/cliente/${usuario.id_usuario}`)
+        .then(res => setPagos(res.data))
+        .catch(err => console.error('Error cargando pagos:', err));
+    }
+  }, [usuario]);
 
-  // si existen pagos, renderizamos la tabla
+  const handlePagoSubmit = async (e) => {
+    e.preventDefault();
+    if (!contratoSeleccionado || !cantidad || !archivo) {
+      setMensaje('Todos los campos son obligatorios.');
+      setAlerta({ open: true, tipo: 'error' });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('id_usuario_seguro_per', contratoSeleccionado);
+    formData.append('cantidad', cantidad);
+    formData.append('comprobante', archivo);
+
+    try {
+      const res = await axios.post('http://localhost:3030/pagos', formData);
+      setMensaje(res.data.mensaje || 'Pago registrado');
+      setAlerta({ open: true, tipo: 'success' });
+      setCantidad('');
+      setArchivo(null);
+
+      // recargar pagos
+      const pagosAct = await axios.get(`http://localhost:3030/pagos/cliente/${usuario.id_usuario}`);
+      setPagos(pagosAct.data);
+    } catch (err) {
+      setMensaje(err.response?.data?.mensaje || 'Error al registrar pago');
+      setAlerta({ open: true, tipo: 'error' });
+    }
+  };
+
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom color="#0D2B81">
-        Cronograma de Pagos
-      </Typography>
+    <Box sx={{ px: { xs: 2, sm: 4 }, py: 3 }}>
+      <Typography variant="h4" gutterBottom align="center">Pagos de Seguros</Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
+      {/* Selector de contrato */}
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Seguro contratado</InputLabel>
+        <Select
+          value={contratoSeleccionado}
+          label="Seguro contratado"
+          onChange={(e) => setContratoSeleccionado(e.target.value)}
+        >
+          {seguros.map((s) => (
+            <MenuItem key={s.id_usuario_seguro} value={s.id_usuario_seguro}>
+              {s.nombre} - {s.modalidad_pago} (${s.precio})
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Formulario */}
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
+        <Typography variant="h6" gutterBottom>Registrar nuevo pago</Typography>
+        <form onSubmit={handlePagoSubmit}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type="number"
+                label="Monto pagado"
+                value={cantidad}
+                onChange={(e) => setCantidad(e.target.value)}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Button variant="contained" component="label" fullWidth>
+                Subir comprobante
+                <input type="file" hidden onChange={(e) => setArchivo(e.target.files[0])} />
+              </Button>
+              {archivo && (
+                <Typography mt={1} sx={{ fontSize: 13, wordBreak: 'break-word' }}>{archivo.name}</Typography>
+              )}
+            </Grid>
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Enviar pago
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+
+      {/* Historial */}
+      <Typography variant="h6" mt={5} mb={1}>Historial de pagos</Typography>
+      <TableContainer component={Paper} sx={{ mt: 1 }}>
+        <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Fecha de Pago</TableCell>
-              <TableCell align="right">Monto</TableCell>
-              <TableCell align="center">Estado</TableCell>
-              <TableCell align="center">Acciones</TableCell>
+              <TableCell>Seguro</TableCell>
+              <TableCell>Fecha</TableCell>
+              <TableCell>Monto</TableCell>
+              <TableCell>Estado</TableCell>
+              <TableCell>Comprobante</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {pagos.map(pago => {
-              let key = "proximo";
-              if (pago.estado_pago === 1) key = "realizado";
-              else if (pago.estado_pago === 2) key = "vencido";
-              const { label, color } = estadoLabels[key];
-
-              return (
-                <TableRow key={pago.id_pago_seguro}>
-                  <TableCell>{new Date(pago.fecha_pago).toLocaleDateString()}</TableCell>
-                  <TableCell align="right">${pago.cantidad.toFixed(2)}</TableCell>
-                  <TableCell align="center">
-                    <Chip label={label} color={color} />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      size="small"
-                      startIcon={<GetAppIcon />}
-                      onClick={() =>
-                        window.open(
-                          `http://localhost:3030/pagos/orden/${pago.id_pago_seguro}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      Orden
-                    </Button>
-                    <Button
-                      size="small"
-                      sx={{ ml: 1 }}
-                      disabled={pago.estado_pago !== 0}
-                      onClick={() => confirmarDebito(pago).then(() => {
-                        // refrescar estado localmente...
-                        setPagos(prev =>
-                          prev.map(p =>
-                            p.id_pago_seguro === pago.id_pago_seguro
-                              ? { ...p, estado_pago: 1 }
-                              : p
-                          )
-                        );
-                        setSnackbar({ open: true, message: "Débito automático confirmado", severity: "success" });
-                      })}
-                    >
-                      Débito auto.
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {pagos.map((pago) => (
+              <TableRow key={pago.id_pago_seguro}>
+                <TableCell>{pago.nombre}</TableCell>
+                <TableCell>{pago.fecha_pago}</TableCell>
+                <TableCell>${pago.cantidad.toFixed(2)}</TableCell>
+                <TableCell sx={{ color: pago.cantidad >= pago.precio ? 'green' : 'red' }}>
+                  {pago.cantidad >= pago.precio ? 'Correcto' : 'Monto insuficiente'}
+                </TableCell>
+                <TableCell>
+                  <a href={`http://localhost:3030/${pago.comprobante_pago}`} target="_blank" rel="noreferrer">
+                    Ver
+                  </a>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
 
+      {/* Snackbar */}
       <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+        open={alerta.open}
+        autoHideDuration={5000}
+        onClose={() => setAlerta({ ...alerta, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert
-          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
-          severity={snackbar.severity}
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
+        <Alert severity={alerta.tipo} variant="filled">
+          {mensaje}
         </Alert>
       </Snackbar>
     </Box>

@@ -3,7 +3,26 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const db = require('../../db/connection');
 
-router.post('/', (req, res) => {
+const multer = require('multer');
+const subirArchivo = require('../../s3/subirArchivo')
+const fs = require('fs');
+const path = require('path');
+const { console } = require('inspector');
+
+const upload = multer({ dest: 'uploads/'});
+
+router.post('/', upload.single('archivo'), async(req, res) => {
+  const file = req.file;//s3
+  try{
+    console.log("Archivo recibido:",file);
+    await subirArchivo(file.path, file.originalname);
+    //fs.unlinkSync(file.path);//para eliminar el archivo locar
+    res.json({message: "Archivo subido correctamente a s3"});//mensaje aprobado
+  }catch (err) {
+    console.error("Error detallado al subir archivo:", err);
+    res.status(500).json({error: 'Error al subir archivo', detalle: err.message});
+  }
+
   const { correo, password } = req.body;
 
   if (!correo || !password) {

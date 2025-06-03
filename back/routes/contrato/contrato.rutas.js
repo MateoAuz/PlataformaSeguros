@@ -197,4 +197,51 @@ router.get('/pendientes', (req, res) => {
   });
 });
 
+router.put('/aprobar/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `UPDATE usuario_seguro SET estado = 1 WHERE id_usuario_seguro = ?`;
+  db.query(sql, [id], (err) => {
+    if (err) {
+      console.error('Error al aprobar contrato:', err);
+      return res.status(500).send('Error al aprobar contrato');
+    }
+    res.send({ ok: true });
+  });
+});
+
+
+router.put('/rechazar/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `UPDATE usuario_seguro SET estado = 3 WHERE id_usuario_seguro = ?`;
+  db.query(sql, [id], (err) => {
+    if (err) {
+      console.error('Error al rechazar contrato:', err);
+      return res.status(500).json({ mensaje: 'Error al rechazar contrato' });
+    }
+    res.status(200).json({ mensaje: 'Contrato rechazado con éxito' });
+  });
+});
+
+
+
+// Obtener contratos de un usuario
+router.get('/usuario/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT us.*, s.nombre, s.tipo
+    FROM usuario_seguro us
+    JOIN seguro s ON us.id_seguro_per = s.id_seguro
+    WHERE us.id_usuario_per = ?
+    ORDER BY us.fecha_contrato DESC
+  `;
+  db.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error('Error al obtener contratos del usuario:', err);
+      return res.status(500).json({ error: 'Error al obtener contratos' });
+    }
+    res.json(results);
+  });
+});
+
+
 module.exports = router;

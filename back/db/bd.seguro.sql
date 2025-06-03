@@ -308,6 +308,9 @@ CREATE TABLE `usuario_seguro` (
 -- Dumping data for table `usuario_seguro`
 --
 
+
+
+
 LOCK TABLES `usuario_seguro` WRITE;
 /*!40000 ALTER TABLE `usuario_seguro` DISABLE KEYS */;
 INSERT INTO `usuario_seguro` VALUES (8,12,3,'2025-06-02',NULL,0,NULL,'Anual','uploads/../routes/uploads/contratos/1748840136242-Taller1Modelamiento.pdf','23:55:36');

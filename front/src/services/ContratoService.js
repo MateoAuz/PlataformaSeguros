@@ -27,12 +27,15 @@ export const getSolicitudesPendientes = () => {
 };
 
 export const aceptarContrato = (id) => {
-  return axios.put(`${API_BASE}/contratos/aceptar/${id}`);
+  return axios.put(`${API_BASE}/contratos/aprobar/${id}`);
 };
+
+
 
 export const rechazarContrato = (id) => {
   return axios.put(`${API_BASE}/contratos/rechazar/${id}`);
 };
+
 
 // GET para obtener detalle completo de un contrato por ID
 export const getDetalleContrato = (idContrato) => {

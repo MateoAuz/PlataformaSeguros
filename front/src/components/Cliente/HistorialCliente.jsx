@@ -15,7 +15,8 @@ import { UserContext } from '../../context/UserContext';
 const estadoColor = {
   0: { label: 'Pendiente', color: 'warning' },
   1: { label: 'Aceptado', color: 'success' },
-  2: { label: 'Rechazado', color: 'error' }
+  2: { label: 'Rechazado', color: 'error' },
+  3: { label: 'Rechazado', color: 'error' }
 };
 
 export const HistorialCliente = () => {

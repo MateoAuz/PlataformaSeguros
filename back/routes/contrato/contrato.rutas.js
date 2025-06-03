@@ -243,5 +243,27 @@ router.get('/usuario/:id', (req, res) => {
   });
 });
 
+// Contratos por cliente (para pagos)
+router.get('/cliente/:id_usuario', (req, res) => {
+  const { id_usuario } = req.params;
+
+  const sql = `
+    SELECT us.id_usuario_seguro, s.nombre, s.precio, us.modalidad_pago
+    FROM usuario_seguro us
+    JOIN seguro s ON us.id_seguro_per = s.id_seguro
+    WHERE us.id_usuario_per = ?
+  `;
+
+  db.query(sql, [id_usuario], (err, rows) => {
+    if (err) {
+      console.error('❌ Error al obtener contratos del cliente:', err);
+      return res.status(500).send('Error al obtener contratos');
+    }
+
+    res.json(rows);
+  });
+});
+
+
 
 module.exports = router;

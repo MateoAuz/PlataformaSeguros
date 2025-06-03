@@ -18,9 +18,7 @@ const beneficioRouter = require('./routes/beneficio/beneficio.rutas');
 const requisitoRouter = require('./routes/requisito/requisito.rutas');
 const contratoRouter = require('./routes/contrato/contrato.rutas');
 const path = require('path');
-
-
-
+const pagoRouter = require('./routes/pago/pago.rutas');
 
 
 app.use('/usuario', usuarioRutas);
@@ -31,6 +29,7 @@ app.use('/beneficio', beneficioRouter);
 app.use('/requisito', requisitoRouter);
 app.use('/contratos', contratoRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/pagos', pagoRouter);
 
 // Ruta base
 app.get("/", (req, res) => {

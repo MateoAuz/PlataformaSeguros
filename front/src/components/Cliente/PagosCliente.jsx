@@ -58,6 +58,16 @@ const PagosCliente = () => {
     }
   };
 
+  const verComprobante = async (rutaS3) => {
+    try {
+      const res = await axios.get(`http://localhost:3030/uploads/descarga/${encodeURIComponent(rutaS3)}`);
+      window.open(res.data.url, '_blank');
+    } catch (err) {
+      setMensaje('Error al cargar el comprobante');
+      setAlerta({ open: true, tipo: 'error' });
+    }
+  };
+
   return (
     <Box sx={{ px: { xs: 2, sm: 4 }, py: 3 }}>
       <Typography variant="h4" gutterBottom align="center">Pagos de Seguros</Typography>
@@ -134,9 +144,9 @@ const PagosCliente = () => {
                   {pago.cantidad >= pago.precio ? 'Correcto' : 'Monto insuficiente'}
                 </TableCell>
                 <TableCell>
-                  <a href={`http://localhost:3030/${pago.comprobante_pago}`} target="_blank" rel="noreferrer">
+                  <Button variant="text" onClick={() => verComprobante(pago.comprobante_pago)}>
                     Ver
-                  </a>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -144,7 +154,6 @@ const PagosCliente = () => {
         </Table>
       </TableContainer>
 
-      {/* Snackbar */}
       <Snackbar
         open={alerta.open}
         autoHideDuration={5000}

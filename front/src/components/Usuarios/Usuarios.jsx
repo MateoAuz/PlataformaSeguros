@@ -19,6 +19,8 @@ import { UsuariosInactivos } from './UsuariosInactivos/UsuariosInactivos';
 import BotonAccion from '../BotonAccion/BotonAccion';
 import SeccionTitulo from '../SeccionTitulo/SeccionTitulo';
 import ConfirmarDialogo from '../ConfirmarDialogo/ConfirmarDialogo';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import { Chip } from '@mui/material';
 
 
@@ -28,6 +30,10 @@ export const Usuarios = () => {
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [dialogoAbierto, setDialogoAbierto] = useState(false);
   const [idParaDesactivar, setIdParaDesactivar] = useState(null);
+  const [mensaje, setMensaje] = useState('');
+  const [tipoMensaje, setTipoMensaje] = useState('success');
+  const [snackbarAbierto, setSnackbarAbierto] = useState(false);
+
 
   const cargarUsuarios = async () => {
     try {
@@ -56,14 +62,27 @@ export const Usuarios = () => {
     try {
       if (usuarioSeleccionado) {
         await editarUsuario(usuarioSeleccionado.id_usuario, data);
+        setMensaje('Usuario actualizado correctamente.');
+        setTipoMensaje('success');
+        cargarUsuarios();
+        return { success: true };
       } else {
         await crearUsuario(data);
+        setMensaje('Usuario creado correctamente.');
+        setTipoMensaje('success');
+        cargarUsuarios();
+        return { success: true };
       }
-      cargarUsuarios();
     } catch (err) {
-      console.error('Error al guardar usuario:', err);
+      const detalle = err?.response?.data?.detalle || err?.response?.data?.error || err.message;
+      setMensaje('Error al guardar usuario: ' + detalle);
+      setTipoMensaje('error');
+      return { success: false, error: detalle };
+    } finally {
+      setSnackbarAbierto(true);
     }
   };
+
 
   const solicitarDesactivacion = (id) => {
     setIdParaDesactivar(id);
@@ -156,6 +175,19 @@ export const Usuarios = () => {
         onConfirm={confirmarDesactivacion}
         mensaje="¿Estás seguro de que deseas desactivar este usuario?"
       />
+
+      <Snackbar open={snackbarAbierto} autoHideDuration={4000} onClose={() => setSnackbarAbierto(false)}>
+        <MuiAlert
+          onClose={() => setSnackbarAbierto(false)}
+          severity={tipoMensaje}
+          elevation={6}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {mensaje}
+        </MuiAlert>
+      </Snackbar>
+
     </Box>
   );
 

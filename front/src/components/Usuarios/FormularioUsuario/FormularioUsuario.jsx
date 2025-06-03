@@ -3,7 +3,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, Button, Grid, MenuItem
 } from '@mui/material';
-import { obtenerUsuarioPorId } from '../../../services/UserService';
+import { obtenerUsuarioPorId, buscarUsuarioPorCedulaTipo } from '../../../services/UserService'; // Te explico esto abajo
 
 const tipos = [
   { value: 0, label: 'Administrador' },
@@ -14,6 +14,7 @@ const tipos = [
 export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
   const [formData, setFormData] = useState(null);
   const [errores, setErrores] = useState({});
+  const [errorCedulaTipo, setErrorCedulaTipo] = useState('');
 
   useEffect(() => {
     const cargarUsuario = async () => {
@@ -38,8 +39,10 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (name === "cedula" || name === "tipo") setErrorCedulaTipo(""); // Limpia el error si cambia
   };
 
+  // Validación estándar
   const validar = () => {
     const errores = {};
 
@@ -57,7 +60,6 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
       errores.password = 'Contraseña requerida';
     }
 
-
     if (!formData.cedula.trim()) errores.cedula = 'Cédula requerida';
     else if (!/^\d{10}$/.test(formData.cedula)) errores.cedula = 'Debe tener 10 dígitos';
 
@@ -68,13 +70,38 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
     return Object.keys(errores).length === 0;
   };
 
-
-  const handleSubmit = () => {
-    if (!validar()) return;
-    onSubmit(formData);
-    onClose();
+  // Validación adicional: Cédula + tipo no debe estar repetido (solo en NUEVO usuario)
+  const validarCedulaTipo = async () => {
+    // Solo si está creando nuevo
+    if (!usuario) {
+      try {
+        // Esto deberías implementarlo en el backend: buscar usuario por cédula y tipo
+        const existe = await buscarUsuarioPorCedulaTipo(formData.cedula, formData.tipo);
+        if (existe.data) { // Ajusta según lo que devuelva tu endpoint
+          setErrorCedulaTipo('Ya existe un usuario con esa cédula y tipo.');
+          return false;
+        }
+      } catch (e) {
+        // Si tu endpoint devuelve 404 si no existe, está bien (no hay duplicado)
+        // Si es otro error, puedes mostrarlo o ignorar
+      }
+    }
+    return true;
   };
 
+  const handleSubmit = async () => {
+    if (!validar()) return;
+    if (!usuario) {
+      const esValido = await validarCedulaTipo();
+      if (!esValido) return;
+    }
+    // Espera la respuesta del padre y cierra solo si fue exitoso
+    const resultado = await onSubmit(formData);
+    if (resultado?.success) {
+      onClose();
+    }
+    // Si hubo error, no cierras el modal
+  };
 
   if (!formData) return null;
 
@@ -113,13 +140,18 @@ export const FormularioUsuario = ({ open, onClose, onSubmit, usuario }) => {
           </Grid>
           <Grid item xs={12}>
             <TextField select fullWidth label="Tipo de usuario" name="tipo" value={formData.tipo}
-              onChange={handleChange}>
+              onChange={handleChange}
+              disabled={!!usuario} // Si es edición, deshabilitado
+            >
               {tipos.map((tipo) => (
                 <MenuItem key={tipo.value} value={tipo.value}>
                   {tipo.label}
                 </MenuItem>
               ))}
             </TextField>
+            {errorCedulaTipo && (
+              <span style={{ color: "red", fontSize: "0.9em" }}>{errorCedulaTipo}</span>
+            )}
           </Grid>
         </Grid>
       </DialogContent>

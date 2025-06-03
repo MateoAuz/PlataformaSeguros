@@ -4,7 +4,6 @@ const db = require('../../db/connection');
 const bcrypt = require('bcrypt');
 
 // ✅ Obtener usuarios activos
-// GET http://localhost:3030/usuario/
 router.get('/', (req, res) => {
   const sql = 'SELECT id_usuario, nombre, apellido, correo, username, tipo FROM usuario WHERE activo = 1';
   db.query(sql, (err, results) => {
@@ -18,18 +17,22 @@ router.post('/', async (req, res) => {
   const { nombre, apellido, correo, username, password, tipo, cedula, telefono } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10); // 🔐 Encriptar contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = 'INSERT INTO usuario (nombre, apellido, correo, username, password, tipo, activo, cedula, telefono) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)';
     const values = [nombre, apellido, correo, username, hashedPassword, tipo, cedula, telefono];
 
     db.query(sql, values, (err, result) => {
-      if (err) return res.status(500).json({ error: 'Error al registrar usuario' });
+      if (err) {
+        // Detalle del error SQL
+        console.error('Error SQL al registrar usuario:', err);
+        return res.status(500).json({ error: 'Error al registrar usuario', detalle: err.sqlMessage || err.message });
+      }
       res.status(201).json({ id: result.insertId });
     });
   } catch (err) {
     console.error('Error al encriptar contraseña:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: 'Error interno del servidor', detalle: err.message });
   }
 });
 
@@ -49,7 +52,6 @@ router.get('/clientes', (req, res) => {
   });
 });
 
-
 // ✅ Editar usuario existente
 router.put('/:id', (req, res) => {
   const { nombre, apellido, correo, username, tipo, cedula, telefono } = req.body;
@@ -57,7 +59,10 @@ router.put('/:id', (req, res) => {
   const values = [nombre, apellido, correo, username, tipo, cedula, telefono, req.params.id];
 
   db.query(sql, values, (err) => {
-    if (err) return res.status(500).json({ error: 'Error al actualizar usuario' });
+    if (err) {
+      console.error('Error SQL al actualizar usuario:', err);
+      return res.status(500).json({ error: 'Error al actualizar usuario', detalle: err.sqlMessage || err.message });
+    }
     res.sendStatus(200);
   });
 });
@@ -71,7 +76,7 @@ router.patch('/:id/desactivar', (req, res) => {
   });
 });
 
-// Obtener usuarios desactivados
+// ✅ Obtener usuarios desactivados
 router.get('/inactivos', (req, res) => {
   const sql = 'SELECT id_usuario, nombre, apellido, correo, username, tipo FROM usuario WHERE activo = 0';
   db.query(sql, (err, results) => {
@@ -80,8 +85,7 @@ router.get('/inactivos', (req, res) => {
   });
 });
 
-
-// Activar usuario
+// ✅ Activar usuario
 router.patch('/:id/activar', (req, res) => {
   const sql = 'UPDATE usuario SET activo = 1 WHERE id_usuario = ?';
   db.query(sql, [req.params.id], (err) => {
@@ -90,7 +94,7 @@ router.patch('/:id/activar', (req, res) => {
   });
 });
 
-//numero de clientes
+// ✅ Número de clientes activos
 router.get('/conteo/clientes', (req, res) => {
   const sql = 'SELECT COUNT(*) AS total FROM usuario WHERE tipo = 2 AND activo = 1';
   db.query(sql, (err, results) => {
@@ -99,8 +103,7 @@ router.get('/conteo/clientes', (req, res) => {
   });
 });
 
-
-//obtener usuario por id
+// ✅ Obtener usuario por ID
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const sql = 'SELECT id_usuario, nombre, apellido, correo, username, tipo, cedula, telefono FROM usuario WHERE id_usuario = ?';
@@ -112,7 +115,7 @@ router.get('/:id', (req, res) => {
   });
 });
 
-// Obtener solicitudes pendientes de clientes
+// ✅ Obtener solicitudes pendientes de clientes
 router.get('/solicitudes', (req, res) => {
   const sql = 'SELECT id_usuario, nombre, apellido, correo, username FROM usuario WHERE tipo = 2 AND activo = 0';
   db.query(sql, (err, results) => {
@@ -121,7 +124,7 @@ router.get('/solicitudes', (req, res) => {
   });
 });
 
-// Aprobar solicitud de cliente
+// ✅ Aprobar solicitud de cliente
 router.put('/:id/activar-cliente', (req, res) => {
   const sql = 'UPDATE usuario SET activo = 1 WHERE id_usuario = ? AND tipo = 2';
   db.query(sql, [req.params.id], (err, result) => {
@@ -131,9 +134,21 @@ router.put('/:id/activar-cliente', (req, res) => {
   });
 });
 
-
-
-
-
+// ✅ Buscar usuario por cédula y tipo (para validación en front)
+router.get('/buscar', (req, res) => {
+  const { cedula, tipo } = req.query;
+  if (!cedula || typeof tipo === 'undefined') {
+    return res.status(400).json({ error: 'Cédula y tipo requeridos' });
+  }
+  const sql = 'SELECT * FROM usuario WHERE cedula = ? AND tipo = ?';
+  db.query(sql, [cedula, tipo], (err, results) => {
+    if (err) {
+      console.error('Error SQL al buscar usuario:', err);
+      return res.status(500).json({ error: 'Error al buscar usuario', detalle: err.sqlMessage || err.message });
+    }
+    if (results.length > 0) return res.status(200).json(results[0]);
+    return res.status(404).json({ error: 'No encontrado' });
+  });
+});
 
 module.exports = router;

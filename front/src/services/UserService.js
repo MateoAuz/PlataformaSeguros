@@ -11,5 +11,6 @@ export const activarUsuario = (id) => axios.patch(`${API}/${id}/activar`);
 export const contarClientes = () => axios.get('http://localhost:3030/usuario/conteo/clientes');
 export const obtenerUsuarioPorId = (id) => axios.get(`http://localhost:3030/usuario/${id}`);
 
-
-
+// NUEVA FUNCIÓN PARA VALIDAR CÉDULA Y TIPO
+export const buscarUsuarioPorCedulaTipo = (cedula, tipo) =>
+  axios.get(`${API}/buscar?cedula=${cedula}&tipo=${tipo}`);

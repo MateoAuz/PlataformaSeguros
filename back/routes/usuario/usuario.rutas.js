@@ -33,6 +33,23 @@ router.post('/', async (req, res) => {
   }
 });
 
+// ✅ Obtener solo clientes activos
+router.get('/clientes', (req, res) => {
+  const sql = `
+    SELECT id_usuario, nombre, apellido, correo, username, activo AS estado
+    FROM usuario
+    WHERE tipo = 2 AND activo = 1
+  `;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error al consultar clientes:', err);
+      return res.status(500).json({ error: 'Error al consultar clientes' });
+    }
+    res.json(results);
+  });
+});
+
+
 // ✅ Editar usuario existente
 router.put('/:id', (req, res) => {
   const { nombre, apellido, correo, username, tipo, cedula, telefono } = req.body;
@@ -82,6 +99,7 @@ router.get('/conteo/clientes', (req, res) => {
   });
 });
 
+
 //obtener usuario por id
 router.get('/:id', (req, res) => {
   const { id } = req.params;
@@ -93,6 +111,29 @@ router.get('/:id', (req, res) => {
     res.json(results[0]);
   });
 });
+
+// Obtener solicitudes pendientes de clientes
+router.get('/solicitudes', (req, res) => {
+  const sql = 'SELECT id_usuario, nombre, apellido, correo, username FROM usuario WHERE tipo = 2 AND activo = 0';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al consultar solicitudes' });
+    res.json(results);
+  });
+});
+
+// Aprobar solicitud de cliente
+router.put('/:id/activar-cliente', (req, res) => {
+  const sql = 'UPDATE usuario SET activo = 1 WHERE id_usuario = ? AND tipo = 2';
+  db.query(sql, [req.params.id], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Error al activar cliente' });
+    if (result.affectedRows === 0) return res.status(404).json({ error: 'Cliente no encontrado o ya activo' });
+    res.sendStatus(200);
+  });
+});
+
+
+
+
 
 
 module.exports = router;

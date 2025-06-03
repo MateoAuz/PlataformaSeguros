@@ -8,6 +8,11 @@ import { useNavigate } from 'react-router-dom';
 import { contarClientes, crearUsuario } from '../../services/UserService';
 import BotonAccion from '../BotonAccion/BotonAccion';
 import { FormularioUsuario } from '../Usuarios/FormularioUsuario/FormularioUsuario';
+import { crearCliente } from '../../services/ClienteService';
+import { FormularioCliente } from '../Clientes/FormularioCliente/FormularioCliente';
+
+
+
 
 export const Bienvenida = () => {
   const { usuario } = useContext(UserContext);
@@ -35,7 +40,30 @@ export const Bienvenida = () => {
   const handleAgregar = () => {
     setUsuarioSeleccionado(null);
     setModalAbierto(true);
+    
   };
+
+  const [modalClienteAbierto, setModalClienteAbierto] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const handleAgregarCliente = () => {
+    setClienteSeleccionado(null);
+    setModalClienteAbierto(true);
+  };
+
+  const handleGuardarCliente = async (nuevoCliente) => {
+    try {
+      await crearCliente({ ...nuevoCliente, tipo: 2 });
+      setModalClienteAbierto(false);
+      navigate('/admin/clientes');
+      window.location.reload();
+    } catch (err) {
+      console.error('Error al crear cliente desde bienvenida:', err);
+    }
+  };
+
+
+
+
 
   const handleGuardar = async (nuevoUsuario) => {
     try {
@@ -86,6 +114,9 @@ export const Bienvenida = () => {
         {usuario?.tipo === 0 && (
           <BotonAccion texto="Nuevo Usuario" onClick={handleAgregar} sx={{ ml: 2 }} />
         )}
+        {(usuario?.tipo === 0 || usuario?.tipo === 1) && (
+          <BotonAccion texto="Nuevo Cliente" onClick={handleAgregarCliente} sx={{mt:2, ml: 2 }} />
+        )}
 
       </Box>
 
@@ -99,6 +130,14 @@ export const Bienvenida = () => {
         onSubmit={handleGuardar}
         usuario={usuarioSeleccionado}
       />
+
+      <FormularioCliente
+        abierto={modalClienteAbierto}
+        onCerrar={() => setModalClienteAbierto(false)}
+        onGuardar={handleGuardarCliente}
+        cliente={clienteSeleccionado}
+      />
+
     </div>
   );
 };

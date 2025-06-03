@@ -21,6 +21,8 @@ export const DashboardAgente = () => {
 					<Route path="revision" element={<Revision />} />
 					<Route path="reportes" element={<Reportes />} />
 					<Route path="perfil" element={<PerfilUsuario />} />
+
+					
 				</Routes>
 			</MenuAgente>
 		</div>

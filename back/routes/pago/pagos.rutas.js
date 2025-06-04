@@ -74,8 +74,7 @@ ORDER BY p.fecha_pago DESC
 
 // ✅ Registrar nuevo pago solo si contrato está ACTIVO (estado = 1)
 router.post('/pagos', upload.single('comprobante'), async (req, res) => {
-  console.log("Campos recibidos (req.body):", req.body);
-  console.log("Archivo recibido (req.file):", req.file);
+
 
   const { id_usuario_seguro_per, cantidad, usuario } = req.body;
   const file = req.file;

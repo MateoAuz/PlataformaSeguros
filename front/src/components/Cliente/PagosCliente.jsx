@@ -29,9 +29,10 @@ const PagosCliente = () => {
 
   useEffect(() => {
     if (usuario?.id_usuario) {
-      axios.get(`http://localhost:3030/contratos/cliente/${usuario.id_usuario}`)
+      axios.get(`http://localhost:3030/contratos/mis-seguros/${usuario.id_usuario}`)
         .then(res => setSeguros(res.data))
         .catch(err => console.error('Error cargando seguros:', err));
+
 
       axios.get(`http://localhost:3030/pagos/cliente/${usuario.id_usuario}`)
         .then(res => setPagos(res.data))
@@ -161,23 +162,23 @@ const PagosCliente = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-  {pagos.map((pago) => (
-    <TableRow key={pago.id_pago_seguro}>
-      <TableCell>{pago.nombre_seguro || 'N/A'}</TableCell>
-      <TableCell>{pago.fecha_pago || 'Sin fecha'}</TableCell>
-      <TableCell>
-        {typeof pago.cantidad === 'number' ? `$${pago.cantidad.toFixed(2)}` : 'N/A'}
-      </TableCell>
-      <TableCell>
-        {pago.comprobante_pago ? (
-          <a href={`http://localhost:3030/${pago.comprobante_pago}`} target="_blank" rel="noreferrer">
-            Ver
-          </a>
-        ) : 'Sin archivo'}
-      </TableCell>
-    </TableRow>
-  ))}
-</TableBody>
+            {pagos.map((pago) => (
+              <TableRow key={pago.id_pago_seguro}>
+                <TableCell>{pago.nombre_seguro || 'N/A'}</TableCell>
+                <TableCell>{pago.fecha_pago || 'Sin fecha'}</TableCell>
+                <TableCell>
+                  {typeof pago.cantidad === 'number' ? `$${pago.cantidad.toFixed(2)}` : 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {pago.comprobante_pago ? (
+                    <a href={`http://localhost:3030/${pago.comprobante_pago}`} target="_blank" rel="noreferrer">
+                      Ver
+                    </a>
+                  ) : 'Sin archivo'}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
 
         </Table>
       </TableContainer>

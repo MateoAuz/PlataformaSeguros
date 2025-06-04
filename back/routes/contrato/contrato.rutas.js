@@ -222,7 +222,25 @@ router.put('/rechazar/:id', (req, res) => {
   });
 });
 
-
+// Obtener todos los contratos aceptados (estado = 1)
+router.get('/aceptados', (req, res) => {
+  const sql = `
+    SELECT us.id_usuario_seguro, u.nombre AS nombre_usuario, u.apellido AS apellido_usuario,
+           s.nombre AS nombre_seguro, s.tipo, us.fecha_contrato, us.modalidad_pago
+    FROM usuario_seguro us
+    JOIN usuario u ON us.id_usuario_per = u.id_usuario
+    JOIN seguro s ON us.id_seguro_per = s.id_seguro
+    WHERE us.estado = 1
+    ORDER BY us.fecha_contrato DESC
+  `;
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('❌ Error al obtener contratos aceptados:', err);
+      return res.status(500).json({ error: 'Error al obtener contratos aceptados' });
+    }
+    res.json(results);
+  });
+});
 
 // Obtener contratos de un usuario
 router.get('/usuario/:id', (req, res) => {
@@ -243,27 +261,19 @@ router.get('/usuario/:id', (req, res) => {
   });
 });
 
-// Contratos por cliente (para pagos)
-router.get('/cliente/:id_usuario', (req, res) => {
-  const { id_usuario } = req.params;
-
+// ✅ Este es tu backend de contratos
+router.get('/cliente/:idUsuario', (req, res) => {
   const sql = `
     SELECT us.id_usuario_seguro, s.nombre, s.precio, us.modalidad_pago
     FROM usuario_seguro us
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
-    WHERE us.id_usuario_per = ?
+    WHERE us.id_usuario_per = ? AND us.estado = 1
   `;
-
-  db.query(sql, [id_usuario], (err, rows) => {
-    if (err) {
-      console.error('❌ Error al obtener contratos del cliente:', err);
-      return res.status(500).send('Error al obtener contratos');
-    }
-
-    res.json(rows);
+  db.query(sql, [req.params.idUsuario], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al obtener contratos' });
+    res.json(results);
   });
 });
-
 
 
 module.exports = router;

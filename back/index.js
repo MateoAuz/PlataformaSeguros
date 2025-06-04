@@ -18,7 +18,11 @@ const beneficioRouter = require('./routes/beneficio/beneficio.rutas');
 const requisitoRouter = require('./routes/requisito/requisito.rutas');
 const contratoRouter = require('./routes/contrato/contrato.rutas');
 const path = require('path');
-const pagoRouter = require('./routes/pago/pago.rutas');
+
+const pagosRouter = require('./routes/pago/pagos.rutas');
+app.use('/pagos', pagosRouter);
+app.use('/uploads', express.static('uploads')); // para servir archivos
+
 
 
 app.use('/usuario', usuarioRutas);
@@ -29,7 +33,6 @@ app.use('/beneficio', beneficioRouter);
 app.use('/requisito', requisitoRouter);
 app.use('/contratos', contratoRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/pagos', pagoRouter);
 
 // Ruta base
 app.get("/", (req, res) => {
@@ -38,4 +41,12 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Servidor Express en http://localhost:${PORT}`);
+});
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    console.error("❌ Multer error:", err);
+    return res.status(400).json({ error: err.message });
+  }
+  next(err);
 });

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: localhost    Database: gestion_seguros
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -83,7 +83,7 @@ CREATE TABLE `requisito` (
   `detalle` text,
   PRIMARY KEY (`id_requisito`),
   UNIQUE KEY `nombre` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,7 +125,7 @@ CREATE TABLE `seguro` (
   `cobertura` decimal(10,2) DEFAULT NULL,
   `num_beneficiarios` int DEFAULT NULL,
   PRIMARY KEY (`id_seguro`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,7 +144,7 @@ CREATE TABLE `seguro_beneficio` (
   KEY `id_beneficio_per` (`id_beneficio_per`),
   CONSTRAINT `seguro_beneficio_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_beneficio_ibfk_2` FOREIGN KEY (`id_beneficio_per`) REFERENCES `beneficio` (`id_beneficio`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,7 +163,7 @@ CREATE TABLE `seguro_requisito` (
   KEY `id_requisito_per` (`id_requisito_per`),
   CONSTRAINT `seguro_requisito_ibfk_1` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`),
   CONSTRAINT `seguro_requisito_ibfk_2` FOREIGN KEY (`id_requisito_per`) REFERENCES `requisito` (`id_requisito`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -187,8 +187,8 @@ CREATE TABLE `usuario` (
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `correo` (`correo`),
   UNIQUE KEY `username` (`username`),
-  UNIQUE KEY `cedula` (`cedula`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `cedula_tipo_unico` (`cedula`,`tipo`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -206,12 +206,15 @@ CREATE TABLE `usuario_seguro` (
   `fecha_fin` date DEFAULT NULL,
   `estado` int DEFAULT NULL,
   `estado_pago` int DEFAULT NULL,
+  `modalidad_pago` varchar(20) DEFAULT NULL,
+  `firma` varchar(255) DEFAULT NULL,
+  `hora` time DEFAULT NULL,
   PRIMARY KEY (`id_usuario_seguro`),
   KEY `id_usuario_per` (`id_usuario_per`),
   KEY `id_seguro_per` (`id_seguro_per`),
   CONSTRAINT `usuario_seguro_ibfk_1` FOREIGN KEY (`id_usuario_per`) REFERENCES `usuario` (`id_usuario`),
   CONSTRAINT `usuario_seguro_ibfk_2` FOREIGN KEY (`id_seguro_per`) REFERENCES `seguro` (`id_seguro`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -223,4 +226,4 @@ CREATE TABLE `usuario_seguro` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-28  3:06:28
+-- Dump completed on 2025-06-04  7:33:31

@@ -308,6 +308,18 @@ CREATE TABLE `usuario_seguro` (
 -- Dumping data for table `usuario_seguro`
 --
 
+CREATE TABLE IF NOT EXISTS usuario_requisito (
+  id_usuario_requisito INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario_seguro INT NOT NULL,
+  id_requisito INT NOT NULL,
+  nombre_archivo VARCHAR(255),
+  path_archivo VARCHAR(255),
+  validado TINYINT DEFAULT 0,
+  FOREIGN KEY (id_usuario_seguro) REFERENCES usuario_seguro(id_usuario_seguro),
+  FOREIGN KEY (id_requisito) REFERENCES requisito(id_requisito)
+);
+
+
 
 
 

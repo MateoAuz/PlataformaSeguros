@@ -83,6 +83,37 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
       setSnackbar({ open: true, message: "Debes adjuntar el PDF de tu firma electrónica.", severity: "error" });
       return;
     }
+    for (const b of beneficiarios) {
+  if (!b.nombre || !b.parentesco || !b.cedula || !b.nacimiento) {
+    setSnackbar({ open: true, message: "Todos los campos del beneficiario deben estar completos.", severity: "error" });
+    return;
+  }
+
+  if (!/^[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]+$/.test(b.nombre)) {
+    setSnackbar({ open: true, message: "El nombre del beneficiario solo debe contener letras.", severity: "error" });
+    return;
+  }
+
+  if (!/^[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]+$/.test(b.parentesco)) {
+    setSnackbar({ open: true, message: "El parentesco del beneficiario solo debe contener letras.", severity: "error" });
+    return;
+  }
+
+  if (!/^\d{10}$/.test(b.cedula)) {
+    setSnackbar({ open: true, message: "La cédula debe contener exactamente 10 números.", severity: "error" });
+    return;
+  }
+
+  const nacimientoDate = new Date(b.nacimiento);
+  const edad = new Date().getFullYear() - nacimientoDate.getFullYear();
+  const mes = new Date().getMonth() - nacimientoDate.getMonth();
+  const dia = new Date().getDate() - nacimientoDate.getDate();
+  if (edad < 18 || (edad === 18 && mes < 0) || (edad === 18 && mes === 0 && dia < 0)) {
+    setSnackbar({ open: true, message: "El beneficiario debe ser mayor de edad.", severity: "error" });
+    return;
+  }
+}
+
     setLoading(true);
     const formDataEnvio = new FormData();
 

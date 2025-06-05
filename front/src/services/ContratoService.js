@@ -30,6 +30,9 @@ export const aceptarContrato = (id) => {
   return axios.put(`${API_BASE}/contratos/aprobar/${id}`);
 };
 
+export const getContratosAceptados = () => {
+  return axios.get(`${API_BASE}/contratos/aceptados`);
+};
 
 
 export const rechazarContrato = (id) => {
@@ -37,10 +40,13 @@ export const rechazarContrato = (id) => {
 };
 
 
-// GET para obtener detalle completo de un contrato por ID
-export const getDetalleContrato = (idContrato) => {
-  return axios.get(`http://localhost:3030/contratos/detalle/${idContrato}`);
-};
+export const getDetalleContratoSimple = (id) =>
+  axios.get(`${API_BASE}/contratos/detalle-simple/${id}`);
+
+export const getDetalleContratoCompleto = (id) =>
+  axios.get(`${API_BASE}/contratos/detalle-completo/${id}`);
+
+
 // GET para listar los seguros disponibles para el usuario
 export const getSegurosDisponibles = (userId) => {
   return axios.get(`${API_BASE}/seguros/disponibles/${userId}`);

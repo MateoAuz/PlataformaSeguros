@@ -12,6 +12,7 @@ import {
 import { getContratos } from '../../services/ContratoService';
 import { UserContext } from '../../context/UserContext';
 
+
 const estadoColor = {
   0: { label: 'Pendiente', color: 'warning' },
   1: { label: 'Aceptado', color: 'success' },

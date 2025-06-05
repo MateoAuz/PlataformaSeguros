@@ -251,27 +251,7 @@ router.get('/usuario/:id', (req, res) => {
   });
 });
 
-// --- CONTRATOS “mis-seguros” POR CLIENTE (solo campos necesarios para pagos)
-router.get('/mis-seguros/:id', (req, res) => {
-  const { id } = req.params;                 // antes era id_usuario
-  const sql = `
-    SELECT
-      us.id_usuario_seguro,
-      s.nombre,
-      s.precio,
-      us.modalidad_pago
-    FROM usuario_seguro us
-    JOIN seguro s ON us.id_seguro_per = s.id_seguro
-    WHERE us.id_usuario_per = ?
-  `;
-  db.query(sql, [id], (err, rows) => {
-    if (err) {
-      console.error('❌ Error al obtener contratos del cliente:', err);
-      return res.status(500).send('Error al obtener contratos');
-    }
-    res.json(rows);
-  });
-});
+
 
 
 // --- DETALLE SIMPLE DE UN CONTRATO
@@ -412,5 +392,29 @@ router.get('/detalle-completo/:id', (req, res) => {
     });
   });
 });
+
+
+// --- CONTRATOS “mis-seguros” POR CLIENTE (SOLO ACEPTADOS para pagos)
+router.get('/mis-seguros/:id', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    SELECT
+      us.id_usuario_seguro,
+      s.nombre,
+      s.precio,
+      us.modalidad_pago
+    FROM usuario_seguro us
+    JOIN seguro s ON us.id_seguro_per = s.id_seguro
+    WHERE us.id_usuario_per = ? AND us.estado = 1
+  `;
+  db.query(sql, [id], (err, rows) => {
+    if (err) {
+      console.error('❌ Error al obtener contratos aceptados del cliente:', err);
+      return res.status(500).send('Error al obtener contratos aceptados');
+    }
+    res.json(rows);
+  });
+});
+
 
 module.exports = router;

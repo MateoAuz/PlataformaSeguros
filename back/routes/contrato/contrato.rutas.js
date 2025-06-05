@@ -239,7 +239,13 @@ router.get('/usuario/:id', (req, res) => {
     SELECT
       us.*,
       s.nombre,
-      s.tipo
+      s.tipo,
+      s.precio,
+      (
+        SELECT MAX(fecha_pago)
+        FROM pago_seguro ps
+        WHERE ps.id_usuario_seguro_per = us.id_usuario_seguro
+      ) AS fecha_pago
     FROM usuario_seguro us
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
     WHERE us.id_usuario_per = ?

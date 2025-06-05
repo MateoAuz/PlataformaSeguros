@@ -90,10 +90,15 @@ export const Cliente = () => {
               <Card sx={{ backgroundColor: "#f5f5f5" }}>
                 <CardContent>
                   <Typography variant="h6" color="#0D2B81">{s.nombre}</Typography>
-                  <Typography variant="body2">💲 Costo mensual: ${s.precio}</Typography>
                   <Typography variant="body2">
-                    ⏳ Siguiente pago en: <strong>{calcularDiasRestantes(s.fecha_pago)}</strong> días
+                    💲 Costo mensual: ${s.precio ?? '—'}
                   </Typography>
+                  <Typography variant="body2">
+                    ⏳ Siguiente pago en: <strong>
+                      {s.fecha_pago ? calcularDiasRestantes(s.fecha_pago) : '—'}
+                    </strong> días
+                  </Typography>
+
                 </CardContent>
               </Card>
             </Grid>

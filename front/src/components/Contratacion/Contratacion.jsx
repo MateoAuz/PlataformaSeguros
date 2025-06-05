@@ -78,7 +78,7 @@ export const Contratacion = () => {
 										<TableCell>{s.nombre_seguro}</TableCell>
 										<TableCell>{s.tipo}</TableCell>
 										<TableCell>{s.tiempo_pago}</TableCell>
-										<TableCell>{new Date(s.fecha_contrato).toLocaleDateString()}</TableCell>
+										<TableCell>{s.fecha_contrato}</TableCell>
 										<TableCell>
 											<Box
 												display="flex"

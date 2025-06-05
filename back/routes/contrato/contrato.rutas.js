@@ -65,8 +65,11 @@ router.post('/', upload.any(), async (req, res) => {
 
     // Fecha actual en formato “YYYY-MM-DD” y hora “HH:MM:SS”
     const fecha = new Date();
-    const yyyyMMdd = fecha.toISOString().split('T')[0];
+    const yyyyMMdd = fecha.getFullYear() + '-' +
+      String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+      String(fecha.getDate()).padStart(2, '0');
     const hhmmss = fecha.toTimeString().split(' ')[0];
+
 
     // Insertar en usuario_seguro
     const sqlContrato = `

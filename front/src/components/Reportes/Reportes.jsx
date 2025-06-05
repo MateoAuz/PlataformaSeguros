@@ -64,7 +64,7 @@ export const Reportes = () => {
                   <TableCell>{c.nombre_seguro}</TableCell>
                   <TableCell>{c.tipo}</TableCell>
                   <TableCell>{c.modalidad_pago}</TableCell>
-                  <TableCell>{new Date(c.fecha_contrato).toLocaleDateString()}</TableCell>
+                  <TableCell>{c.fecha_contrato}</TableCell>
                   <TableCell>
                     <Button variant="outlined" size="small" onClick={() => handleOpen(c.id_usuario_seguro)}>
                       Ver Detalle

@@ -342,7 +342,7 @@ router.get('/detalle-completo/:id', (req, res) => {
       s.precio,
       s.cobertura,
       us.fecha_contrato,
-      TIME(us.fecha_contrato) AS hora,
+      us.hora,
       us.firma
     FROM usuario_seguro us
     JOIN usuario u ON us.id_usuario_per = u.id_usuario

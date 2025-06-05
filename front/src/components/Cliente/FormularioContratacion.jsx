@@ -116,10 +116,13 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
 
     setLoading(true);
     const formDataEnvio = new FormData();
+    const now = new Date();
+    const horaActual = now.toTimeString().split(' ')[0];
 
     formDataEnvio.append("id_usuario", id_usuario);
     formDataEnvio.append("id_seguro", seguro.id_seguro);
     formDataEnvio.append("modalidad_pago", seguro.tiempo_pago);
+    formDataEnvio.append("hora", horaActual);
 
     // Adjuntar requisitos
     Object.entries(archivosRequisitos).forEach(([idRequisito, archivo]) => {

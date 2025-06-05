@@ -3,11 +3,9 @@ import React, { useEffect, useState } from 'react';
 import {
 	Box, Typography, Paper, Table, TableHead, TableBody,
 	TableRow, TableCell, Button, CircularProgress, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions
-
 } from '@mui/material';
 import { getSolicitudesPendientes, aceptarContrato, rechazarContrato } from '../../services/ContratoService';
 import DetalleSolicitudAgente from './DetalleSolicitudAgente';
-
 
 import './Contratacion.css';
 
@@ -19,7 +17,6 @@ export const Contratacion = () => {
 	const [idSeleccionado, setIdSeleccionado] = useState(null);
 	const [confirmarRechazo, setConfirmarRechazo] = useState(false);
 	const [idARechazar, setIdARechazar] = useState(null);
-
 
 	const cargarSolicitudes = () => {
 		getSolicitudesPendientes()
@@ -54,66 +51,79 @@ export const Contratacion = () => {
 	};
 
 	return (
-		<Box p={4} className="revision">
+		<Box p={4} pt={{ xs: 10, sm: 6 }} className="revision">
+
 			<Typography variant="h4" gutterBottom color="primary">
 				Solicitudes de Contratación Pendientes
 			</Typography>
 
 			{loading ? <CircularProgress sx={{ mt: 4 }} /> : (
 				<Paper elevation={3}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell><strong>Cliente</strong></TableCell>
-								<TableCell><strong>Seguro</strong></TableCell>
-								<TableCell><strong>Tipo</strong></TableCell>
-								<TableCell><strong>Pago</strong></TableCell>
-								<TableCell><strong>Fecha</strong></TableCell>
-								<TableCell><strong>Acción</strong></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{solicitudes.map(s => (
-								<TableRow key={s.id_usuario_seguro}>
-									<TableCell>{s.nombre_usuario} {s.apellido}</TableCell>
-									<TableCell>{s.nombre_seguro}</TableCell>
-									<TableCell>{s.tipo}</TableCell>
-									<TableCell>{s.tiempo_pago}</TableCell>
-									<TableCell>{new Date(s.fecha_contrato).toLocaleDateString()}</TableCell>
-									<TableCell>
-										<Button
-											variant="outlined"
-											size="small"
-											onClick={() => {
-												setIdSeleccionado(s.id_usuario_seguro);
-												setDetalleAbierto(true);
-											}}
-											sx={{ mb: 1 }}
-										>
-											Ver Detalle
-										</Button><br />
-										<Button variant="outlined" color="success" size="small" onClick={() => handleDecision(s.id_usuario_seguro, 'aceptar')}>Aceptar</Button>
-										<Button
-											variant="outlined"
-											color="error"
-											size="small"
-											sx={{ ml: 1 }}
-											onClick={() => {
-												setIdARechazar(s.id_usuario_seguro);
-												setConfirmarRechazo(true);
-											}}
-											>
-											Rechazar
-										</Button>
-
-									</TableCell>
+					<Box sx={{ overflowX: 'auto' }}>
+						<Table>
+							<TableHead>
+								<TableRow>
+									<TableCell><strong>Cliente</strong></TableCell>
+									<TableCell><strong>Seguro</strong></TableCell>
+									<TableCell><strong>Tipo</strong></TableCell>
+									<TableCell><strong>Pago</strong></TableCell>
+									<TableCell><strong>Fecha</strong></TableCell>
+									<TableCell><strong>Acción</strong></TableCell>
 								</TableRow>
-							))}
-						</TableBody>
-					</Table>
+							</TableHead>
+							<TableBody>
+								{solicitudes.map(s => (
+									<TableRow key={s.id_usuario_seguro}>
+										<TableCell>{s.nombre_usuario} {s.apellido}</TableCell>
+										<TableCell>{s.nombre_seguro}</TableCell>
+										<TableCell>{s.tipo}</TableCell>
+										<TableCell>{s.tiempo_pago}</TableCell>
+										<TableCell>{new Date(s.fecha_contrato).toLocaleDateString()}</TableCell>
+										<TableCell>
+											<Box
+												display="flex"
+												flexDirection={{ xs: 'row', sm: 'column' }}
+												flexWrap="wrap"
+												gap={1}
+											>
+												<Button
+													variant="outlined"
+													size="small"
+													onClick={() => {
+														setIdSeleccionado(s.id_usuario_seguro);
+														setDetalleAbierto(true);
+													}}
+												>
+													Ver Detalle
+												</Button>
+												<Button
+													variant="outlined"
+													color="success"
+													size="small"
+													onClick={() => handleDecision(s.id_usuario_seguro, 'aceptar')}
+												>
+													Aceptar
+												</Button>
+												<Button
+													variant="outlined"
+													color="error"
+													size="small"
+													onClick={() => {
+														setIdARechazar(s.id_usuario_seguro);
+														setConfirmarRechazo(true);
+													}}
+												>
+													Rechazar
+												</Button>
+											</Box>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</Box>
 				</Paper>
 			)}
-
 
 			<Snackbar
 				open={snackbar.open}
@@ -126,34 +136,33 @@ export const Contratacion = () => {
 			</Snackbar>
 
 			<Dialog open={confirmarRechazo} onClose={() => setConfirmarRechazo(false)}>
-  <DialogTitle>¿Confirmar Rechazo?</DialogTitle>
-  <DialogContent>
-    <Typography>¿Estás seguro de rechazar este contrato?</Typography>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={() => setConfirmarRechazo(false)}>Cancelar</Button>
-    <Button
-      color="error"
-      variant="contained"
-      onClick={async () => {
-        try {
-          await rechazarContrato(idARechazar);
-          setSnackbar({ open: true, message: 'Contrato rechazado correctamente', severity: 'success' });
-          cargarSolicitudes();
-        } catch (err) {
-          console.error("❌ Error al rechazar contrato:", err);
-          setSnackbar({ open: true, message: 'Error al rechazar contrato', severity: 'error' });
-        } finally {
-          setConfirmarRechazo(false);
-          setIdARechazar(null);
-        }
-      }}
-    >
-      Confirmar Rechazo
-    </Button>
-  </DialogActions>
-</Dialog>
-
+				<DialogTitle>¿Confirmar Rechazo?</DialogTitle>
+				<DialogContent>
+					<Typography>¿Estás seguro de rechazar este contrato?</Typography>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setConfirmarRechazo(false)}>Cancelar</Button>
+					<Button
+						color="error"
+						variant="contained"
+						onClick={async () => {
+							try {
+								await rechazarContrato(idARechazar);
+								setSnackbar({ open: true, message: 'Contrato rechazado correctamente', severity: 'success' });
+								cargarSolicitudes();
+							} catch (err) {
+								console.error("❌ Error al rechazar contrato:", err);
+								setSnackbar({ open: true, message: 'Error al rechazar contrato', severity: 'error' });
+							} finally {
+								setConfirmarRechazo(false);
+								setIdARechazar(null);
+							}
+						}}
+					>
+						Confirmar
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			{detalleAbierto && (
 				<DetalleSolicitudAgente

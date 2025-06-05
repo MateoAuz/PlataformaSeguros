@@ -30,12 +30,11 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
             </Typography>
             <Typography variant="subtitle1" gutterBottom>
               <strong>Fecha:</strong> {new Date(detalle.fecha_contrato).toLocaleDateString('es-EC')} – 
-              <strong> Hora:</strong> {new Date(detalle.fecha_contrato).toLocaleTimeString('es-EC', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-              })}
+              <strong> Hora:</strong> {detalle.hora}
             </Typography>
+
+
+
 
             <Typography variant="subtitle1" gutterBottom>
               <strong>Seguro:</strong> {detalle.seguro} ({detalle.tipo})

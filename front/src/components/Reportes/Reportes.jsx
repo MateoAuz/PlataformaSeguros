@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent
+  TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, Divider
 } from '@mui/material';
 import { getContratosAceptados, getDetalleContratoSimple } from '../../services/ContratoService';
 
@@ -79,43 +79,76 @@ export const Reportes = () => {
 
       {/* Diálogo de detalles */}
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>Detalle del Contrato</DialogTitle>
-        <DialogContent dividers>
+        <DialogTitle sx={{ bgcolor: '#0D2B81', color: 'white' }}>
+          Detalle del Contrato
+        </DialogTitle>
+        <DialogContent dividers sx={{ p: 3 }}>
           {detalleContrato ? (
-            <>
-              <Typography><strong>Seguro:</strong> {detalleContrato.nombre_seguro}</Typography>
-              <Typography><strong>Tipo:</strong> {detalleContrato.tipo}</Typography>
-              <Typography><strong>Precio:</strong> ${detalleContrato.precio}</Typography>
-              <Typography><strong>Modalidad de pago:</strong> {detalleContrato.modalidad_pago}</Typography>
-              <Typography><strong>Cobertura:</strong> ${detalleContrato.cobertura}</Typography>
+            <Box>
+              <Typography variant="h6" gutterBottom color="primary">Datos del Seguro</Typography>
+              <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2} mb={2}>
+                <Typography><strong>Seguro:</strong> {detalleContrato.nombre_seguro}</Typography>
+                <Typography><strong>Tipo:</strong> {detalleContrato.tipo}</Typography>
+                <Typography><strong>Precio:</strong> ${detalleContrato.precio}</Typography>
+                <Typography><strong>Modalidad de pago:</strong> {detalleContrato.modalidad_pago}</Typography>
+                <Typography><strong>Cobertura:</strong> ${detalleContrato.cobertura}</Typography>
+              </Box>
 
-              <Typography sx={{ mt: 2 }}><strong>Beneficios:</strong></Typography>
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="h6" gutterBottom color="primary">Beneficios</Typography>
               <ul>
                 {detalleContrato.beneficios?.map((b, i) => <li key={i}>{b}</li>)}
               </ul>
 
-              <Typography sx={{ mt: 2 }}><strong>Beneficiarios:</strong></Typography>
-              <ul>
-                {detalleContrato.beneficiarios?.map((b, i) => (
-                  <li key={i}>{b.nombre} – {b.parentesco}</li>
-                ))}
-              </ul>
+              <Divider sx={{ my: 2 }} />
 
-              <Typography sx={{ mt: 2 }}><strong>Documentos requeridos:</strong></Typography>
-              <ul>
-                {detalleContrato.requisitos?.map((r, i) => <li key={i}>{r}</li>)}
-              </ul>
+              <Typography variant="h6" gutterBottom color="primary">Beneficiarios</Typography>
+              {detalleContrato.beneficiarios?.length ? (
+                <ul>
+                  {detalleContrato.beneficiarios.map((b, i) => (
+                    <li key={i}>
+                      <strong>{b.nombre}</strong> – {b.parentesco} – <em>C.I. {b.cedula}</em>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography>No hay beneficiarios registrados.</Typography>
+              )}
 
-              <Typography sx={{ mt: 2 }}><strong>Firma electrónica:</strong></Typography>
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="h6" gutterBottom color="primary">Documentos Requeridos</Typography>
+              {detalleContrato.requisitos?.map((r, i) => (
+                <li key={i}>
+                  {r.nombre}
+                  {r.archivo ? (
+                    <>
+                      {" – "}
+                      <a href={`http://localhost:3030/${r.archivo}`} target="_blank" rel="noreferrer">
+                        Ver documento
+                      </a>
+                    </>
+                  ) : (
+                    <span style={{ color: 'gray' }}>No cargado</span>
+                  )}
+                </li>
+              ))}
+
+
+              <Divider sx={{ my: 2 }} />
+
+              <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
               <a href={`http://localhost:3030/${detalleContrato.firma}`} target="_blank" rel="noreferrer">
                 Ver firma
               </a>
-            </>
+            </Box>
           ) : (
             <Typography>Cargando detalles...</Typography>
           )}
         </DialogContent>
       </Dialog>
+
     </Box>
   );
 };

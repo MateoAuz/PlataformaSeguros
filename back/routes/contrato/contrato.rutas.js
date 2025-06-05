@@ -283,15 +283,23 @@ router.get('/detalle-simple/:id', (req, res) => {
     JOIN usuario_seguro us ON sb.id_seguro_per = us.id_seguro_per
     WHERE us.id_usuario_seguro = ?
   `;
+  
   const sqlRequisitos = `
-    SELECT r.nombre
+    SELECT r.id_requisito, r.nombre, ur.path_archivo
     FROM seguro_requisito sr
     JOIN requisito r ON sr.id_requisito_per = r.id_requisito
     JOIN usuario_seguro us ON sr.id_seguro_per = us.id_seguro_per
+    LEFT JOIN usuario_requisito ur
+      ON ur.id_usuario_seguro = us.id_usuario_seguro
+      AND ur.id_requisito = r.id_requisito
     WHERE us.id_usuario_seguro = ?
   `;
+
+
+
+
   const sqlBeneficiarios = `
-    SELECT nombre, parentesco
+    SELECT nombre, parentesco, cedula
     FROM beneficiario
     WHERE id_usuario_seguro = ?
   `;
@@ -310,13 +318,26 @@ router.get('/detalle-simple/:id', (req, res) => {
         contrato.beneficios = [];
       } else {
         contrato.beneficios = beneficios.map(b => b.nombre);
-      }
+      } 
+
+
 
       db.query(sqlRequisitos, [id], (err3, requisitos) => {
         if (err3) {
           contrato.requisitos = [];
         } else {
-          contrato.requisitos = requisitos.map(r => r.nombre);
+          const requisitosMap = new Map();
+          requisitos.forEach(r => {
+            if (!requisitosMap.has(r.id_requisito)) {
+              requisitosMap.set(r.id_requisito, {
+                nombre: r.nombre,
+                archivo: r.path_archivo || null
+              });
+            }
+          });
+          contrato.requisitos = Array.from(requisitosMap.values());
+
+
         }
 
         db.query(sqlBeneficiarios, [id], (err4, beneficiarios) => {
@@ -358,17 +379,14 @@ router.get('/detalle-completo/:id', (req, res) => {
     WHERE id_usuario_seguro = ?
   `;
   const sqlRequisitos = `
-    SELECT r.nombre, rs.path_archivo AS archivo
+    SELECT r.id_requisito, r.nombre, ur.path_archivo AS archivo
     FROM seguro_requisito sr
     JOIN requisito r ON sr.id_requisito_per = r.id_requisito
-    LEFT JOIN requisito_seguro rs
-      ON rs.id_requisito_per = r.id_requisito
-      AND rs.id_usuario_seguro_per = ?
-    WHERE sr.id_seguro_per = (
-      SELECT id_seguro_per
-      FROM usuario_seguro
-      WHERE id_usuario_seguro = ?
-    )
+    JOIN usuario_seguro us ON sr.id_seguro_per = us.id_seguro_per
+    LEFT JOIN usuario_requisito ur
+      ON ur.id_usuario_seguro = us.id_usuario_seguro
+      AND ur.id_requisito = r.id_requisito
+    WHERE us.id_usuario_seguro = ?
   `;
 
   db.query(sqlContrato, [id], (err1, resultContrato) => {
@@ -384,14 +402,24 @@ router.get('/detalle-completo/:id', (req, res) => {
         contrato.beneficiarios = beneficiarios;
       }
 
-      db.query(sqlRequisitos, [id, id], (err3, requisitos) => {
+      db.query(sqlRequisitos, [id], (err3, requisitos) => {
         if (err3) {
           contrato.requisitos = [];
         } else {
-          contrato.requisitos = requisitos;
+          const requisitosMap = new Map();
+          requisitos.forEach(r => {
+            if (!requisitosMap.has(r.id_requisito)) {
+              requisitosMap.set(r.id_requisito, {
+                nombre: r.nombre,
+                archivo: r.archivo || null
+              });
+            }
+          });
+          contrato.requisitos = Array.from(requisitosMap.values());
         }
         return res.json(contrato);
       });
+
     });
   });
 });

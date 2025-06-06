@@ -15,4 +15,11 @@ const ConfirmarDialogo = ({ open, onClose, onConfirm, mensaje }) => (
   </Dialog>
 );
 
+ConfirmarDialogo.propTypes = {
+  abierto: PropTypes.bool.isRequired,
+  onCerrar: PropTypes.func.isRequired,
+  onConfirmar: PropTypes.func.isRequired,
+  mensaje: PropTypes.string.isRequired
+};
+
 export default ConfirmarDialogo;

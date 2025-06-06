@@ -14,3 +14,4 @@ export const obtenerUsuarioPorId = (id) => axios.get(`http://localhost:3030/usua
 // NUEVA FUNCIÓN PARA VALIDAR CÉDULA Y TIPO
 export const buscarUsuarioPorCedulaTipo = (cedula, tipo) =>
   axios.get(`${API}/buscar?cedula=${cedula}&tipo=${tipo}`);
+

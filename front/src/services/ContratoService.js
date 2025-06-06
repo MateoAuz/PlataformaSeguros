@@ -13,8 +13,9 @@ export function crearContrato(data) {
 }
 
 // GET para listar contratos de un usuario
+// Nota: ahora apuntamos a “mis-seguros” para recibir también proximo_vencimiento
 export const getContratos = (userId) => {
-  return axios.get(`${API_BASE}/contratos/usuario/${userId}`);
+  return axios.get(`${API_BASE}/contratos/mis-seguros/${userId}`);
 };
 
 // URL para descargar el PDF de un contrato
@@ -34,11 +35,9 @@ export const getContratosAceptados = () => {
   return axios.get(`${API_BASE}/contratos/aceptados`);
 };
 
-
 export const rechazarContrato = (id) => {
   return axios.put(`${API_BASE}/contratos/rechazar/${id}`);
 };
-
 
 export const getDetalleContratoSimple = (id) =>
   axios.get(`${API_BASE}/contratos/detalle-simple/${id}`);
@@ -46,11 +45,7 @@ export const getDetalleContratoSimple = (id) =>
 export const getDetalleContratoCompleto = (id) =>
   axios.get(`${API_BASE}/contratos/detalle-completo/${id}`);
 
-
 // GET para listar los seguros disponibles para el usuario
 export const getSegurosDisponibles = (userId) => {
   return axios.get(`${API_BASE}/seguros/disponibles/${userId}`);
 };
-
-
-

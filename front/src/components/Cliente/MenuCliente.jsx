@@ -1,79 +1,146 @@
-import React, { useState } from 'react';
+"use client";
+import React, { useState } from "react";
 import {
-    AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Box, Button
-} from '@mui/material';
-import {
-    Home as HomeIcon,
-    AccountCircle
-} from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import './MenuCliente.css';
-
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  Box,
+  Button,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import { Home as HomeIcon, AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import "./MenuCliente.css";
 
 export const MenuCliente = ({ children }) => {
-    const [auth, setAuth] = useState(true);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const navigate = useNavigate();
+  const [auth, setAuth] = useState(true);
+  const [anchorElUsuario, setAnchorElUsuario] = useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const navigate = useNavigate();
 
-    const handleMenu = (event) => setAnchorEl(event.currentTarget);
-    const handleClose = () => setAnchorEl(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const handleNavigate = (ruta) => {
-        navigate(ruta);
-    };
+  const handleMenuUsuario = (event) => setAnchorElUsuario(event.currentTarget);
+  const handleCloseUsuario = () => setAnchorElUsuario(null);
 
-    const inicio_login = () => {
-        localStorage.removeItem("usuario");
-        setAuth(false);
-        window.location.href = "/login";
-    };
+  const handleMenuNav = (event) => setAnchorElNav(event.currentTarget);
+  const handleCloseNav = () => setAnchorElNav(null);
 
-    return (
-        <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static" className="barra-navegacion">
-                <Toolbar className="barra-contenido">
-                    <Box className="barra-izquierda">
-                        <IconButton color="inherit" onClick={() => navigate('/cliente')}>
-                            <HomeIcon />
-                        </IconButton>
-                        <img src="/logo.png" alt="Logo" className="logo-barra" />
-                        <Typography variant="h6" className="titulo">
-                            SISTEMA DE SEGUROS "Vida Plena"
-                        </Typography>
-                    </Box>
+  const inicio_login = () => {
+    localStorage.removeItem("usuario");
+    setAuth(false);
+    window.location.href = "/login";
+  };
 
-                    <Box className="barra-centro">
-                        <Button onClick={() => navigate('/cliente/contratacion')}>CONTRATACIÓN</Button>
-                        <Button onClick={() => navigate('/cliente/historial')}>HISTORIAL</Button>
-                        <Button onClick={() => navigate('/cliente/reembolsos')}>REEMBOLSO</Button>
-                        <Button onClick={() => navigate('/cliente/pagos')}>PAGOS</Button>
-                        <Button onClick={() => navigate('/cliente/notificaciones')}>NOTIFICACIONES</Button>
-                    </Box>
+  // Función genérica para navegar y cerrar menús
+  const irARuta = (ruta, cerrarUsuario = false, cerrarNav = false) => {
+    if (cerrarUsuario) handleCloseUsuario();
+    if (cerrarNav) handleCloseNav();
+    navigate(ruta);
+  };
 
-                    <Box className="barra-derecha">
-                        <IconButton onClick={handleMenu} color="inherit">
-                            <AccountCircle />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                        >
-                            <MenuItem onClick={() => { handleClose(); navigate('/cliente/perfil'); }}>Perfil</MenuItem>
-                            <MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </AppBar>
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static" className="barra-navegacion">
+        <Toolbar className="barra-contenido">
+          {/* Bloque IZQUIERDA: icono Home + logo + título */}
+          <Box className="barra-izquierda">
+            <IconButton color="inherit" onClick={() => navigate("/cliente")}>
+              <HomeIcon />
+            </IconButton>
+            <img src="/logo.png" alt="Logo" className="logo-barra" />
+            <Typography variant="h6" className="titulo">
+              SISTEMA DE SEGUROS "Vida Plena"
+            </Typography>
+          </Box>
 
-            {/* Contenido de la página */}
-            <Box sx={{ backgroundColor: '#ffffff', minHeight: '100vh', p: 3 }}>
-                {children}
+          {/* Bloque CENTRO: botones o ícono de menú según tamaño */}
+          {isMobile ? (
+            <>
+              <IconButton
+                color="inherit"
+                edge="start"
+                onClick={handleMenuNav}
+                sx={{ ml: "auto" }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorElNav}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNav}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={() => irARuta("/cliente/contratacion", false, true)}>
+                  CONTRATACIÓN
+                </MenuItem>
+                <MenuItem onClick={() => irARuta("/cliente/historial", false, true)}>
+                  HISTORIAL
+                </MenuItem>
+                <MenuItem onClick={() => irARuta("/cliente/reembolsos", false, true)}>
+                  REEMBOLSO
+                </MenuItem>
+                <MenuItem onClick={() => irARuta("/cliente/pagos", false, true)}>
+                  PAGOS
+                </MenuItem>
+                <MenuItem onClick={() => irARuta("/cliente/notificaciones", false, true)}>
+                  NOTIFICACIONES
+                </MenuItem>
+              </Menu>
+            </>
+          ) : (
+            <Box className="barra-centro" sx={{ ml: 2, flexGrow: 1 }}>
+              <Button onClick={() => navigate("/cliente/contratacion")} color="inherit">
+                CONTRATACIÓN
+              </Button>
+              <Button onClick={() => navigate("/cliente/historial")} color="inherit">
+                HISTORIAL
+              </Button>
+              <Button onClick={() => navigate("/cliente/reembolsos")} color="inherit">
+                REEMBOLSO
+              </Button>
+              <Button onClick={() => navigate("/cliente/pagos")} color="inherit">
+                PAGOS
+              </Button>
+              <Button onClick={() => navigate("/cliente/notificaciones")} color="inherit">
+                NOTIFICACIONES
+              </Button>
             </Box>
-        </Box>
-    );
+          )}
+
+          {/* Bloque DERECHA: ícono Usuario + menú */}
+          <Box className="barra-derecha" sx={{ ml: isMobile ? 0 : "auto" }}>
+            <IconButton onClick={handleMenuUsuario} color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              anchorEl={anchorElUsuario}
+              open={Boolean(anchorElUsuario)}
+              onClose={handleCloseUsuario}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              <MenuItem onClick={() => irARuta("/cliente/perfil", true, false)}>
+                Perfil
+              </MenuItem>
+              <MenuItem onClick={inicio_login}>Cerrar sesión</MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      {/* Contenido de la página */}
+      <Box sx={{ backgroundColor: "#ffffff", minHeight: "100vh", p: 3 }}>
+        {children}
+      </Box>
+    </Box>
+  );
 };
 
 export default MenuCliente;

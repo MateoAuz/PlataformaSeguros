@@ -32,6 +32,25 @@ function getRelativePath(fullPath) {
   return `uploads/${rel}`;
 }
 
+// --- Función auxiliar para sumar un período (Mensual/Trimestral/Anual)
+function agregarPeriodo(fechaBase, tiempoPago) {
+  const f = (fechaBase instanceof Date) ? new Date(fechaBase) : new Date(fechaBase);
+  switch (tiempoPago.toLowerCase()) {
+    case 'mensual':
+      f.setMonth(f.getMonth() + 1);
+      break;
+    case 'trimestral':
+      f.setMonth(f.getMonth() + 3);
+      break;
+    case 'anual':
+      f.setFullYear(f.getFullYear() + 1);
+      break;
+    default:
+      break;
+  }
+  return f;
+}
+
 // --- CREAR CONTRATO (CON FIRMA Y REQUISITOS)
 router.post('/', upload.any(), async (req, res) => {
   try {
@@ -69,7 +88,6 @@ router.post('/', upload.any(), async (req, res) => {
       String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
       String(fecha.getDate()).padStart(2, '0');
     const hhmmss = fecha.toTimeString().split(' ')[0];
-
 
     // Insertar en usuario_seguro
     const sqlContrato = `
@@ -116,7 +134,6 @@ router.post('/', upload.any(), async (req, res) => {
         // Guardar beneficiarios si vienen en el body
         if (req.body.beneficiarios) {
           try {
-            // Supongamos que req.body.beneficiarios = { "0": "{\"nombre\":\"Ana\",\"cedula\":\"0101\",\"parentesco\":\"Hija\",\"nacimiento\":\"2023-01-01\"}", ... }
             const beneficiariosArray = Object.values(req.body.beneficiarios).map(item =>
               JSON.parse(item)
             );
@@ -260,9 +277,6 @@ router.get('/usuario/:id', (req, res) => {
   });
 });
 
-
-
-
 // --- DETALLE SIMPLE DE UN CONTRATO
 router.get('/detalle-simple/:id', (req, res) => {
   const { id } = req.params;
@@ -289,7 +303,6 @@ router.get('/detalle-simple/:id', (req, res) => {
     JOIN usuario_seguro us ON sb.id_seguro_per = us.id_seguro_per
     WHERE us.id_usuario_seguro = ?
   `;
-  
   const sqlRequisitos = `
     SELECT r.id_requisito, r.nombre, ur.path_archivo
     FROM seguro_requisito sr
@@ -300,9 +313,6 @@ router.get('/detalle-simple/:id', (req, res) => {
       AND ur.id_requisito = r.id_requisito
     WHERE us.id_usuario_seguro = ?
   `;
-
-
-
 
   const sqlBeneficiarios = `
     SELECT nombre, parentesco, cedula
@@ -324,9 +334,7 @@ router.get('/detalle-simple/:id', (req, res) => {
         contrato.beneficios = [];
       } else {
         contrato.beneficios = beneficios.map(b => b.nombre);
-      } 
-
-
+      }
 
       db.query(sqlRequisitos, [id], (err3, requisitos) => {
         if (err3) {
@@ -342,8 +350,6 @@ router.get('/detalle-simple/:id', (req, res) => {
             }
           });
           contrato.requisitos = Array.from(requisitosMap.values());
-
-
         }
 
         db.query(sqlBeneficiarios, [id], (err4, beneficiarios) => {
@@ -425,33 +431,82 @@ router.get('/detalle-completo/:id', (req, res) => {
         }
         return res.json(contrato);
       });
-
     });
   });
 });
 
-
-// --- CONTRATOS “mis-seguros” POR CLIENTE (SOLO ACEPTADOS para pagos)
+// --- CONTRATOS “mis-seguros” POR CLIENTE (SOLO ACEPTADOS para pagos) con cálculo de próxima fecha
 router.get('/mis-seguros/:id', (req, res) => {
   const { id } = req.params;
   const sql = `
     SELECT
       us.id_usuario_seguro,
+      us.fecha_contrato,
+      us.modalidad_pago,
       s.nombre,
-      s.precio,
-      us.modalidad_pago
+      s.precio
     FROM usuario_seguro us
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
     WHERE us.id_usuario_per = ? AND us.estado = 1
   `;
-  db.query(sql, [id], (err, rows) => {
+
+  db.query(sql, [id], (err, contratos) => {
     if (err) {
       console.error('❌ Error al obtener contratos aceptados del cliente:', err);
       return res.status(500).send('Error al obtener contratos aceptados');
     }
-    res.json(rows);
+
+    // Para cada contrato, obtenemos la última fecha de pago y calculamos el próximo vencimiento
+    const promesas = contratos.map((c) => {
+      return new Promise((resolve, reject) => {
+        const sqlUltPago = `
+          SELECT MAX(fecha_pago) AS ultima_fecha
+          FROM pago_seguro
+          WHERE id_usuario_seguro_per = ?
+        `;
+        db.query(sqlUltPago, [c.id_usuario_seguro], (err2, rowsPago) => {
+          if (err2) {
+            return reject(err2);
+          }
+
+          // Determinar la fecha de referencia (última_fecha si existe, o fecha_contrato)
+          let fechaReferencia = c.fecha_contrato;
+          if (rowsPago.length && rowsPago[0].ultima_fecha) {
+            fechaReferencia = rowsPago[0].ultima_fecha;
+          }
+
+          // Calcular próximo vencimiento
+          const proximoVencimientoDate = agregarPeriodo(fechaReferencia, c.modalidad_pago);
+          const yyyy = proximoVencimientoDate.getFullYear();
+          const mm = String(proximoVencimientoDate.getMonth() + 1).padStart(2, '0');
+          const dd = String(proximoVencimientoDate.getDate()).padStart(2, '0');
+          c.proximo_vencimiento = `${yyyy}-${mm}-${dd}`;
+
+          // Incluir también la última fecha de pago, si existe
+          if (rowsPago.length && rowsPago[0].ultima_fecha) {
+            const uf = new Date(rowsPago[0].ultima_fecha);
+            const ufy = uf.getFullYear();
+            const ufm = String(uf.getMonth() + 1).padStart(2, '0');
+            const ufd = String(uf.getDate()).padStart(2, '0');
+            c.ultima_fecha_pago = `${ufy}-${ufm}-${ufd}`;
+          } else {
+            c.ultima_fecha_pago = null;
+          }
+
+          resolve(c);
+        });
+      });
+    });
+
+    Promise.all(promesas)
+      .then((contratosConFechas) => {
+        return res.json(contratosConFechas);
+      })
+      .catch((error) => {
+        console.error('❌ Error calculando próximas fechas:', error);
+        return res.status(500).send('Error interno calculando fechas de vencimiento');
+      });
   });
 });
-
 
 module.exports = router;

@@ -4,7 +4,7 @@ import {
   Box, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Chip, Button, Dialog, DialogTitle, DialogContent, Divider
 } from '@mui/material';
-import { getContratos, getDetalleContratoSimple } from '../../services/ContratoService';
+import axios from 'axios';
 import { UserContext } from '../../context/UserContext';
 
 const estadoColor = {
@@ -24,14 +24,17 @@ const HistorialCliente = () => {
   useEffect(() => {
     if (!usuario) return;
 
-    getContratos(usuario.id_usuario)
-      .then(res => setContratos(res.data))
+    // ← CAMBIO: ahora llamamos a "/contratos/usuario/:id" para obtener TODOS los contratos (incluyendo 'estado')
+    axios.get(`http://localhost:3030/contratos/usuario/${usuario.id_usuario}`)
+      .then(res => {
+        setContratos(res.data);
+      })
       .catch(err => console.error('Error al cargar historial:', err))
       .finally(() => setLoading(false));
   }, [usuario]);
 
   const handleOpen = (id) => {
-    getDetalleContratoSimple(id)
+    axios.get(`http://localhost:3030/contratos/detalle-simple/${id}`)
       .then(res => {
         setDetalleContrato(res.data);
         setDialogOpen(true);
@@ -79,6 +82,7 @@ const HistorialCliente = () => {
               <TableCell><strong>Acción</strong></TableCell>
             </TableRow>
           </TableHead>
+
           <TableBody>
             {contratos.map((c) => (
               <TableRow key={c.id_usuario_seguro}>
@@ -165,8 +169,6 @@ const HistorialCliente = () => {
                 </li>
               ))}
 
-
-
               <Divider sx={{ my: 2 }} />
 
               <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
@@ -179,8 +181,6 @@ const HistorialCliente = () => {
           )}
         </DialogContent>
       </Dialog>
-
-
     </Box>
   );
 };

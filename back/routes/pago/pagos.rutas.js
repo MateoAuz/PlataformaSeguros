@@ -1,5 +1,4 @@
 // routes/pago/pagos.rutas.js
-
 const express = require('express');
 const router = express.Router();
 const db = require('../../db/connection');
@@ -303,5 +302,127 @@ router.get('/cliente/:id_usuario_per', (req, res) => {
     return res.json(rows);
   });
 });
+
+/**
+ * ▶︎ GET /pagos/contrato/:id_usuario_seguro
+ * Devuelve los pagos asociados únicamente a ese contrato.
+ */
+// GET pagos por contrato
+router.get('/contrato/:id_usuario_seguro', (req, res) => {
+  const { id_usuario_seguro } = req.params;
+
+  const sql = `
+    SELECT 
+      ps.id_pago_seguro,
+      ps.fecha_pago,
+      ps.cantidad,
+      ps.comprobante_pago,
+      s.nombre AS nombre_seguro,
+      CASE 
+  WHEN ps.id_pago_seguro = (
+    SELECT MAX(id_pago_seguro)
+    FROM pago_seguro
+    WHERE id_usuario_seguro_per = ?
+  ) THEN us.estado_pago
+  ELSE NULL
+END AS estado_pago
+    FROM pago_seguro ps
+    JOIN usuario_seguro us ON ps.id_usuario_seguro_per = us.id_usuario_seguro
+    JOIN seguro s ON us.id_seguro_per = s.id_seguro
+    WHERE us.id_usuario_seguro = ?
+    ORDER BY ps.fecha_pago DESC
+  `;
+
+  db.query(sql, [id_usuario_seguro, id_usuario_seguro], (err, rows) => {
+    if (err) {
+      console.error(`[GET /pagos/contrato/${id_usuario_seguro}] Error:`, err);
+      return res.status(500).json({ error: 'Error interno al obtener pagos del contrato' });
+    }
+    res.json(rows);
+  });
+});
+
+
+
+// Confirmar un pago
+router.patch('/:id/confirmar', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    UPDATE usuario_seguro
+    SET estado_pago = 1
+    WHERE id_usuario_seguro = (
+      SELECT id_usuario_seguro_per FROM pago_seguro WHERE id_pago_seguro = ?
+    )
+  `;
+  db.query(sql, [id], (err) => {
+    if (err) return res.status(500).send('Error al confirmar pago');
+    res.status(200).json({ message: 'Pago confirmado correctamente' });
+  });
+});
+
+// Denegar un pago
+router.patch('/:id/denegar', (req, res) => {
+  const { id } = req.params;
+  const sql = `
+    UPDATE usuario_seguro
+    SET estado_pago = 0
+    WHERE id_usuario_seguro = (
+      SELECT id_usuario_seguro_per FROM pago_seguro WHERE id_pago_seguro = ?
+    )
+  `;
+  db.query(sql, [id], (err) => {
+    if (err) return res.status(500).send('Error al cancelar pago');
+    res.status(200).json({ message: 'Pago cancelado correctamente' });
+  });
+});
+
+// Ruta para obtener la URL de un comprobante de pago
+router.get('/descarga/:id_pago_seguro', (req, res) => {
+  const { id_pago_seguro } = req.params;
+
+  if (!id_pago_seguro || isNaN(parseInt(id_pago_seguro, 10))) {
+    return res.status(400).json({ error: 'ID de pago inválido' });
+  }
+
+  const sql = `
+    SELECT comprobante_pago
+    FROM pago_seguro
+    WHERE id_pago_seguro = ?
+  `;
+
+  db.query(sql, [id_pago_seguro], async (err, rows) => {
+    if (err) {
+      console.error(`[GET /pagos/descarga/${id_pago_seguro}] Error al consultar base de datos:`, err);
+      return res.status(500).json({ error: 'Error interno al obtener el comprobante' });
+    }
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Pago no encontrado' });
+    }
+
+    const comprobante = rows[0].comprobante_pago;
+
+    // Si ya es una URL completa, la devolvemos directo
+    if (comprobante.startsWith('http')) {
+      return res.json({ url: comprobante });
+    }
+
+    try {
+      let key = comprobante.trim();
+      if (key.startsWith('undefined/')) {
+        key = key.replace('undefined/', '');
+      }
+
+      console.log("Key solicitada a S3:", key);
+
+      const url = await obtenerUrlArchivo(key);
+      return res.json({ url });
+    } catch (err2) {
+      console.error(`[GET /pagos/descarga/${id_pago_seguro}] Error al generar URL firmada:`, err2);
+      return res.status(500).json({ error: 'No se pudo generar la URL del comprobante' });
+    }
+  });
+});
+
 
 module.exports = router;

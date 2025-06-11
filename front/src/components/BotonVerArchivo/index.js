@@ -1,0 +1,1 @@
+export {BotonVerArchivo } from './BotonVerArchivo';

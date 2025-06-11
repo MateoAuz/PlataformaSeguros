@@ -174,7 +174,7 @@ router.post('/', upload.any(), async (req, res) => {
 // --- SOLICITUDES PENDIENTES (PARA AGENTE)
 router.get('/pendientes', (req, res) => {
   const sql = `
-    SELECT
+SELECT
       us.id_usuario_seguro,
       u.nombre AS nombre_usuario,
       u.apellido AS apellido_usuario,
@@ -227,13 +227,14 @@ router.put('/rechazar/:id', (req, res) => {
 router.get('/aceptados', (req, res) => {
   const sql = `
     SELECT
-      us.id_usuario_seguro,
-      u.nombre AS nombre_usuario,
-      u.apellido AS apellido_usuario,
-      s.nombre AS nombre_seguro,
-      s.tipo,
-      us.fecha_contrato,
-      us.modalidad_pago
+  us.id_usuario_seguro,
++ us.id_usuario_per,
+  u.nombre AS nombre_usuario,
+  u.apellido AS apellido_usuario,
+  s.nombre AS nombre_seguro,
+  s.tipo,
+  us.fecha_contrato,
+  us.modalidad_pago
     FROM usuario_seguro us
     JOIN usuario u ON us.id_usuario_per = u.id_usuario
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
@@ -440,11 +441,12 @@ router.get('/mis-seguros/:id', (req, res) => {
   const { id } = req.params;
   const sql = `
     SELECT
-      us.id_usuario_seguro,
-      us.fecha_contrato,
-      us.modalidad_pago,
-      s.nombre,
-      s.precio
+  us.id_usuario_seguro,
+  us.fecha_contrato,
+  us.modalidad_pago,
+  us.estado_pago,           -- ✅ AÑADIR ESTE CAMPO
+  s.nombre,
+  s.precio
     FROM usuario_seguro us
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
     WHERE us.id_usuario_per = ? AND us.estado = 1

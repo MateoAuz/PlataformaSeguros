@@ -1,16 +1,29 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import {
-  Box, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, Divider
+  Box, Typography, CircularProgress, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle,
+  DialogContent, Divider, Collapse, IconButton
 } from '@mui/material';
-import { getContratosAceptados, getDetalleContratoSimple } from '../../services/ContratoService';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import {
+  getContratosAceptados,
+  getDetalleContratoSimple
+} from '../../services/ContratoService';
+import {
+  getPagosPorContrato,
+  confirmarDebito as confirmarPago,
+  denegarPago
+} from '../../services/PagoService';
 
 export const Reportes = () => {
   const [contratos, setContratos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [detalleContrato, setDetalleContrato] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [pagosVisibles, setPagosVisibles] = useState({});
+  const [pagosPorContrato, setPagosPorContrato] = useState({});
 
   useEffect(() => {
     getContratosAceptados()
@@ -20,18 +33,47 @@ export const Reportes = () => {
   }, []);
 
   const handleOpen = (id) => {
-  getDetalleContratoSimple(id)
-    .then(res => {
-      setDetalleContrato(res.data);
-      setDialogOpen(true);
-    })
-    .catch(() => alert("Error al cargar detalles"));
-};
-
+    getDetalleContratoSimple(id)
+      .then(res => {
+        setDetalleContrato(res.data);
+        setDialogOpen(true);
+      })
+      .catch(() => alert("Error al cargar detalles"));
+  };
 
   const handleClose = () => {
     setDialogOpen(false);
     setDetalleContrato(null);
+  };
+
+  const togglePagos = async (idContrato) => {
+    const isOpen = pagosVisibles[idContrato];
+    if (!isOpen && !pagosPorContrato[idContrato]) {
+      try {
+        const res = await getPagosPorContrato(idContrato);
+        setPagosPorContrato(prev => ({ ...prev, [idContrato]: res.data }));
+      } catch (err) {
+        console.error("Error al obtener pagos del contrato:", err);
+      }
+    }
+    setPagosVisibles(prev => ({ ...prev, [idContrato]: !isOpen }));
+  };
+
+  const evaluarPago = async (idPago, accion, idContrato) => {
+    try {
+      if (accion === 'confirmar') {
+        await confirmarPago(idPago);
+      } else {
+        await denegarPago(idPago);
+      }
+
+      // Refrescar los pagos
+      const res = await getPagosPorContrato(idContrato);
+      setPagosPorContrato(prev => ({ ...prev, [idContrato]: res.data }));
+    } catch (err) {
+      alert('Error al procesar el pago');
+      console.error(err);
+    }
   };
 
   return (
@@ -49,6 +91,7 @@ export const Reportes = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell />
                 <TableCell><strong>Cliente</strong></TableCell>
                 <TableCell><strong>Seguro</strong></TableCell>
                 <TableCell><strong>Tipo</strong></TableCell>
@@ -59,25 +102,109 @@ export const Reportes = () => {
             </TableHead>
             <TableBody>
               {contratos.map((c) => (
-                <TableRow key={c.id_usuario_seguro}>
-                  <TableCell>{c.nombre_usuario} {c.apellido_usuario}</TableCell>
-                  <TableCell>{c.nombre_seguro}</TableCell>
-                  <TableCell>{c.tipo}</TableCell>
-                  <TableCell>{c.modalidad_pago}</TableCell>
-                  <TableCell>{c.fecha_contrato}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" size="small" onClick={() => handleOpen(c.id_usuario_seguro)}>
-                      Ver Detalle
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                <React.Fragment key={c.id_usuario_seguro}>
+                  <TableRow>
+                    <TableCell>
+                      <IconButton size="small" onClick={() => togglePagos(c.id_usuario_seguro)}>
+                        {pagosVisibles[c.id_usuario_seguro]
+                          ? <KeyboardArrowUpIcon />
+                          : <KeyboardArrowDownIcon />}
+                      </IconButton>
+                    </TableCell>
+                    <TableCell>{c.nombre_usuario} {c.apellido_usuario}</TableCell>
+                    <TableCell>{c.nombre_seguro}</TableCell>
+                    <TableCell>{c.tipo}</TableCell>
+                    <TableCell>{c.modalidad_pago}</TableCell>
+                    <TableCell>{c.fecha_contrato}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleOpen(c.id_usuario_seguro)}
+                      >
+                        Ver Detalle
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell colSpan={7} style={{ paddingBottom: 0, paddingTop: 0 }}>
+                      <Collapse in={pagosVisibles[c.id_usuario_seguro]} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 2 }}>
+                          <Typography variant="subtitle1" gutterBottom>
+                            Pagos realizados
+                          </Typography>
+
+                          {pagosPorContrato[c.id_usuario_seguro]?.length ? (
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell><strong>Seguro</strong></TableCell>
+                                  <TableCell><strong>Fecha</strong></TableCell>
+                                  <TableCell><strong>Monto</strong></TableCell>
+                                  <TableCell><strong>Comprobante</strong></TableCell>
+                                  <TableCell><strong>Evaluación</strong></TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {pagosPorContrato[c.id_usuario_seguro].map((pago, i) => {
+                                  const esUltimo = i === 0;
+                                  return (
+                                    <TableRow key={pago.id_pago_seguro}>
+                                      <TableCell>{pago.nombre_seguro || 'N/A'}</TableCell>
+                                      <TableCell>{new Date(pago.fecha_pago).toLocaleDateString()}</TableCell>
+                                      <TableCell>${parseFloat(pago.cantidad).toFixed(2)}</TableCell>
+                                      <TableCell>
+                                        {pago.comprobante_pago ? (
+                                          <a href={pago.comprobante_pago} target="_blank" rel="noreferrer">
+                                            Ver comprobante
+                                          </a>
+                                        ) : 'Sin archivo'}
+                                      </TableCell>
+                                      <TableCell>
+  {pago.estado_pago === 1 ? (
+    <Typography color="green">Confirmado</Typography>
+  ) : pago.estado_pago === 0 ? (
+    <Typography color="red">Cancelado</Typography>
+  ) : (
+    <>
+      <Button
+        size="small"
+        color="success"
+        onClick={() => evaluarPago(pago.id_pago_seguro, 'confirmar', c.id_usuario_seguro)}
+      >
+        Confirmar
+      </Button>
+      <Button
+        size="small"
+        color="error"
+        onClick={() => evaluarPago(pago.id_pago_seguro, 'denegar', c.id_usuario_seguro)}
+      >
+        Denegar
+      </Button>
+    </>
+  )}
+</TableCell>
+
+                                    </TableRow>
+                                  );
+                                })}
+                              </TableBody>
+                            </Table>
+                          ) : (
+                            <Typography>No se registran pagos aún.</Typography>
+                          )}
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       )}
 
-      {/* Diálogo de detalles */}
       <Dialog open={dialogOpen} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle sx={{ bgcolor: '#0D2B81', color: 'white' }}>
           Detalle del Contrato
@@ -95,21 +222,17 @@ export const Reportes = () => {
               </Box>
 
               <Divider sx={{ my: 2 }} />
-
               <Typography variant="h6" gutterBottom color="primary">Beneficios</Typography>
               <ul>
                 {detalleContrato.beneficios?.map((b, i) => <li key={i}>{b}</li>)}
               </ul>
 
               <Divider sx={{ my: 2 }} />
-
               <Typography variant="h6" gutterBottom color="primary">Beneficiarios</Typography>
               {detalleContrato.beneficiarios?.length ? (
                 <ul>
                   {detalleContrato.beneficiarios.map((b, i) => (
-                    <li key={i}>
-                      <strong>{b.nombre}</strong> – {b.parentesco} – <em>C.I. {b.cedula}</em>
-                    </li>
+                    <li key={i}><strong>{b.nombre}</strong> – {b.parentesco} – <em>{b.cedula}</em></li>
                   ))}
                 </ul>
               ) : (
@@ -117,27 +240,23 @@ export const Reportes = () => {
               )}
 
               <Divider sx={{ my: 2 }} />
-
-              <Typography variant="h6" gutterBottom color="primary">Documentos Requeridos</Typography>
-              {detalleContrato.requisitos?.map((r, i) => (
-                <li key={i}>
-                  {r.nombre}
-                  {r.archivo ? (
-                    <>
-                      {" – "}
+              <Typography variant="h6" gutterBottom color="primary">Requisitos</Typography>
+              <ul>
+                {detalleContrato.requisitos?.map((r, i) => (
+                  <li key={i}>
+                    {r.nombre}{" "}
+                    {r.archivo ? (
                       <a href={`http://localhost:3030/${r.archivo}`} target="_blank" rel="noreferrer">
-                        Ver documento
+                        Ver archivo
                       </a>
-                    </>
-                  ) : (
-                    <span style={{ color: 'gray' }}>No cargado</span>
-                  )}
-                </li>
-              ))}
-
+                    ) : (
+                      <span style={{ color: 'gray' }}>No cargado</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
 
               <Divider sx={{ my: 2 }} />
-
               <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
               <a href={`http://localhost:3030/${detalleContrato.firma}`} target="_blank" rel="noreferrer">
                 Ver firma
@@ -148,7 +267,6 @@ export const Reportes = () => {
           )}
         </DialogContent>
       </Dialog>
-
     </Box>
   );
 };

@@ -137,7 +137,6 @@ const PagosCliente = () => {
   );
 }
 
-
         return (
           <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
             <Typography variant="h6" gutterBottom>

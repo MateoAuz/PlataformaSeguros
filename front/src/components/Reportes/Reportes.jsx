@@ -162,30 +162,48 @@ export const Reportes = () => {
                                         ) : 'Sin archivo'}
                                       </TableCell>
                                       <TableCell>
-  {pago.estado_pago === 1 ? (
-    <Typography color="green">Confirmado</Typography>
-  ) : pago.estado_pago === 0 ? (
-    <Typography color="red">Cancelado</Typography>
-  ) : (
-    <>
-      <Button
-        size="small"
-        color="success"
-        onClick={() => evaluarPago(pago.id_pago_seguro, 'confirmar', c.id_usuario_seguro)}
-      >
-        Confirmar
-      </Button>
-      <Button
-        size="small"
-        color="error"
-        onClick={() => evaluarPago(pago.id_pago_seguro, 'denegar', c.id_usuario_seguro)}
-      >
-        Denegar
-      </Button>
-    </>
-  )}
-</TableCell>
-
+                                        {esUltimo ? (
+                                          pago.estado_pago === 1 ? (
+                                            <Typography color="green">Confirmado</Typography>
+                                          ) : pago.estado_pago === 0 ? (
+                                            <Typography color="red">Cancelado</Typography>
+                                          ) : (
+                                            <>
+                                              <Button
+                                                size="small"
+                                                color="success"
+                                                onClick={async () => {
+                                                  await evaluarPago(pago.id_pago_seguro, 'confirmar', c.id_usuario_seguro);
+                                                  // actualización manual del estado en frontend
+                                                  setPagosPorContrato(prev => {
+                                                    const actualizados = [...prev[c.id_usuario_seguro]];
+                                                    actualizados[0] = { ...actualizados[0], estado_pago: 1 };
+                                                    return { ...prev, [c.id_usuario_seguro]: actualizados };
+                                                  });
+                                                }}
+                                              >
+                                                Confirmar
+                                              </Button>
+                                              <Button
+                                                size="small"
+                                                color="error"
+                                                onClick={async () => {
+                                                  await evaluarPago(pago.id_pago_seguro, 'denegar', c.id_usuario_seguro);
+                                                  setPagosPorContrato(prev => {
+                                                    const actualizados = [...prev[c.id_usuario_seguro]];
+                                                    actualizados[0] = { ...actualizados[0], estado_pago: 0 };
+                                                    return { ...prev, [c.id_usuario_seguro]: actualizados };
+                                                  });
+                                                }}
+                                              >
+                                                Denegar
+                                              </Button>
+                                            </>
+                                          )
+                                        ) : (
+                                          '-' // Pagos anteriores muestran guion
+                                        )}
+                                      </TableCell>
                                     </TableRow>
                                   );
                                 })}

@@ -78,17 +78,22 @@ router.post('/', upload.single('archivo'), async (req, res) => {
     WHERE id_usuario_seguro = ? AND estado = 1
   `;
   db.query(sqlContrato, [id_usuario_seguro_per], (err1, contratos) => {
-    if (err1) {
-      console.error('[POST /pagos] Error al consultar usuario_seguro:', err1);
-      return res.status(500).json({ error: 'Error interno al verificar contrato' });
-    }
-    if (contratos.length === 0) {
-      return res.status(404).json({ error: 'Contrato no existe o no está activo' });
-    }
+  if (err1) {
+    console.error('[POST /pagos] Error al consultar usuario_seguro:', err1);
+    return res.status(500).json({ error: 'Error interno al verificar contrato' });
+  }
+  if (contratos.length === 0) {
+    return res.status(404).json({ error: 'Contrato no existe o no está activo' });
+  }
 
-    const { fecha_contrato, modalidad_pago } = contratos[0];
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+  const { fecha_contrato, modalidad_pago, estado_pago } = contratos[0];
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  // ✅ Aquí es válido y seguro verificar el estado_pago
+  if (estado_pago === 0) {
+    return procesarPagoNormal();
+  }
 
     // 2) Obtener la última fecha de pago (si existe)
     const sqlUltPago = `
@@ -183,21 +188,7 @@ router.post('/', upload.single('archivo'), async (req, res) => {
             return res.status(500).json({ error: 'Error al guardar el pago en la base de datos' });
           }
 
-          // 6.5) Actualizar estado_pago = 1 en usuario_seguro
-          const sqlUpdateEstado = `
-            UPDATE usuario_seguro
-            SET estado_pago = 1
-            WHERE id_usuario_seguro = ?
-          `;
-          db.query(sqlUpdateEstado, [id_usuario_seguro_per], (err5) => {
-            if (err5) {
-              console.error('[POST /pagos] Error al actualizar estado_pago:', err5);
-              return res.status(200).json({
-                message: 'Primer pago guardado, pero hubo problema al actualizar estado_pago.'
-              });
-            }
-            return res.json({ message: 'Primer pago guardado exitosamente y estado_pago=1' });
-          });
+          return res.json({ message: 'Primer pago guardado exitosamente. En espera de revisión.' });
         });
       } catch (errorS3) {
         console.error('[POST /pagos] Error S3/Pago (primer):', errorS3);
@@ -238,20 +229,7 @@ router.post('/', upload.single('archivo'), async (req, res) => {
           }
 
           // 6.5) Actualizar estado_pago = 1 en usuario_seguro
-          const sqlUpdateEstado = `
-            UPDATE usuario_seguro
-            SET estado_pago = 1
-            WHERE id_usuario_seguro = ?
-          `;
-          db.query(sqlUpdateEstado, [id_usuario_seguro_per], (err5) => {
-            if (err5) {
-              console.error('[POST /pagos] Error al actualizar estado_pago:', err5);
-              return res.status(200).json({
-                message: 'Pago guardado, pero hubo problema al actualizar estado_pago.'
-              });
-            }
-            return res.json({ message: 'Pago guardado exitosamente y estado_pago=1' });
-          });
+          return res.json({ message: 'Pago guardado exitosamente. En espera de revisión.' });
         });
       } catch (errorS3) {
         console.error('[POST /pagos] Error S3/Pago:', errorS3);

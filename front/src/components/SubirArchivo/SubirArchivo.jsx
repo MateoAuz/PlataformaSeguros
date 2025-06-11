@@ -24,7 +24,7 @@ export const SubirArchivo = ({ onArchivoSeleccionado, nombre, tipo = "applicatio
           type="file"
           accept={tipo}
           hidden
-          onChange={handleChange}
+          onChange={handleChange} 
         />
       </Button>
 

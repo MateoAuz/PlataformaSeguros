@@ -163,12 +163,15 @@ router.post('/', upload.single('archivo'), async (req, res) => {
     async function procesarPrimerPago() {
       try {
         // Si 'usuario' llega undefined, usamos 'sin-usuario' como carpeta por defecto
-        const carpeta = usuario || 'sin-usuario';
+        const carpeta = (usuario && usuario.trim()) || 'sin-usuario';
 
         // 6.1) Subir a S3
         const uniqueName = file.filename;
-        const rutaS3 = `${carpeta}/${uniqueName}`;
-        await subirArchivo(file.path, rutaS3);
+         if (!fs.existsSync(file.path)) {
+      console.error('El archivo temporal no existe:', file.path);
+      return res.status(500).json({ error: 'Archivo temporal no encontrado' });
+    }
+        await subirArchivo(file.path, uniqueName, carpeta);
 
         // 6.2) Borrar el archivo temporal
         fs.unlinkSync(file.path);
@@ -178,18 +181,20 @@ router.post('/', upload.single('archivo'), async (req, res) => {
 
         // 6.4) Insertar en pago_seguro
         const sqlInsertPago = `
-          INSERT INTO pago_seguro 
-            (id_usuario_seguro_per, fecha_pago, cantidad, comprobante_pago)
-          VALUES (?, CURDATE(), ?, ?)
-        `;
-        db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
-          if (err4) {
-            console.error('[POST /pagos] Error al insertar primer pago:', err4);
-            return res.status(500).json({ error: 'Error al guardar el pago en la base de datos' });
-          }
+  INSERT INTO pago_seguro 
+    (id_usuario_seguro_per, fecha_pago, cantidad, comprobante_pago)
+  VALUES (?, CURDATE(), ?, ?)
+`;
+console.log("Insertando pago...");
+db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
+  if (err4) {
+    console.error('[POST /pagos] Error al insertar pago:', err4);
+    return res.status(500).json({ error: 'Error al guardar el pago en la base de datos' });
+  }
 
-          return res.json({ message: 'Primer pago guardado exitosamente. En espera de revisión.' });
-        });
+  return res.json({ message: 'Pago guardado exitosamente. En espera de revisión.' });
+});
+
       } catch (errorS3) {
         console.error('[POST /pagos] Error S3/Pago (primer):', errorS3);
         return res.status(500).json({ error: 'Error interno al subir el comprobante a S3' });
@@ -203,12 +208,16 @@ router.post('/', upload.single('archivo'), async (req, res) => {
     async function procesarPagoNormal() {
       try {
         // Si 'usuario' llega undefined, usamos 'sin-usuario' como carpeta por defecto
-        const carpeta = usuario || 'sin-usuario';
+        const carpeta = (usuario && usuario.trim()) || 'sin-usuario';
+
 
         // 6.1) Subir a S3
         const uniqueName = file.filename;
-        const rutaS3 = `${carpeta}/${uniqueName}`;
-        await subirArchivo(file.path, rutaS3);
+        if (!fs.existsSync(file.path)) {
+      console.error('El archivo temporal no existe:', file.path);
+      return res.status(500).json({ error: 'Archivo temporal no encontrado' });
+    }
+        await subirArchivo(file.path, uniqueName, carpeta);
 
         // 6.2) Borrar el archivo temporal
         fs.unlinkSync(file.path);

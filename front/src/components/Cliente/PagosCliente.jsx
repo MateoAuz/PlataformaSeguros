@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import {
   Box, Typography, Select, MenuItem, InputLabel, FormControl,
-  Button, TextField, Paper, Grid, Snackbar, Alert,
+  Button, Paper, Grid, Snackbar, Alert,
   Table, TableHead, TableRow, TableCell, TableBody, TableContainer,
 } from "@mui/material";
 import axios from "axios";
@@ -16,7 +16,6 @@ const PagosCliente = () => {
   const [seguros, setSeguros] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [contratoSeleccionado, setContratoSeleccionado] = useState("");
-  const [cantidad, setCantidad] = useState("");
   const [archivo, setArchivo] = useState(null);
   const [mensaje, setMensaje] = useState("");
   const [alerta, setAlerta] = useState({ open: false, tipo: "success" });
@@ -40,25 +39,18 @@ const PagosCliente = () => {
 
   const handlePagoSubmit = async () => {
     const precioSeguro = obtenerPrecioSeguroSeleccionado();
-    const montoPagado = parseFloat(cantidad);
 
-    if (!archivo || !cantidad || !contratoSeleccionado) {
-      setMensaje("Completa todos los campos y selecciona un archivo");
-      setAlerta({ open: true, tipo: "error" });
-      return;
-    }
-
-    if (montoPagado !== parseFloat(precioSeguro)) {
-      setMensaje(`El monto debe ser exactamente $${precioSeguro}`);
-      setAlerta({ open: true, tipo: "error" });
-      return;
-    }
+    if (!archivo || !contratoSeleccionado) {
+  setMensaje("Completa todos los campos y selecciona un archivo");
+  setAlerta({ open: true, tipo: "error" });
+  return;
+}
 
     const formData = new FormData();
     formData.append("archivo", archivo);
-    formData.append("cantidad", montoPagado);
+    formData.append("cantidad", precioSeguro); // monto real del seguro
     formData.append("id_usuario_seguro_per", contratoSeleccionado);
-    formData.append("usuario", usuario.username || usuario.id_usuario);
+    formData.append("usuario", usuario.username || `user_${usuario.id_usuario}` || 'sin-usuario');
 
     try {
       const res = await fetch("http://localhost:3030/pagos", {
@@ -71,7 +63,6 @@ const PagosCliente = () => {
         setMensaje("Pago registrado exitosamente");
         setAlerta({ open: true, tipo: "success" });
         setArchivo(null);
-        setCantidad("");
         setContratoSeleccionado("");
 
         axios.get(`http://localhost:3030/pagos/cliente/${usuario.id_usuario}`)
@@ -144,36 +135,26 @@ const PagosCliente = () => {
             </Typography>
             <form>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    type="number"
-                    label="Monto pagado"
-                    value={cantidad}
-                    onChange={(e) => setCantidad(e.target.value)}
-                    fullWidth
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <SubirArchivo
-                    nombre="Subir comprobante (PDF)"
-                    tipo="application/pdf"
-                    requerido={true} // <-- Esto activa el borde amarillo si no hay archivo
-                    onArchivoSeleccionado={setArchivo}
-                  />
+  <Grid item xs={12}>
+    <SubirArchivo
+      nombre="Subir comprobante (PDF)"
+      tipo="application/pdf"
+      requerido={true}
+      onArchivoSeleccionado={setArchivo}
+    />
+  </Grid>
+  <Grid item xs={12}>
+    <Button
+      onClick={handlePagoSubmit}
+      variant="contained"
+      color="primary"
+      disabled={!archivo}
+    >
+      Enviar pago
+    </Button>
+  </Grid>
+</Grid>
 
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    onClick={handlePagoSubmit}
-                    variant="contained"
-                    color="primary"
-                    disabled={!cantidad || !archivo}
-                  >
-                    Enviar pago
-                  </Button>
-                </Grid>
-              </Grid>
             </form>
           </Paper>
         );

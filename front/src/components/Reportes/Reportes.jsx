@@ -262,23 +262,28 @@ export const Reportes = () => {
               )}
 
               <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" gutterBottom color="primary">Requisitos</Typography>
-              <ul>
-                {detalleContrato.requisitos?.map((r, i) => (
-                  <li key={i}>
-                    {r.nombre}{" "}
-                    {r.archivo ? (
-                      <a href={`http://localhost:3030/${r.archivo}`} target="_blank" rel="noreferrer">
-                        Ver archivo
-                      </a>
-                    ) : (
-                      <span style={{ color: 'gray' }}>No cargado</span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+<Typography variant="h6" gutterBottom color="primary">
+  Documentos Requeridos Adjuntos
+</Typography>
+{detalleContrato.requisitos?.length ? (
+  <ul>
+    {detalleContrato.requisitos.map((r, i) => (
+      <li key={i}>
+        {r.nombre}:{" "}
+        {r.archivo ? (
+          <BotonVerArchivo
+            rutaDescarga={`http://localhost:3030/contratos/descarga/requisito/${detalleContrato.id_contrato}/${r.id_requisito}`}
+          />
+        ) : (
+          <span style={{ color: 'gray' }}>No cargado</span>
+        )}
+      </li>
+    ))}
+  </ul>
+) : (
+  <Typography>No hay requisitos definidos.</Typography>
+)}
 
-              <Divider sx={{ my: 2 }} />
               <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
               <a href={`http://localhost:3030/${detalleContrato.firma}`} target="_blank" rel="noreferrer">
                 Ver firma

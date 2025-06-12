@@ -34,10 +34,6 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
               <strong>Fecha:</strong> {detalle.fecha_contrato} – <strong>Hora:</strong> {detalle.hora}
             </Typography>
 
-
-
-
-
             <Typography variant="subtitle1" gutterBottom>
               <strong>Seguro:</strong> {detalle.seguro} ({detalle.tipo})
             </Typography>

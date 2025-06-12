@@ -40,13 +40,6 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
               <strong>Seguro:</strong> {detalle.seguro} ({detalle.tipo})
             </Typography>
 
-            <Typography variant="subtitle1" gutterBottom mt={2}>
-              <strong>Firma Electrónica del Cliente:</strong>
-            </Typography>
-            <a href={`http://localhost:3030/${detalle.firma}`} target="_blank" rel="noreferrer">
-              Ver PDF de la firma electrónica
-            </a>
-
             <Typography variant="h6" mt={3}>Beneficiarios</Typography>
             {detalle.beneficiarios?.length ? (
               <ul>

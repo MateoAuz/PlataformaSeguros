@@ -16,6 +16,8 @@ import {
   confirmarDebito as confirmarPago,
   denegarPago
 } from '../../services/PagoService';
+import { BotonVerArchivo } from "../../components/BotonVerArchivo";
+
 
 export const Reportes = () => {
   const [contratos, setContratos] = useState([]);
@@ -156,10 +158,12 @@ export const Reportes = () => {
                                       <TableCell>${parseFloat(pago.cantidad).toFixed(2)}</TableCell>
                                       <TableCell>
                                         {pago.comprobante_pago ? (
-                                          <a href={pago.comprobante_pago} target="_blank" rel="noreferrer">
-                                            Ver comprobante
-                                          </a>
-                                        ) : 'Sin archivo'}
+                                          <BotonVerArchivo
+                                            rutaDescarga={`http://localhost:3030/pagos/descarga/${pago.id_pago_seguro}`}
+                                          />
+                                        ) : (
+                                          "Sin archivo"
+                                        )}
                                       </TableCell>
                                       <TableCell>
                                         {esUltimo ? (

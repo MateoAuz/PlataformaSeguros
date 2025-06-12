@@ -15,13 +15,11 @@ export const BotonVerArchivo = ({ urlDirecta, rutaDescarga, metodo = 'GET' }) =>
 		try {
 			setCargando(true);
 
-			// Si hay URL directa, se abre directamente
 			if (urlDirecta) {
 				window.open(urlDirecta, '_blank');
 				return;
 			}
 
-			// Si no hay URL directa, se consulta al backend
 			const response = await fetch(rutaDescarga, { method: metodo });
 			const data = await response.json();
 
@@ -46,7 +44,7 @@ export const BotonVerArchivo = ({ urlDirecta, rutaDescarga, metodo = 'GET' }) =>
 };
 
 BotonVerArchivo.propTypes = {
-	urlDirecta: PropTypes.string,          // Si tienes la URL completa del archivo (por ejemplo, S3)
-	rutaDescarga: PropTypes.string,        // Si necesitas hacer una petición GET/POST a tu backend
-	metodo: PropTypes.oneOf(['GET', 'POST']) // Método HTTP si usas rutaDescarga
+	urlDirecta: PropTypes.string,
+	rutaDescarga: PropTypes.string, 
+	metodo: PropTypes.oneOf(['GET', 'POST'])
 };

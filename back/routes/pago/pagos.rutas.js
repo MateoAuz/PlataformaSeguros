@@ -6,6 +6,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const subirArchivo = require('../../s3/subirArchivo');
+const obtenerUrlArchivo = require('../../s3/obtenerUrl');
 
 // ─────────── Función auxiliar para sumar un período a una fecha ───────────
 function agregarPeriodo(fechaBase, tiempoPago) {
@@ -177,7 +178,7 @@ router.post('/', upload.single('archivo'), async (req, res) => {
         fs.unlinkSync(file.path);
 
         // 6.3) Construir URL en S3
-        const urlS3 = `https://${process.env.AWS_BUCKET}.s3.amazonaws.com/${rutaS3}`;
+        const keyS3 = `${carpeta}/${file.filename}`;
 
         // 6.4) Insertar en pago_seguro
         const sqlInsertPago = `
@@ -185,8 +186,7 @@ router.post('/', upload.single('archivo'), async (req, res) => {
     (id_usuario_seguro_per, fecha_pago, cantidad, comprobante_pago)
   VALUES (?, CURDATE(), ?, ?)
 `;
-console.log("Insertando pago...");
-db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
+db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, keyS3], (err4) => {
   if (err4) {
     console.error('[POST /pagos] Error al insertar pago:', err4);
     return res.status(500).json({ error: 'Error al guardar el pago en la base de datos' });
@@ -223,7 +223,7 @@ db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
         fs.unlinkSync(file.path);
 
         // 6.3) Construir URL en S3
-        const urlS3 = `https://${process.env.AWS_BUCKET}.s3.amazonaws.com/${rutaS3}`;
+        const keyS3 = `${carpeta}/${file.filename}`;
 
         // 6.4) Insertar en pago_seguro
         const sqlInsertPago = `
@@ -231,7 +231,7 @@ db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
             (id_usuario_seguro_per, fecha_pago, cantidad, comprobante_pago)
           VALUES (?, CURDATE(), ?, ?)
         `;
-        db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, urlS3], (err4) => {
+        db.query(sqlInsertPago, [id_usuario_seguro_per, cantidad, keyS3], (err4) => {
           if (err4) {
             console.error('[POST /pagos] Error al insertar pago:', err4);
             return res.status(500).json({ error: 'Error al guardar el pago en la base de datos' });
@@ -388,10 +388,10 @@ router.get('/descarga/:id_pago_seguro', (req, res) => {
     }
 
     const comprobante = rows[0].comprobante_pago;
-
+    const URL = obtenerUrlArchivo(comprobante);
     // Si ya es una URL completa, la devolvemos directo
     if (comprobante.startsWith('http')) {
-      return res.json({ url: comprobante });
+      return res.json({ url: URL });
     }
 
     try {

@@ -3,6 +3,8 @@ import {
   Dialog, DialogTitle, DialogContent, Typography, Button
 } from '@mui/material';
 import { getDetalleContratoCompleto } from '../../services/ContratoService';
+import { BotonVerArchivo } from '../../components/BotonVerArchivo';
+
 
 const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
   const [detalle, setDetalle] = useState(null);
@@ -57,11 +59,11 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
                 {detalle.requisitos.map((r, i) => (
                   <li key={i}>
                     {r.nombre}: {r.archivo ? (
-                      <a href={`http://localhost:3030/${r.archivo}`} target="_blank" rel="noreferrer">
-                        Ver archivo
-                      </a>
+                     <BotonVerArchivo
+  rutaDescarga={`http://localhost:3030/contratos/descarga/requisito/${idContrato}/${r.id_requisito}`}
+/>
                     ) : (
-                      <span style={{ color: 'gray' }}>No cargado</span>
+                      <span>No cargado</span>
                     )}
                   </li>
                 ))}

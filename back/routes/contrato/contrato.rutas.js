@@ -4,6 +4,8 @@ const db = require('../../db/connection');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const subirArchivo = require('../../s3/subirArchivo');
+const obtenerUrlArchivo = require('../../s3/obtenerUrl');
 
 // --- Configuración de subida de archivos (Multer)
 const storage = multer.diskStorage({
@@ -62,18 +64,26 @@ router.post('/', upload.any(), async (req, res) => {
     // Extraer archivos de firma y “documentos[...]”
     let firmaArchivo = null;
     const documentos = {}; // { idRequisito: { path, originalName } }
-    req.files.forEach(file => {
+
+    for (const file of req.files) {
+      console.log("📥 Recibido:", file.fieldname, "=>", file.originalname);
       if (file.fieldname === 'firma_pdf') {
         firmaArchivo = file;
       } else if (file.fieldname.startsWith('documentos[')) {
-        // fieldname ejemplo: documentos[3]
         const idRequisito = file.fieldname.match(/documentos\[(\d+)\]/)[1];
+        const carpetaUsuario = `usuario_${id_usuario}`;
+        const nombreUnico = `${Date.now()}-${file.originalname.replace(/\s+/g, '')}`;
+
+        await subirArchivo(file.path, nombreUnico, carpetaUsuario);
+        fs.unlinkSync(file.path); // elimina el archivo temporal
+        const keyS3 = `${carpetaUsuario}/${nombreUnico}`;
+
         documentos[idRequisito] = {
-          path: getRelativePath(file.path),
+          path: keyS3,
           originalName: file.originalname
         };
       }
-    });
+    }
 
 
     // Path relativo para guardar en BD
@@ -96,7 +106,7 @@ router.post('/', upload.any(), async (req, res) => {
     db.query(
       sqlContrato,
       [id_usuario, id_seguro, yyyyMMdd, 0, modalidad_pago, firmaBD, hhmmss],
-      function (err, result) {
+      async function (err, result) {
         if (err) {
           console.error('❌ Error al insertar contrato:', err);
           return res.status(500).send('Error al guardar el contrato');
@@ -105,6 +115,22 @@ router.post('/', upload.any(), async (req, res) => {
 
         // Guardar los documentos de requisitos (si existen)
         const inserts = []; // matriz de [id_usuario_seguro, id_requisito, nombre_archivo, path_archivo, validado]
+        const eliminarSQL = `
+  DELETE FROM usuario_requisito
+  WHERE id_usuario_seguro = ? AND id_requisito = ?
+`;
+
+        await Promise.all(Object.keys(documentos).map(idReq => {
+          return new Promise((resolve, reject) => {
+            db.query(eliminarSQL, [id_usuario_seguro, idReq], (err) => {
+              if (err) {
+                console.error(`❌ Error al eliminar requisito anterior (id: ${idReq})`, err);
+                return reject(err);
+              }
+              resolve();
+            });
+          });
+        }));
         Object.entries(documentos).forEach(([idRequisito, fileObj]) => {
           inserts.push([
             id_usuario_seguro,
@@ -421,6 +447,7 @@ router.get('/detalle-completo/:id', (req, res) => {
           requisitos.forEach(r => {
             if (!requisitosMap.has(r.id_requisito)) {
               requisitosMap.set(r.id_requisito, {
+                id_requisito: r.id_requisito, // ✅ esto lo necesitas
                 nombre: r.nombre,
                 archivo: r.archivo || null
               });
@@ -506,6 +533,38 @@ router.get('/mis-seguros/:id', (req, res) => {
         console.error('❌ Error calculando próximas fechas:', error);
         return res.status(500).send('Error interno calculando fechas de vencimiento');
       });
+  });
+});
+
+router.get('/descarga/requisito/:id_usuario_seguro/:id_requisito', async (req, res) => {
+  console.log('🟢 Ruta /descarga/requisito ejecutada con:', req.params);
+  const { id_usuario_seguro, id_requisito } = req.params;
+
+  const sql = `
+    SELECT path_archivo
+    FROM usuario_requisito
+    WHERE id_usuario_seguro = ? AND id_requisito = ?
+  `;
+
+  db.query(sql, [id_usuario_seguro, id_requisito], async (err, rows) => {
+    if (err) {
+      console.error(`[GET /descarga/requisito] Error DB:`, err);
+      return res.status(500).json({ error: 'Error al buscar archivo del requisito' });
+    }
+
+    if (!rows.length || !rows[0].path_archivo) {
+      return res.status(404).json({ error: 'Archivo no encontrado' });
+    }
+
+    try {
+      const key = rows[0].path_archivo;
+      console.log("📁 Key que se enviará a S3:", key);
+      const url = await obtenerUrlArchivo(key);
+      res.json({ url });
+    } catch (err2) {
+      console.error(`[GET /descarga/requisito] Error generando URL S3:`, err2);
+      res.status(500).json({ error: 'No se pudo generar la URL del archivo' });
+    }
   });
 });
 

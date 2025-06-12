@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import emailjs from 'emailjs-com'; 
 import {
   Paper, Box, Grid, Typography, Divider, TextField,
   Button, Snackbar, Alert, CircularProgress, Chip
@@ -24,12 +25,17 @@ function getIdUsuarioLocalStorage() {
 }
 
 const FormularioContratacion = ({ seguro, onVolver }) => {
+  const [correo, setCorreo] = useState('');
+  const [codigoGenerado, setCodigoGenerado] = useState('');
+  const [codigoIngresado, setCodigoIngresado] = useState('');
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const [beneficiarios, setBeneficiarios] = useState([]);
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [requisitos, setRequisitos] = useState([]);
   const [archivosRequisitos, setArchivosRequisitos] = useState({});
   const [archivoFirma, setArchivoFirma] = useState(null);
+  
 
   useEffect(() => {
     if (seguro?.id_seguro) {
@@ -38,6 +44,34 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
         .catch(err => console.error('Error al obtener requisitos:', err));
     }
   }, [seguro]);
+
+  const enviarCodigoVerificacion = () => {
+    if (!correo || !/\S+@\S+\.\S+/.test(correo)) {
+      setSnackbar({ open: true, message: "Correo inválido.", severity: "error" });
+      return;
+    }
+
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    setCodigoGenerado(codigo);
+
+    emailjs.send(
+      'service_c4us1gc',
+      'template_eiu5j2s',
+      {
+        to_email: correo,
+        subject: "Código de Verificación",
+        message: `Tu código de verificación es: ${codigo}`
+      },
+      '3sOnnDkXYopdiWy7l'
+    ).then(() => {
+      setCodigoEnviado(true);
+      setSnackbar({ open: true, message: "Código enviado al correo.", severity: "info" });
+    }).catch((err) => {
+      console.error("Error al enviar correo:", err);
+      setSnackbar({ open: true, message: "Error al enviar el código.", severity: "error" });
+    });
+  };
+
 
   const handleArchivoRequisito = (idRequisito, file) => {
     setArchivosRequisitos(prev => ({ ...prev, [idRequisito]: file }));
@@ -79,8 +113,8 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
       setSnackbar({ open: true, message: "Debes adjuntar TODOS los documentos requeridos (PDF).", severity: "error" });
       return;
     }
-    if (!archivoFirma) {
-      setSnackbar({ open: true, message: "Debes adjuntar el PDF de tu firma electrónica.", severity: "error" });
+    if (!codigoEnviado || codigoIngresado !== codigoGenerado) {
+      setSnackbar({ open: true, message: "Código de verificación incorrecto o no enviado.", severity: "error" });
       return;
     }
     for (const b of beneficiarios) {
@@ -128,8 +162,6 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
     Object.entries(archivosRequisitos).forEach(([idRequisito, archivo]) => {
       formDataEnvio.append(`documentos[${idRequisito}]`, archivo);
     });
-    // Adjuntar firma
-    formDataEnvio.append("firma_pdf", archivoFirma);
 
     // Beneficiarios (opcional)
     beneficiarios.forEach((b, i) => {
@@ -248,31 +280,36 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
         </Box>
         {/* FIRMA ELECTRÓNICA */}
         <Box mt={3} mb={3}>
-          <Typography variant="subtitle1" gutterBottom>Adjunta tu firma electrónica</Typography>
-          <Typography variant="body2" sx={{ mb: 1, color: "gray" }}>
-            Adjunta un <b>archivo PDF</b> con tu firma manuscrita escaneada o digitalizada. <b>Este campo es obligatorio.</b>
-          </Typography>
-          <Button
-            variant={archivoFirma ? "contained" : "outlined"}
-            color={archivoFirma ? "success" : "primary"}
-            component="label"
+          <Typography variant="subtitle1" gutterBottom>Correo electrónico de verificación</Typography>
+          <TextField
+            label="Correo electrónico"
             fullWidth
-            sx={{ fontWeight: 'bold', mb: 1 }}
+            type="email"
+            value={correo}
+            onChange={(e) => setCorreo(e.target.value)}
+            required
+            sx={{ mb: 1 }}
+          />
+          <Button
+            variant="outlined"
+            color="secondary"
+            fullWidth
+            onClick={enviarCodigoVerificacion}
+            sx={{ fontWeight: 'bold', mb: 2 }}
           >
-            {archivoFirma ? "PDF cargado" : "Adjuntar PDF de firma"}
-            <input
-              type="file"
-              hidden
-              accept=".pdf"
-              onChange={e => handleArchivoFirma(e.target.files[0])}
-              required
-            />
+            Enviar código de verificación
           </Button>
-          {archivoFirma &&
-            <Typography variant="body2" color="text.secondary">
-              Archivo: {archivoFirma.name}
-            </Typography>
-          }
+
+          {codigoEnviado && (
+            <TextField
+              label="Ingresa el código recibido"
+              fullWidth
+              value={codigoIngresado}
+              onChange={(e) => setCodigoIngresado(e.target.value)}
+              required
+              sx={{ mb: 2 }}
+            />
+          )}
         </Box>
 
         <Box display="flex" justifyContent="space-between" mt={4} gap={2}>
@@ -286,7 +323,7 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
             startIcon={loading && <CircularProgress size={20} />}
             sx={{ fontWeight: 'bold' }}
           >
-            {loading ? 'Enviando...' : 'FIRMAR Y CONTRATAR'}
+            {loading ? 'Enviando...' : 'VERIFICAR Y CONTRATAR'}
           </Button>
         </Box>
       </Box>

@@ -75,12 +75,10 @@ router.post('/', upload.any(), async (req, res) => {
       }
     });
 
-    if (!firmaArchivo) {
-      return res.status(400).send('Falta la firma PDF');
-    }
 
     // Path relativo para guardar en BD
-    const firmaBD = getRelativePath(firmaArchivo.path);
+    const firmaBD = firmaArchivo ? getRelativePath(firmaArchivo.path) : null;
+
 
     // Fecha actual en formato “YYYY-MM-DD” y hora “HH:MM:SS”
     const fecha = new Date();

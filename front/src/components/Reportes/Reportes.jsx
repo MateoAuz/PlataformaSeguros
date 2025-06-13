@@ -284,10 +284,7 @@ export const Reportes = () => {
   <Typography>No hay requisitos definidos.</Typography>
 )}
 
-              <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
-              <a href={`http://localhost:3030/${detalleContrato.firma}`} target="_blank" rel="noreferrer">
-                Ver firma
-              </a>
+
             </Box>
           ) : (
             <Typography>Cargando detalles...</Typography>

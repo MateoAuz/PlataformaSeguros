@@ -45,7 +45,7 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
     }
   }, [seguro]);
 
-  const enviarCodigoVerificacion = () => {
+  const enviarCodigoVerificacion = async () => {
     if (!correo || !/\S+@\S+\.\S+/.test(correo)) {
       setSnackbar({ open: true, message: "Correo inválido.", severity: "error" });
       return;
@@ -54,23 +54,42 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
     setCodigoGenerado(codigo);
 
-    emailjs.send(
-      'service_c4us1gc',
-      'template_eiu5j2s',
-      {
-        to_email: correo,
-        subject: "Código de Verificación",
-        message: `Tu código de verificación es: ${codigo}`
-      },
-      '3sOnnDkXYopdiWy7l'
-    ).then(() => {
+    // 🔵 Intentar primero con EmailJS
+    try {
+      await emailjs.send(
+        'service_c4us1gc',
+        'template_eiu5j2s',
+        {
+          to_email: correo,
+          subject: "Código de Verificación",
+          message: `Tu código de verificación es: ${codigo}`
+        },
+        '3sOnnDkXYopdiWy7l'
+      );
       setCodigoEnviado(true);
-      setSnackbar({ open: true, message: "Código enviado al correo.", severity: "info" });
-    }).catch((err) => {
-      console.error("Error al enviar correo:", err);
-      setSnackbar({ open: true, message: "Error al enviar el código.", severity: "error" });
-    });
+      setSnackbar({ open: true, message: "Código enviado al correo (EmailJS).", severity: "info" });
+    } catch (errorEmailJS) {
+      console.warn("❌ Error con EmailJS, intentando con nodemailer...", errorEmailJS);
+
+      // 🟡 Intentar con tu backend y nodemailer como respaldo
+      try {
+        const res = await fetch('http://localhost:3030/enviar-codigo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ correoDestino: correo, codigo })
+        });
+
+        if (!res.ok) throw new Error("Fallo al usar nodemailer");
+
+        setCodigoEnviado(true);
+        setSnackbar({ open: true, message: "Código enviado al correo (Servidor Local).", severity: "info" });
+      } catch (errorNode) {
+        console.error("❌ Error total al enviar código:", errorNode);
+        setSnackbar({ open: true, message: "Error total al enviar el código.", severity: "error" });
+      }
+    }
   };
+
 
 
   const handleArchivoRequisito = (idRequisito, file) => {

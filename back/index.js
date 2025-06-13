@@ -26,6 +26,8 @@ const beneficioRouter = require('./routes/beneficio/beneficio.rutas');
 const requisitoRouter = require('./routes/requisito/requisito.rutas');
 const contratoRouter  = require('./routes/contrato/contrato.rutas');
 const pagosRouter     = require('./routes/pago/pagos.rutas');  // ← aquí
+const codigoRutas = require('./routes/codigo/codigo.rutas');
+app.use('/enviar-codigo', codigoRutas);
 
 app.use('/usuario', usuarioRutas);
 app.use('/cliente', require('./routes/cliente/cliente.rutas'));

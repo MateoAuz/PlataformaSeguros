@@ -329,7 +329,7 @@ router.get('/detalle-simple/:id', (req, res) => {
     WHERE us.id_usuario_seguro = ?
   `;
   const sqlRequisitos = `
-    SELECT r.id_requisito, r.nombre, ur.path_archivo
+   SELECT ur.id_usuario_requisito, r.id_requisito, r.nombre, ur.path_archivo
     FROM seguro_requisito sr
     JOIN requisito r ON sr.id_requisito_per = r.id_requisito
     JOIN usuario_seguro us ON sr.id_seguro_per = us.id_seguro_per
@@ -368,7 +368,8 @@ router.get('/detalle-simple/:id', (req, res) => {
           const requisitosMap = new Map();
           requisitos.forEach(r => {
             if (!requisitosMap.has(r.id_requisito)) {
-              requisitosMap.set(r.id_requisito, {
+              requisitosMap.set(r.id_usuario_requisito, {
+                id_usuario_requisito: r.id_usuario_requisito, // ✅ para frontend
                 nombre: r.nombre,
                 archivo: r.path_archivo || null
               });
@@ -416,7 +417,7 @@ router.get('/detalle-completo/:id', (req, res) => {
     WHERE id_usuario_seguro = ?
   `;
   const sqlRequisitos = `
-    SELECT r.id_requisito, r.nombre, ur.path_archivo AS archivo
+    SELECT ur.id_usuario_requisito, r.nombre, ur.path_archivo AS archivo
     FROM seguro_requisito sr
     JOIN requisito r ON sr.id_requisito_per = r.id_requisito
     JOIN usuario_seguro us ON sr.id_seguro_per = us.id_seguro_per
@@ -446,8 +447,8 @@ router.get('/detalle-completo/:id', (req, res) => {
           const requisitosMap = new Map();
           requisitos.forEach(r => {
             if (!requisitosMap.has(r.id_requisito)) {
-              requisitosMap.set(r.id_requisito, {
-                id_requisito: r.id_requisito, // ✅ esto lo necesitas
+              requisitosMap.set(r.id_usuario_requisito, {
+                id_usuario_requisito: r.id_usuario_requisito,// ✅ esto lo necesitas
                 nombre: r.nombre,
                 archivo: r.archivo || null
               });
@@ -536,8 +537,36 @@ router.get('/mis-seguros/:id', (req, res) => {
   });
 });
 
+//----------------------------------------------------------------------------------------------------------------------------------
+router.get('/descarga/requisito-por-id/:id_usuario_seguro/:id_usuario_requisito', async (req, res) => {
+  const { id_usuario_seguro, id_usuario_requisito } = req.params;
+
+  db.query(
+    `SELECT path_archivo FROM usuario_requisito WHERE id_usuario_seguro = ? AND id_usuario_requisito = ?`,
+    [id_usuario_seguro, id_usuario_requisito],
+    async (err, rows) => {
+      if (err) {
+        console.error(`[GET /descarga/requisito-por-id] Error DB:`, err);
+        return res.status(500).json({ error: 'Error al buscar archivo del requisito' });
+      }
+
+      if (!rows.length || !rows[0].path_archivo) {
+        return res.status(404).json({ error: 'Archivo no encontrado' });
+      }
+
+      try {
+        const key = rows[0].path_archivo;
+        const url = await obtenerUrlArchivo(key);
+        res.json({ url });
+      } catch (err2) {
+        console.error(`[GET /descarga/requisito-por-id] Error generando URL S3:`, err2);
+        res.status(500).json({ error: 'No se pudo generar la URL del archivo' });
+      }
+    });
+});
+
+
 router.get('/descarga/requisito/:id_usuario_seguro/:id_requisito', async (req, res) => {
-  console.log('🟢 Ruta /descarga/requisito ejecutada con:', req.params);
   const { id_usuario_seguro, id_requisito } = req.params;
 
   const sql = `
@@ -558,7 +587,6 @@ router.get('/descarga/requisito/:id_usuario_seguro/:id_requisito', async (req, r
 
     try {
       const key = rows[0].path_archivo;
-      console.log("📁 Key que se enviará a S3:", key);
       const url = await obtenerUrlArchivo(key);
       res.json({ url });
     } catch (err2) {
@@ -567,5 +595,6 @@ router.get('/descarga/requisito/:id_usuario_seguro/:id_requisito', async (req, r
     }
   });
 });
+
 
 module.exports = router;

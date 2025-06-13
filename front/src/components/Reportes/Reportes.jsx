@@ -265,15 +265,19 @@ export const Reportes = () => {
 <Typography variant="h6" gutterBottom color="primary">
   Documentos Requeridos Adjuntos
 </Typography>
+{console.log("▶ requisitos:", detalleContrato.requisitos)}
+
 {detalleContrato.requisitos?.length ? (
   <ul>
+    
     {detalleContrato.requisitos.map((r, i) => (
       <li key={i}>
         {r.nombre}:{" "}
         {r.archivo ? (
           <BotonVerArchivo
-            rutaDescarga={`http://localhost:3030/contratos/descarga/requisito/${detalleContrato.id_contrato}/${r.id_requisito}`}
-          />
+  rutaDescarga={`http://localhost:3030/contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
+/>
+
         ) : (
           <span style={{ color: 'gray' }}>No cargado</span>
         )}

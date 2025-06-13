@@ -6,6 +6,12 @@ import {
   Paper, Box, Grid, Typography, Divider, TextField,
   Button, Snackbar, Alert, CircularProgress, Chip
 } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { crearContrato } from '../../services/ContratoService';
 import { getRequisitosPorSeguro } from '../../services/RequisitoService';
@@ -35,6 +41,11 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
   const [requisitos, setRequisitos] = useState([]);
   const [archivosRequisitos, setArchivosRequisitos] = useState({});
   const [archivoFirma, setArchivoFirma] = useState(null);
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [terminosVistos, setTerminosVistos] = useState(false);
+
+
   
 
   useEffect(() => {
@@ -330,6 +341,34 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
             />
           )}
         </Box>
+          <Box mt={2}>
+            <label>
+              <input
+                type="checkbox"
+                checked={aceptaTerminos}
+                onChange={(e) => {
+                  if (!terminosVistos) {
+                    setSnackbar({ open: true, message: "Por favor lee los términos y condiciones antes de aceptar.", severity: "warning" });
+                    return;
+                  }
+                  setAceptaTerminos(e.target.checked);
+                }}
+                style={{ marginRight: '10px' }}
+              />
+              Acepto los <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setMostrarModal(true);
+              }}
+            >
+              términos y condiciones
+            </a>
+            </label>
+
+            
+
+          </Box>
 
         <Box display="flex" justifyContent="space-between" mt={4} gap={2}>
           <Button fullWidth variant="outlined" color="primary" onClick={onVolver} sx={{ fontWeight: 'bold' }}>← VOLVER</Button>
@@ -338,12 +377,42 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
             variant="contained"
             color="primary"
             type="submit"
-            disabled={loading}
+            disabled={loading || !aceptaTerminos}
             startIcon={loading && <CircularProgress size={20} />}
             sx={{ fontWeight: 'bold' }}
           >
             {loading ? 'Enviando...' : 'VERIFICAR Y CONTRATAR'}
           </Button>
+
+          <Dialog
+            open={mostrarModal}
+            onClose={() => setMostrarModal(false)}
+            fullWidth
+            maxWidth="md"
+          >
+            <DialogTitle>Términos y Condiciones</DialogTitle>
+            <DialogContent dividers>
+              <Typography variant="body2" paragraph>
+                Al proceder con la contratación de un seguro a través de esta plataforma, el usuario declara que la información proporcionada es verídica y corresponde a su identidad personal.
+              </Typography>
+              <Typography variant="body2" paragraph>
+                La contratación debe ser realizada exclusivamente por el titular del documento de identificación ingresado. Cualquier intento de suplantación de identidad o falsificación de datos será considerado una falta grave y podría ser notificado a las autoridades pertinentes.
+              </Typography>
+              <Typography variant="body2" paragraph>
+                El usuario acepta que todos los documentos adjuntados tienen validez legal y han sido emitidos por las entidades correspondientes. Asimismo, se compromete a mantener actualizados sus datos y a no realizar contrataciones a nombre de terceros sin autorización expresa y comprobable.
+              </Typography>
+              <Typography variant="body2" paragraph>
+                Al aceptar estos términos, usted confirma que ha leído y comprendido las condiciones de contratación, y que asume total responsabilidad por el uso de esta plataforma.
+              </Typography>
+              <Typography variant="body2" paragraph>
+                Si tiene dudas sobre su identidad o desea delegar este trámite, por favor contáctese con un agente autorizado antes de continuar.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => { setMostrarModal(false); setTerminosVistos(true); }}>Cerrar</Button>
+            </DialogActions>
+          </Dialog>
+
         </Box>
       </Box>
 
@@ -361,7 +430,11 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
         </Alert>
       </Snackbar>
     </Paper>
+    
+              
+
   );
+  
 };
 
 FormularioContratacion.propTypes = {

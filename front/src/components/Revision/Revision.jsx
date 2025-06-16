@@ -15,7 +15,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  TextField,
+  Snackbar, 
+  Alert
 } from '@mui/material';
 import {
   getSolicitudesReembolsos,
@@ -30,6 +33,16 @@ export const Revision = () => {
   const [loading, setLoading] = useState(true);
   const [detalle, setDetalle] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [rechazoOpen, setRechazoOpen] = useState(false);
+  const [idRechazar, setIdRechazar]   = useState(null);
+  const [motivoRechazo, setMotivoRechazo] = useState('');
+  const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: '',
+  severity: 'info'
+});
+
+
 
   useEffect(() => {
     getSolicitudesReembolsos()
@@ -105,15 +118,29 @@ export const Revision = () => {
                         variant="outlined"
                         size="small"
                         color="success"
-                        onClick={() => decidir(r.id_reembolso, 'aprobar')}
+                        onClick={async () => {
+                          try {
+                            await aprobarReembolso(r.id_reembolso);
+                            const res = await getSolicitudesReembolsos();
+                            setSolicitudes(res.data);
+                            setSnackbar({ open: true, message: 'Reembolso aprobado', severity: 'success' });
+                          } catch {
+                            setSnackbar({ open: true, message: 'Error al aprobar', severity: 'error' });
+                          }
+                        }}
                       >
                         ACEPTAR
                       </Button>
+
                       <Button
                         variant="outlined"
                         size="small"
                         color="error"
-                        onClick={() => decidir(r.id_reembolso, 'rechazar')}
+                          onClick={() => {
+                          setIdRechazar(r.id_reembolso);
+                          setMotivoRechazo('');
+                          setRechazoOpen(true);
+                        }}
                       >
                         RECHAZAR
                       </Button>
@@ -125,6 +152,47 @@ export const Revision = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* —————————— Diálogo de motivo de rechazo —————————— */}
+<Dialog open={rechazoOpen} onClose={() => setRechazoOpen(false)}>
+  <DialogTitle>¿Por qué rechazas esta solicitud?</DialogTitle>
+  <DialogContent>
+    <TextField
+      autoFocus
+      margin="dense"
+      label="Motivo de rechazo"
+      type="text"
+      fullWidth
+      multiline
+      minRows={2}
+      value={motivoRechazo}
+      onChange={e => setMotivoRechazo(e.target.value)}
+    />
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setRechazoOpen(false)}>Cancelar</Button>
+    <Button
+      color="error"
+      variant="contained"
+      onClick={async () => {
+        try {
+          await rechazarReembolso(idRechazar, motivoRechazo);
+          // refresca lista
+          const res = await getSolicitudesReembolsos();
+          setSolicitudes(res.data);
+          setSnackbar({ open: true, message: 'Reembolso rechazado', severity: 'success' });
+        } catch {
+          setSnackbar({ open: true, message: 'Error al rechazar', severity: 'error' });
+        } finally {
+          setRechazoOpen(false);
+        }
+      }}
+    >
+      Confirmar
+    </Button>
+  </DialogActions>
+</Dialog>
+
 
       <Dialog
         open={dialogOpen}
@@ -144,7 +212,18 @@ export const Revision = () => {
               <Typography><strong>Monto:</strong> ${parseFloat(detalle.monto_solicitado).toFixed(2)}</Typography>
               <Typography variant="h6" mt={2}>Documentos</Typography>
               {detalle.documentos.map((d, i) => (
-                <Box key={i} mb={1}>
+                <Box
+                  key={i}
+                  display="flex"
+                  alignItems="center"
+                gap={1}
+                  mb={1}
+                >
+                  {/* Mostrar el nombre del archivo */}
+                  <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                    {d.nombre_archivo}
+                  </Typography>
+                  {/* Botón de descarga */}
                   <BotonVerArchivo
                     rutaDescarga={`http://localhost:3030/reembolsos/${detalle.id_reembolso}/documento/${d.id_documento}`}
                   />
@@ -159,6 +238,22 @@ export const Revision = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+  open={snackbar.open}
+  autoHideDuration={4000}
+  onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+>
+  <Alert
+    onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+    severity={snackbar.severity}
+    sx={{ width: '100%' }}
+  >
+    {snackbar.message}
+  </Alert>
+</Snackbar>
+
+
     </Box>
   );
 };

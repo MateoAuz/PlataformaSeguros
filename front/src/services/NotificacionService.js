@@ -1,5 +1,10 @@
 import axios from 'axios';
 const API = axios.create({ baseURL: 'http://localhost:3030' });
 
-export const getNotificaciones = (id_usuario) =>
-  API.get(`/notificaciones/usuario/${id_usuario}`);
+/** 
++ * Devuelve la lista de notificaciones para un usuario.
++ */
+export function getNotificaciones(userId) {
+  // usa la instancia API, no axios.get con un objeto en string.
+  return API.get(`/notificaciones/cliente/${userId}`);
+}

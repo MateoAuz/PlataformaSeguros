@@ -38,5 +38,10 @@ export const getDetalleReembolso = id =>
 export const aprobarReembolso = id =>
   axios.put(`${API_BASE}/reembolsos/${id}/aprobar`);
 
-export const rechazarReembolso = id =>
-  axios.put(`${API_BASE}/reembolsos/${id}/rechazar`);
+export const rechazarReembolso = (id, motivo_rechazo) => {
+  return axios.put(`${API_BASE}/reembolsos/${id}/rechazar`, { motivo_rechazo });
+};
+
+export function getHistorialReembolsos(userId) {
+  return axios.get(`${API_BASE}/reembolsos/usuario/${userId}`);
+}

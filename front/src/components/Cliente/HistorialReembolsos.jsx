@@ -1,5 +1,4 @@
 // src/components/Cliente/HistorialReembolsos.jsx
-"use client";
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Box,
@@ -11,27 +10,33 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress
+  CircularProgress,
+  Chip
 } from '@mui/material';
 import { UserContext } from '../../context/UserContext';
-import { getSolicitudesReembolsos } from '../../services/ReembolsoService';
+import { getHistorialReembolsos } from '../../services/ReembolsoService';
+
+const estadoColor = {
+  PENDIENTE: { label: 'Pendiente', color: 'warning' },
+  APROBADO:  { label: 'Aceptado',  color: 'success' },
+  RECHAZADO: { label: 'Rechazado', color: 'error' }
+};
 
 const HistorialReembolsos = () => {
-  const { user } = useContext(UserContext);
+  const { usuario } = useContext(UserContext);
   const [reembolsos, setReembolsos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]       = useState(true);
 
   useEffect(() => {
-    if (!user?.id_usuario) {
-      setLoading(false); // <- evita que quede en loading infinito
+    if (!usuario?.id_usuario) {
+      setLoading(false);
       return;
     }
-
-    getSolicitudesReembolsos(user.id_usuario)
+    getHistorialReembolsos(usuario.id_usuario)
       .then(res => setReembolsos(res.data))
       .catch(err => console.error('Error al obtener historial:', err))
       .finally(() => setLoading(false));
-  }, [user]);
+  }, [usuario]);
 
   if (loading) {
     return (
@@ -60,17 +65,28 @@ const HistorialReembolsos = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Fecha</TableCell>
-              <TableCell>Monto</TableCell>
-              <TableCell>Estado</TableCell>
+              <TableCell><strong>Seguro</strong></TableCell> 
+              <TableCell><strong>Fecha</strong></TableCell>
+              <TableCell><strong>Monto</strong></TableCell>
+              <TableCell><strong>Estado</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {reembolsos.map(r => (
               <TableRow key={r.id_reembolso}>
-                <TableCell>{new Date(r.fecha).toLocaleDateString()}</TableCell>
-                <TableCell>${r.monto.toFixed(2)}</TableCell>
-                <TableCell>{r.estado}</TableCell>
+                <TableCell>{r.seguro}</TableCell>  
+                <TableCell>
+                  {new Date(r.fecha).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  ${parseFloat(r.monto).toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={estadoColor[r.estado]?.label || r.estado}
+                    color={estadoColor[r.estado]?.color}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

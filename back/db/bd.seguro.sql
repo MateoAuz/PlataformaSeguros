@@ -358,6 +358,26 @@ LOCK TABLES `reembolso` WRITE;
 /*!40000 ALTER TABLE `reembolso` ENABLE KEYS */;
 UNLOCK TABLES;
 
+-- 1) Agrega motivo_rechazo a la tabla reembolso
+ALTER TABLE reembolso
+  ADD COLUMN motivo_rechazo TEXT NULL
+  AFTER monto_solicitado;
+
+DROP TABLE IF EXISTS `notificacion`;
+-- 2) Crea la tabla notificacion para guardar mensajes al cliente
+CREATE TABLE `notificacion` (
+  id_notificacion INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario      INT             NOT NULL,
+  mensaje         TEXT            NOT NULL,
+  fecha           DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+LOCK TABLES `notificacion` WRITE;
+/*!40000 ALTER TABLE `notificacion` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notificacion` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

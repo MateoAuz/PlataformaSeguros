@@ -102,12 +102,15 @@ router.post('/', upload.any(), async (req, res) => {
       fs.unlinkSync(file.path);
       // Inserta el registro de documento
       const keyS3 = `${carpeta}/${file.filename}`;
+    // Corregir mojibake: reinterpretar nombre en latin1 como UTF-8
+    const original = file.originalname;
+    const nombre_utf8 = Buffer.from(original, 'latin1').toString('utf8');
       await new Promise((resolve, reject) => {
         db.query(
           `INSERT INTO documento_reembolso
              (id_reembolso, nombre_archivo, path_archivo)
            VALUES (?, ?, ?)`,
-          [idReembolso, file.originalname, keyS3],
+          [idReembolso, nombre_utf8, keyS3],
           err2 => err2 ? reject(err2) : resolve()
         );
       });
@@ -167,5 +170,110 @@ router.get('/:id', (req, res) => {
 });
 
 
+
+// --- RECHAZAR REEMBOLSO (con motivo + crear notificación)
+router.put('/:id/rechazar', (req, res) => {
+  const { id } = req.params;
+  const { motivo_rechazo } = req.body;
+  // 1) Marco como rechazado y guardo el motivo
+  db.query(
+    `UPDATE reembolso 
+        SET estado = 'RECHAZADO', motivo_rechazo = ?
+      WHERE id_reembolso = ?`,
+    [motivo_rechazo, id],
+    err => {
+      if (err) return res.status(500).send('Error al rechazar');
+      // 2) Recupero el usuario para notificarle
+      const sqlUser = `
+        SELECT us.id_usuario_per AS id_usuario
+        FROM reembolso r
+        JOIN usuario_seguro us ON r.id_usuario_seguro = us.id_usuario_seguro
+        WHERE r.id_reembolso = ?
+      `;
+      db.query(sqlUser, [id], (e2, rows) => {
+        if (e2 || !rows.length) {
+          console.error('No se pudo encontrar usuario para notificar');
+          return res.json({ ok: true });
+        }
+        const idUsuario = rows[0].id_usuario;
+        // 3) Inserto en tabla notificacion
+        const texto = `Tu solicitud de reembolso #${id} fue rechazada: ${motivo_rechazo}`;
+        db.query(
+          `INSERT INTO notificacion (id_usuario, mensaje, fecha) 
+             VALUES (?, ?, NOW())`,
+          [idUsuario, texto],
+          e3 => {
+            if (e3) console.error('Error al crear notificación', e3);
+            // finalmente
+            res.json({ ok: true });
+          }
+        );
+      });
+    }
+  );
+});
+
+// al final, antes de `module.exports = router;`
+router.get('/usuario/:id', (req, res) => {
+  const idUsuario = req.params.id;
+  const sql = `
+    SELECT 
+      r.id_reembolso,
+      s.nombre            AS seguro,
+      r.fecha_solicitud    AS fecha,
+      r.monto_solicitado   AS monto,
+      r.estado
+    FROM reembolso r
+    JOIN usuario_seguro us ON r.id_usuario_seguro = us.id_usuario_seguro
+    JOIN seguro s         ON us.id_seguro_per     = s.id_seguro  -- nuevo
+    WHERE us.id_usuario_per = ?
+    ORDER BY r.fecha_solicitud DESC
+  `;
+  db.query(sql, [idUsuario], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener historial de reembolsos:', err);
+      return res.status(500).send('Error interno');
+    }
+    res.json(rows);
+  });
+});
+
+// Quedará así:
+router.put('/:id/aprobar', (req, res) => {
+  const { id } = req.params;
+  // 1) Marco como aprobado
+  db.query(
+    `UPDATE reembolso SET estado = 'DEVUELTO' WHERE id_reembolso = ?`,
+    [id],
+    (err) => {
+      if (err) return res.status(500).send('Error al aprobar');
+      // 2) Recupero el usuario para notificarle
+      const sqlUser = `
+        SELECT us.id_usuario_per AS id_usuario
+          FROM reembolso r
+          JOIN usuario_seguro us ON r.id_usuario_seguro = us.id_usuario_seguro
+         WHERE r.id_reembolso = ?
+      `;
+      db.query(sqlUser, [id], (e2, rows) => {
+        if (e2 || !rows.length) {
+          console.error('No se encontró usuario para notificar');
+          return res.json({ ok: true });
+        }
+        const idUsuario = rows[0].id_usuario;
+        // 3) Inserto la notificación de aprobación
+        const texto = `¡Tu reembolso #${id} ha sido aprobado con éxito!`;
+        db.query(
+          `INSERT INTO notificacion (id_usuario, mensaje, fecha)
+             VALUES (?, ?, NOW())`,
+          [idUsuario, texto],
+          (e3) => {
+            if (e3) console.error('Error creando notificación de aprobación', e3);
+            res.json({ ok: true });
+          }
+        );
+      });
+    }
+  );
+});
 
 module.exports = router;

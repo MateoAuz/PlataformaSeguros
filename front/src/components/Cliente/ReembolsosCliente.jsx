@@ -201,6 +201,8 @@ const ReembolsosCliente = () => {
           </Button>
         </Box>
       </Box>
+    
+    
 
       {/* Snackbar */}
       <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))}>

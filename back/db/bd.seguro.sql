@@ -330,6 +330,34 @@ INSERT INTO `usuario_seguro` VALUES (8,12,3,'2025-06-02',NULL,0,NULL,'Anual','up
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+DROP TABLE IF EXISTS `reembolso`;
+-- Tabla principal de reembolsos
+CREATE TABLE `reembolso` (
+  id_reembolso INT AUTO_INCREMENT PRIMARY KEY,
+  id_usuario_seguro INT NOT NULL,
+  fecha_solicitud DATE NOT NULL,
+  hora_solicitud TIME NOT NULL,
+  motivo TEXT NOT NULL,
+  monto_solicitado DECIMAL(10,2) NOT NULL,
+  estado ENUM('PENDIENTE','DEVUELTO','RECHAZADO','PAGADO') DEFAULT 'PENDIENTE',
+  fecha_actualizacion DATETIME,
+  FOREIGN KEY (id_usuario_seguro) REFERENCES usuario_seguro(id_usuario_seguro)
+);
+
+-- Tabla de documentos asociados a cada reembolso
+CREATE TABLE IF NOT EXISTS documento_reembolso (
+  id_documento INT AUTO_INCREMENT PRIMARY KEY,
+  id_reembolso INT NOT NULL,
+  nombre_archivo VARCHAR(255) NOT NULL,
+  path_archivo   VARCHAR(255) NOT NULL,
+  FOREIGN KEY (id_reembolso) REFERENCES reembolso(id_reembolso)
+);
+
+LOCK TABLES `reembolso` WRITE;
+/*!40000 ALTER TABLE `reembolso` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reembolso` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

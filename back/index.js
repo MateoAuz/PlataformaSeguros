@@ -27,6 +27,7 @@ const requisitoRouter = require('./routes/requisito/requisito.rutas');
 const contratoRouter  = require('./routes/contrato/contrato.rutas');
 const pagosRouter     = require('./routes/pago/pagos.rutas');  // ← aquí
 const codigoRutas = require('./routes/codigo/codigo.rutas');
+const reembolsoRoutes = require('./routes/reembolso/reembolso.rutas');
 app.use('/enviar-codigo', codigoRutas);
 
 app.use('/usuario', usuarioRutas);
@@ -39,7 +40,7 @@ app.use('/beneficio', beneficioRouter);
 app.use('/requisito', requisitoRouter);
 app.use('/contratos', contratoRouter);
 app.use('/pagos', pagosRouter);  // ← monta todas las rutas definidas en pagos.rutas.js
-
+app.use('/reembolsos', reembolsoRoutes);
 
 // Para servir archivos estáticos (comprobantes subidos) en /uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -472,7 +472,8 @@ router.get('/mis-seguros/:id', (req, res) => {
   us.modalidad_pago,
   us.estado_pago,           -- ✅ AÑADIR ESTE CAMPO
   s.nombre,
-  s.precio
+  s.precio,
+  s.cobertura
     FROM usuario_seguro us
     JOIN seguro s ON us.id_seguro_per = s.id_seguro
     WHERE us.id_usuario_per = ? AND us.estado = 1

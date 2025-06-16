@@ -14,7 +14,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { UserContext } from '../../context/UserContext';
-import { getReembolsos } from '../../services/ReembolsoService';
+import { getSolicitudesReembolsos } from '../../services/ReembolsoService';
 
 const HistorialReembolsos = () => {
   const { user } = useContext(UserContext);
@@ -27,7 +27,7 @@ const HistorialReembolsos = () => {
       return;
     }
 
-    getReembolsos(user.id_usuario)
+    getSolicitudesReembolsos(user.id_usuario)
       .then(res => setReembolsos(res.data))
       .catch(err => console.error('Error al obtener historial:', err))
       .finally(() => setLoading(false));

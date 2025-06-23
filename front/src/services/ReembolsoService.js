@@ -45,3 +45,12 @@ export const rechazarReembolso = (id, motivo_rechazo) => {
 export function getHistorialReembolsos(userId) {
   return axios.get(`${API_BASE}/reembolsos/usuario/${userId}`);
 }
+
+/**
+ * Comprueba si ya hay un reembolso PENDIENTE para ese contrato.
+ * @param {number} idUsSeg – id_usuario_seguro
+ * @returns Promise<{ pendiente: boolean }>
+ */
+export function hasPendingReembolso(idUsSeg) {
+  return axios.get(`${API_BASE}/reembolsos/pendiente/${idUsSeg}`);
+}

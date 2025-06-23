@@ -74,6 +74,25 @@ router.get('/:id/documento/:docId', async (req, res) => {
   });
 });
 
+// GET /reembolsos/pendiente/:id_usuario_seguro
+router.get('/pendiente/:id_usuario_seguro', (req, res) => {
+  const { id_usuario_seguro } = req.params;
+  const sql = `
+    SELECT COUNT(*) AS cnt
+      FROM reembolso
+     WHERE id_usuario_seguro = ?
+       AND estado = 'PENDIENTE'
+  `;
+  db.query(sql, [id_usuario_seguro], (err, rows) => {
+    if (err) {
+      console.error('Error al chequear pendientes:', err);
+      return res.status(500).send('Error interno');
+    }
+    // devolvemos { pendiente: true|false }
+    res.json({ pendiente: rows[0].cnt > 0 });
+  });
+});
+
 
 router.post('/', upload.any(), async (req, res) => {
   try {

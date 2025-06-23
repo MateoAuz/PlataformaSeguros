@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { UserContext } from '../../context/UserContext';
-import { createReembolso, fetchSegurosCliente } from '../../services/ReembolsoService';
+import { createReembolso, fetchSegurosCliente, hasPendingReembolso } from '../../services/ReembolsoService';
 import { SubirArchivo } from '../SubirArchivo';
 
 const ReembolsosCliente = () => {
@@ -29,12 +29,21 @@ const ReembolsosCliente = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
 
   useEffect(() => {
-    if (usuario?.id_usuario) {
-      fetchSegurosCliente(usuario.id_usuario)
-        .then(data => setSeguros(data))
-        .catch(err => console.error('Error cargando seguros:', err));
-    }
-  }, [usuario]);
+  if (!usuario?.id_usuario) return;
+  fetchSegurosCliente(usuario.id_usuario)
+    .then(async lista => {
+      // Para cada seguro, chequeamos pendiente
+      const arr = await Promise.all(
+        lista.map(async s => {
+          const { data } = await hasPendingReembolso(s.id_usuario_seguro);
+          return { ...s, pendiente: data.pendiente };
+        })
+      );
+      setSeguros(arr);
+    })
+    .catch(console.error);
+}, [usuario]);
+
 
   const handleChange = (e, idx) => {
     const { name, value, files } = e.target;
@@ -57,22 +66,43 @@ const ReembolsosCliente = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    // 1) Compruebo pendiente para este contrato
+  try {
+    const { data } = await hasPendingReembolso(formData.contrato);
+    if (data.pendiente) {
+      return setSnackbar({
+        open: true,
+        message: 'Ya tienes una solicitud pendiente para este seguro.',
+        severity: 'warning'
+      });
+    }
+  } catch (err) {
+    console.warn('No se pudo chequear pendientes, continuando…');
+    // si da error en la comprobación, dejamos seguir para no bloquear TODO
+  }
     const montoNum = parseFloat(formData.monto);
     if (isNaN(montoNum) || montoNum < 0) {
-        setSnackbar({ open: true, message: 'El monto debe ser un número positivo.', severity: 'warning' });
-        return;
+      setSnackbar({ open: true, message: 'El monto debe ser un número positivo.', severity: 'warning' });
+      return;
     }
-    if (!formData.contrato) return setSnackbar({ open: true, message: 'Selecciona un seguro.', severity: 'warning' });
-    if (!formData.motivo.trim() || !formData.monto) return setSnackbar({ open: true, message: 'Completa motivo y monto.', severity: 'warning' });
-    if (formData.documentos.some(d => !d)) return setSnackbar({ open: true, message: 'Adjunta todos los documentos.', severity: 'warning' });
+    if (!formData.contrato) {
+      setSnackbar({ open: true, message: 'Selecciona un seguro.', severity: 'warning' });
+      return;
+    }
+    if (!formData.motivo.trim() || !formData.monto) {
+      setSnackbar({ open: true, message: 'Completa motivo y monto.', severity: 'warning' });
+      return;
+    }
+    if (formData.documentos.some(d => !d)) {
+      setSnackbar({ open: true, message: 'Adjunta todos los documentos.', severity: 'warning' });
+      return;
+    }
 
     const payload = new FormData();
     payload.append('id_usuario_seguro', formData.contrato);
     payload.append('motivo', formData.motivo);
     payload.append('monto', formData.monto);
-    formData.documentos.forEach(file =>
-        payload.append('documentos', file)
-    );
+    formData.documentos.forEach(file => payload.append('documentos', file));
 
     try {
       setLoading(true);
@@ -92,7 +122,7 @@ const ReembolsosCliente = () => {
         Solicitud de Reembolso
       </Typography>
       <Box component="form" onSubmit={handleSubmit} noValidate>
-        {/* Fila: Selector + Motivo + Monto */}
+        {/* Selector de Seguro */}
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} sm={2}>
             <FormControl sx={{ width: 380 }}>
@@ -106,18 +136,27 @@ const ReembolsosCliente = () => {
                 sx={{ width: '200%', height: 56, borderRadius: 1 }}
               >
                 {seguros.length === 0 ? (
-                  <MenuItem value="" disabled>No tienes</MenuItem>
+                  <MenuItem value="" disabled>No tienes seguros</MenuItem>
                 ) : (
                   seguros.map(s => (
-                    <MenuItem key={s.id_usuario_seguro} value={s.id_usuario_seguro}>
-                      {`${s.nombre} - ${`Cobertura: $${s.cobertura}`}`}
+                    <MenuItem
+                      key={s.id_usuario_seguro}
+                      value={s.id_usuario_seguro}
+                      disabled={s.pendiente}
+                    >
+                      
+                      {s.nombre} {`- Cobertura: $${s.cobertura}`} {s.pendiente && '(Ya hay pendiente)'}
+                     
                     </MenuItem>
+
                   ))
                 )}
               </Select>
             </FormControl>
           </Grid>
         </Grid>
+
+        {/* Motivo y Monto */}
         <Grid container spacing={2} alignItems="center" sx={{ mt: 2 }}>
           <Grid item xs={12} sm={5}>
             <TextField
@@ -131,7 +170,6 @@ const ReembolsosCliente = () => {
               required
             />
           </Grid>
-          
           <Grid item xs={12} sm={5}>
             <TextField
               name="monto"
@@ -139,7 +177,7 @@ const ReembolsosCliente = () => {
               type="number"
               fullWidth
               variant="outlined"
-              inputProps={{ min: 0, step: '0.1' }}
+              inputProps={{ min: 0, step: '0.01' }}
               value={formData.monto}
               onChange={handleChange}
               required
@@ -147,40 +185,48 @@ const ReembolsosCliente = () => {
           </Grid>
         </Grid>
 
-        {/* Documentos adjuntos */}
-<Box sx={{ mt: 3, textAlign: 'center' }}>
-  <Typography variant="subtitle1" gutterBottom>
-    Documentos adjuntos *
-  </Typography>
+        {/* Documentos adjuntos con botón X */}
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Documentos adjuntos *
+          </Typography>
+          {formData.documentos.map((doc, idx) => (
+            <Box
+              key={idx}
+              display="flex"
+              alignItems="center"
+              gap={2}
+              sx={{ maxWidth: 200, mx: 'auto', mt: 1 }}
+            >
+              <SubirArchivo
+                nombre={`Documento ${idx + 1}`}
+                tipo="application/pdf,image/*"
+                requerido
+                fullWidth
+                onArchivoSeleccionado={file => {
+                  setFormData(fd => {
+                    const docs = [...fd.documentos];
+                    docs[idx] = file;
+                    return { ...fd, documentos: docs };
+                  });
+                }}
+              />
+              <IconButton color="error" onClick={() => removeDocumento(idx)}>
+                <ClearIcon />
+              </IconButton>
+            </Box>
+          ))}
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ maxWidth: 200, mx: 'auto', mt: 3 }}
+            onClick={addDocumento}
+          >
+            + AÑADIR DOCUMENTO
+          </Button>
+        </Box>
 
-  {formData.documentos.map((_, idx) => (
-    <Box key={idx} sx={{ mb: 2 }}>
-      <SubirArchivo
-        nombre={`Documento ${idx + 1}`}
-        tipo="application/pdf,image/*"
-        requerido
-        onArchivoSeleccionado={file => {
-          setFormData(fd => {
-            const docs = [...fd.documentos];
-            docs[idx] = file;
-            return { ...fd, documentos: docs };
-          });
-        }}
-      />
-    </Box>
-  ))}
-
-  <Button
-    variant="outlined"
-    fullWidth
-    sx={{ maxWidth: 200, mx: 'auto', mt: 1 }}
-    onClick={addDocumento}
-  >
-    + AÑADIR DOCUMENTO
-  </Button>
-</Box>
-
-        {/* Botones Limpiar y Enviar con estilo de la imagen */}
+        {/* Botones de acción */}
         <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
           <Button
             variant="outlined"
@@ -201,12 +247,18 @@ const ReembolsosCliente = () => {
           </Button>
         </Box>
       </Box>
-    
-    
 
       {/* Snackbar */}
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))}>
-        <Alert onClose={() => setSnackbar(s => ({ ...s, open: false }))} severity={snackbar.severity} sx={{ width: '100%' }}>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+      >
+        <Alert
+          onClose={() => setSnackbar(s => ({ ...s, open: false }))}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

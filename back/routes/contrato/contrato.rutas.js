@@ -237,15 +237,54 @@ router.put('/aprobar/:id', (req, res) => {
 // --- RECHAZAR CONTRATO (PUT /rechazar/:id)
 router.put('/rechazar/:id', (req, res) => {
   const { id } = req.params;
-  const sql = `UPDATE usuario_seguro SET estado = 3 WHERE id_usuario_seguro = ?`;
-  db.query(sql, [id], (err) => {
-    if (err) {
-      console.error('❌ Error al rechazar contrato:', err);
-      return res.status(500).json({ mensaje: 'Error al rechazar contrato' });
-    }
-    res.status(200).json({ mensaje: 'Contrato rechazado con éxito' });
+  const { motivo_rechazo } = req.body;
+
+  // 1) Marco como rechazado
+  const sqlUpd = `UPDATE usuario_seguro SET estado = 3, motivo_rechazo = ? WHERE id_usuario_seguro = ?`;
+  db.query(sqlUpd, [motivo_rechazo, id], err => {
+    if (err) return res.status(500).json({ mensaje: 'Error al rechazar contrato' });
+
+    // 2) Recupero usuario (para notificarle)
+    const sqlUser = `
+      SELECT us.id_usuario_per AS id_usuario
+      FROM usuario_seguro us
+      WHERE us.id_usuario_seguro = ?
+    `;
+    db.query(sqlUser, [id], (e2, rows) => {
+      if (e2 || !rows.length) {
+        console.error('No se pudo encontrar usuario para notificar');
+        return res.json({ ok: true });
+      }
+      const idUsuario = rows[0].id_usuario;
+
+      // 3) Recupero el nombre del seguro
+      const sqlSeguro = `
+        SELECT s.nombre AS seguro_nombre
+        FROM usuario_seguro us
+        JOIN seguro s ON us.id_seguro_per = s.id_seguro
+        WHERE us.id_usuario_seguro = ?
+      `;
+      db.query(sqlSeguro, [id], (e3, sr) => {
+        const nombreSeguro = (e3 || !sr.length)
+          ? `#${id}`
+          : sr[0].seguro_nombre;
+
+        // 4) Inserto la notificación con el nombre en el texto
+        const texto = `Tu solicitud de contrato "${nombreSeguro}" fue rechazada: ${motivo_rechazo}`;
+        db.query(
+          `INSERT INTO notificacion (id_usuario, mensaje, fecha) VALUES (?, ?, NOW())`,
+          [idUsuario, texto],
+          e4 => {
+            if (e4) console.error('Error al crear notificación', e4);
+            res.json({ ok: true });
+          }
+        );
+      });
+    });
   });
 });
+
+
 
 // --- Obtener todos los contratos ACEPTADOS (estado = 1)
 router.get('/aceptados', (req, res) => {

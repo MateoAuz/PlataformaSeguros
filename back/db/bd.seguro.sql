@@ -330,6 +330,10 @@ INSERT INTO `usuario_seguro` VALUES (8,12,3,'2025-06-02',NULL,0,NULL,'Anual','up
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+ALTER TABLE usuario_seguro
+  ADD COLUMN motivo_rechazo VARCHAR(255) NULL;
+
+
 DROP TABLE IF EXISTS `reembolso`;
 -- Tabla principal de reembolsos
 CREATE TABLE `reembolso` (

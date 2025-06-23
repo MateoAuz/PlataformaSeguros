@@ -6,6 +6,11 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { UserContext } from '../../context/UserContext';
+import { BotonVerArchivo } from "../../components/BotonVerArchivo";
+import {
+  getContratosAceptados,
+  getDetalleContratoSimple
+} from '../../services/ContratoService';
 
 const estadoColor = {
   0: { label: 'Pendiente', color: 'warning' },
@@ -34,13 +39,13 @@ const HistorialCliente = () => {
   }, [usuario]);
 
   const handleOpen = (id) => {
-    axios.get(`http://localhost:3030/contratos/detalle-simple/${id}`)
-      .then(res => {
-        setDetalleContrato(res.data);
-        setDialogOpen(true);
-      })
-      .catch(() => alert("Error al cargar detalles"));
-  };
+      getDetalleContratoSimple(id)
+        .then(res => {
+          setDetalleContrato(res.data);
+          setDialogOpen(true);
+        })
+        .catch(() => alert("Error al cargar detalles"));
+    };
 
   const handleClose = () => {
     setDialogOpen(false);
@@ -152,33 +157,37 @@ const HistorialCliente = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              <Typography variant="h6" gutterBottom color="primary">Documentos Requeridos</Typography>
-              {detalleContrato.requisitos?.map((r, i) => (
-                <li key={i}>
-                  {r.nombre}
-                  {r.archivo ? (
-                    <>
-                      {" – "}
-                      <a href={`http://localhost:3030/${r.archivo}`} target="_blank" rel="noreferrer">
-                        Ver documento
-                      </a>
-                    </>
-                  ) : (
-                    <span style={{ color: 'gray' }}>No cargado</span>
-                  )}
-                </li>
-              ))}
-
-              <Divider sx={{ my: 2 }} />
-
-              <Typography variant="h6" gutterBottom color="primary">Firma Electrónica</Typography>
-              <a href={`http://localhost:3030/${detalleContrato.firma}`} target="_blank" rel="noreferrer">
-                Ver firma
-              </a>
-            </Box>
-          ) : (
-            <Typography>Cargando detalles...</Typography>
-          )}
+              <Typography variant="h6" gutterBottom color="primary">
+                Documentos Requeridos Adjuntos
+              </Typography>
+              {console.log("▶ requisitos:", detalleContrato.requisitos)}
+              
+              {detalleContrato.requisitos?.length ? (
+                <ul>
+                  
+                  {detalleContrato.requisitos.map((r, i) => (
+                    <li key={i}>
+                      {r.nombre}:{" "}
+                      {r.archivo ? (
+                        <BotonVerArchivo
+                rutaDescarga={`http://localhost:3030/contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
+              />
+              
+                      ) : (
+                        <span style={{ color: 'gray' }}>No cargado</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography>No hay requisitos definidos.</Typography>
+              )}
+              
+              
+                          </Box>
+                        ) : (
+                          <Typography>Cargando detalles...</Typography>
+                        )}
         </DialogContent>
       </Dialog>
     </Box>

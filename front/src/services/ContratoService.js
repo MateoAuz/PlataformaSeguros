@@ -35,8 +35,11 @@ export const getContratosAceptados = () => {
   return axios.get(`${API_BASE}/contratos/aceptados`);
 };
 
-export const rechazarContrato = (id) => {
-  return axios.put(`${API_BASE}/contratos/rechazar/${id}`);
+export const rechazarContrato = (id, motivo) => {
+  return axios.put(
+    `${API_BASE}/contratos/rechazar/${id}`,
+    { motivo_rechazo: motivo }
+  );
 };
 
 export const getDetalleContratoSimple = (id) =>

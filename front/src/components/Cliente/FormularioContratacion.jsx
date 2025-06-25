@@ -15,6 +15,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers';
 import { crearContrato } from '../../services/ContratoService';
 import { getRequisitosPorSeguro } from '../../services/RequisitoService';
+import { BaseUrl } from '../../shared/conexion';
 
 // ✅ UTILITARIO UNIVERSAL PARA OBTENER EL ID DE USUARIO
 function getIdUsuarioLocalStorage() {
@@ -84,7 +85,7 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
 
       // 🟡 Intentar con tu backend y nodemailer como respaldo
       try {
-        const res = await fetch('http://localhost:3030/enviar-codigo', {
+        const res = await fetch(`${BaseUrl.BASE_URL}enviar-codigo`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ correoDestino: correo, codigo })

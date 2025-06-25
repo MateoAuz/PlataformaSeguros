@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API_BASE = 'http://localhost:3030';
+import { BaseUrl } from '../shared/conexion';
+const API_BASE = `${BaseUrl.BASE_URL}`;
 
 export const getRequisitosPorSeguro = (idSeguro) => {
   return axios.get(`${API_BASE}/requisito/por-seguro/${idSeguro}`);

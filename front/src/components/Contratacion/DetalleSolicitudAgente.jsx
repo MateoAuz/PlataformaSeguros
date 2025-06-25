@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import { getDetalleContratoCompleto } from '../../services/ContratoService';
 import { BotonVerArchivo } from '../../components/BotonVerArchivo';
+import { BaseUrl } from '../../shared/conexion';
 
 
 const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
@@ -56,7 +57,7 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
                   <li key={i}>
                     {r.nombre}: {r.archivo ? (
                      <BotonVerArchivo
-  rutaDescarga={`http://localhost:3030/contratos/descarga/requisito-por-id/${idContrato}/${r.id_usuario_requisito}`}
+  rutaDescarga={`${BaseUrl.BASE_URL}contratos/descarga/requisito-por-id/${idContrato}/${r.id_usuario_requisito}`}
 />
                     ) : (
                       <span>No cargado</span>

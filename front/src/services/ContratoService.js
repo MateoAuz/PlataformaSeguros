@@ -1,7 +1,8 @@
 // src/services/ContratoService.js
 import axios from 'axios';
+import { BaseUrl } from '../shared/conexion';
 
-const API_BASE = 'http://localhost:3030';
+const API_BASE = `${BaseUrl.BASE_URL}`;
 
 // POST para crear un contrato como JSON
 export function crearContrato(data) {

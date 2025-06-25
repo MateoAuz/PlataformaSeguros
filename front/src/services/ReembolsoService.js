@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { BaseUrl } from '../shared/conexion';
 
-const API_BASE = 'http://localhost:3030';
+const API_BASE = `${BaseUrl.BASE_URL}`;
 
 
 

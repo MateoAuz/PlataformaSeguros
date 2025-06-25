@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API = axios.create({ baseURL: 'http://localhost:3030' });
+import { BaseUrl } from '../shared/conexion';
+const API = axios.create({ baseURL: `${BaseUrl.BASE_URL}` });
 
 /** 
 + * Devuelve la lista de notificaciones para un usuario.

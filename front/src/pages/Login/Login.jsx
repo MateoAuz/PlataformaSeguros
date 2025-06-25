@@ -4,6 +4,7 @@ import './Login.css';
 import { FaUser, FaLock, FaSignInAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
+import { BaseUrl } from '../../shared/conexion';
 
 export const Login = () => {
 	const navigate = useNavigate();
@@ -38,7 +39,7 @@ export const Login = () => {
 		try {
 			console.log("Enviando:", { correo: username, password });
 
-			const res = await fetch("http://localhost:3030/login", {
+			const res = await fetch(`${BaseUrl.BASE_URL}login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ correo: username, password })

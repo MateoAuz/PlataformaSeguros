@@ -17,6 +17,7 @@ import {
   denegarPago
 } from '../../services/PagoService';
 import { BotonVerArchivo } from "../../components/BotonVerArchivo";
+import { BaseUrl } from '../../shared/conexion';
 
 
 export const Reportes = () => {
@@ -159,7 +160,7 @@ export const Reportes = () => {
                                       <TableCell>
                                         {pago.comprobante_pago ? (
                                           <BotonVerArchivo
-                                            rutaDescarga={`http://localhost:3030/pagos/descarga/${pago.id_pago_seguro}`}
+                                            rutaDescarga={`${BaseUrl.BASE_URL}pagos/descarga/${pago.id_pago_seguro}`}
                                           />
                                         ) : (
                                           "Sin archivo"
@@ -275,7 +276,7 @@ export const Reportes = () => {
         {r.nombre}:{" "}
         {r.archivo ? (
           <BotonVerArchivo
-  rutaDescarga={`http://localhost:3030/contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
+  rutaDescarga={`${BaseUrl.BASE_URL}contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
 />
 
         ) : (

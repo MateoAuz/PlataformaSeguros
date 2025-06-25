@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { BaseUrl } from '../shared/conexion';
 
-const API_BASE = 'http://localhost:3030';
-const API = 'http://localhost:3030/seguros';
+const API_BASE = `${BaseUrl.BASE_URL}`;
+const API = `${BaseUrl.BASE_URL}seguros`;
 // Obtener todos los seguros activos (sin filtro de usuario)
 export const getSeguros = () => axios.get(`${API_BASE}/seguros`);
 

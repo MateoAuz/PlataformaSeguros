@@ -11,6 +11,7 @@ import {
   getContratosAceptados,
   getDetalleContratoSimple
 } from '../../services/ContratoService';
+import { BaseUrl } from '../../shared/conexion';
 
 const estadoColor = {
   0: { label: 'Pendiente', color: 'warning' },
@@ -30,7 +31,7 @@ const HistorialCliente = () => {
     if (!usuario) return;
 
     // ← CAMBIO: ahora llamamos a "/contratos/usuario/:id" para obtener TODOS los contratos (incluyendo 'estado')
-    axios.get(`http://localhost:3030/contratos/usuario/${usuario.id_usuario}`)
+    axios.get(`${BaseUrl.BASE_URL}contratos/usuario/${usuario.id_usuario}`)
       .then(res => {
         setContratos(res.data);
       })
@@ -170,7 +171,7 @@ const HistorialCliente = () => {
                       {r.nombre}:{" "}
                       {r.archivo ? (
                         <BotonVerArchivo
-                rutaDescarga={`http://localhost:3030/contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
+                rutaDescarga={`${BaseUrl.BASE_URL}contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
               />
               
                       ) : (

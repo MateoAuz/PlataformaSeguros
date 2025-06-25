@@ -27,6 +27,7 @@ import {
   rechazarReembolso
 } from '../../services/ReembolsoService';
 import { BotonVerArchivo } from '../../components/BotonVerArchivo';
+import { BaseUrl } from '../../shared/conexion';
 
 export const Revision = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -225,7 +226,7 @@ export const Revision = () => {
                   </Typography>
                   {/* Botón de descarga */}
                   <BotonVerArchivo
-                    rutaDescarga={`http://localhost:3030/reembolsos/${detalle.id_reembolso}/documento/${d.id_documento}`}
+                    rutaDescarga={`${BaseUrl.BASE_URL}reembolsos/${detalle.id_reembolso}/documento/${d.id_documento}`}
                   />
                 </Box>
               ))}

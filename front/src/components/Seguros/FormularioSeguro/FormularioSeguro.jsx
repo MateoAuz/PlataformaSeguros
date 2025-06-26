@@ -1,29 +1,39 @@
 // src/pages/Seguros/FormularioSeguro/FormularioSeguro.jsx
 "use client";
 
-import React, { useEffect, useState } from "react";
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, TextField, Grid, FormGroup, FormControlLabel,
-  Checkbox, RadioGroup, Radio, Box, useTheme, useMediaQuery,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  Radio,
+  RadioGroup,
+  TextField,
   Typography
 } from "@mui/material";
+import { useEffect, useState } from "react";
 
-import { useForm, Controller } from "react-hook-form";
 import PropTypes from "prop-types";
+import { Controller, useForm } from "react-hook-form";
 
 import {
-  crearSeguro,
-  editarSeguro,
-  asociarBeneficios,
-  asociarRequisitos,
-} from "../../../services/SeguroService";
-import {
-  getBeneficios,
-  getRequisitos,
   crearBeneficio,
   crearRequisito,
+  getBeneficios,
+  getRequisitos,
 } from "../../../services/DatoSeguroService";
+import {
+  asociarBeneficios,
+  asociarRequisitos,
+  crearSeguro,
+  editarSeguro,
+} from "../../../services/SeguroService";
 
 export const FormularioSeguro = ({ open, onClose, seguro, onSuccess }) => {
   const {
@@ -39,9 +49,6 @@ export const FormularioSeguro = ({ open, onClose, seguro, onSuccess }) => {
   const [requisitosDisponibles, setRequisitosDisponibles] = useState([]);
   const [nuevoBeneficio, setNuevoBeneficio] = useState("");
   const [nuevoRequisito, setNuevoRequisito] = useState("");
-
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 
   // Cargo listas de beneficios y requisitos al montar
   useEffect(() => {

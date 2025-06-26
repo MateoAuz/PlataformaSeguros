@@ -1,18 +1,25 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import emailjs from 'emailjs-com'; 
 import {
-  Paper, Box, Grid, Typography, Divider, TextField,
-  Button, Snackbar, Alert, CircularProgress, Chip
-} from '@mui/material';
-import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
   Dialog,
-  DialogTitle,
+  DialogActions,
   DialogContent,
-  DialogActions
+  DialogTitle,
+  Divider,
+  Grid,
+  Paper,
+  Snackbar,
+  TextField,
+  Typography
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
+import emailjs from 'emailjs-com';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { crearContrato } from '../../services/ContratoService';
 import { getRequisitosPorSeguro } from '../../services/RequisitoService';
 import { BaseUrl } from '../../shared/conexion';
@@ -41,7 +48,6 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'info' });
   const [requisitos, setRequisitos] = useState([]);
   const [archivosRequisitos, setArchivosRequisitos] = useState({});
-  const [archivoFirma, setArchivoFirma] = useState(null);
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [terminosVistos, setTerminosVistos] = useState(false);
@@ -106,10 +112,6 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
 
   const handleArchivoRequisito = (idRequisito, file) => {
     setArchivosRequisitos(prev => ({ ...prev, [idRequisito]: file }));
-  };
-
-  const handleArchivoFirma = (file) => {
-    setArchivoFirma(file);
   };
 
   // Beneficiarios
@@ -356,15 +358,14 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
                 }}
                 style={{ marginRight: '10px' }}
               />
-              Acepto los <a
-              href="#"
+              Acepto los <button
               onClick={(e) => {
                 e.preventDefault();
                 setMostrarModal(true);
               }}
             >
               términos y condiciones
-            </a>
+            </button>
             </label>
 
             

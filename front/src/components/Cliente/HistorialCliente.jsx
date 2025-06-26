@@ -1,14 +1,23 @@
 "use client";
-import React, { useContext, useEffect, useState } from 'react';
 import {
-  Box, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Chip, Button, Dialog, DialogTitle, DialogContent, Divider
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Paper,
+  Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow,
+  Typography
 } from '@mui/material';
 import axios from 'axios';
-import { UserContext } from '../../context/UserContext';
+import { useContext, useEffect, useState } from 'react';
 import { BotonVerArchivo } from "../../components/BotonVerArchivo";
+import { UserContext } from '../../context/UserContext';
 import {
-  getContratosAceptados,
   getDetalleContratoSimple
 } from '../../services/ContratoService';
 import { BaseUrl } from '../../shared/conexion';

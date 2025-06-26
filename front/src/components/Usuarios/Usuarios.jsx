@@ -1,35 +1,34 @@
 // src/pages/Usuarios.jsx
 "use client";
-import React, { useEffect, useState } from "react";
-import "./Usuarios.css";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
-  Typography,
+  IconButton,
+  Paper,
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  Paper,
-  IconButton,
-  useTheme,
   useMediaQuery,
+  useTheme
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  getUsuarios,
-  crearUsuario,
-  editarUsuario,
-  desactivarUsuario,
-} from "../../services/UserService";
-import { FormularioUsuario } from "./FormularioUsuario/FormularioUsuario";
-import { UsuariosInactivos } from "./UsuariosInactivos/UsuariosInactivos";
-import BotonAccion from "../BotonAccion/BotonAccion";
-import SeccionTitulo from "../SeccionTitulo/SeccionTitulo";
-import ConfirmarDialogo from "../ConfirmarDialogo/ConfirmarDialogo";
-import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import { useEffect, useState } from "react";
+import {
+  crearUsuario,
+  desactivarUsuario,
+  editarUsuario,
+  getUsuarios,
+} from "../../services/UserService";
+import BotonAccion from "../BotonAccion/BotonAccion";
+import ConfirmarDialogo from "../ConfirmarDialogo/ConfirmarDialogo";
+import SeccionTitulo from "../SeccionTitulo/SeccionTitulo";
+import { FormularioUsuario } from "./FormularioUsuario/FormularioUsuario";
+import "./Usuarios.css";
+import { UsuariosInactivos } from "./UsuariosInactivos/UsuariosInactivos";
 
 export const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);

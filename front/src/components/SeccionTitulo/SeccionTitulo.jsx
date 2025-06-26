@@ -1,8 +1,6 @@
 "use client";
-import React from 'react';
-import './SeccionTitulo.css';
-import PropTypes from 'prop-types';
 import { Box, Typography } from '@mui/material';
+import './SeccionTitulo.css';
 
 const SeccionTitulo = ({ titulo, children }) => {
   return (

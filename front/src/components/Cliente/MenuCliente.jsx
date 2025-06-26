@@ -1,23 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import { AccountCircle, Home as HomeIcon, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
-  Toolbar,
-  Typography,
+  Box,
+  Button,
   IconButton,
   Menu,
   MenuItem,
-  Box,
-  Button,
-  useTheme,
+  Toolbar,
+  Typography,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import { Home as HomeIcon, AccountCircle, Menu as MenuIcon } from "@mui/icons-material";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MenuCliente.css";
 
 export const MenuCliente = ({ children }) => {
-  const [auth, setAuth] = useState(true);
   const [anchorElUsuario, setAnchorElUsuario] = useState(null);
   const [anchorElNav, setAnchorElNav] = useState(null);
   const navigate = useNavigate();
@@ -33,7 +32,6 @@ export const MenuCliente = ({ children }) => {
 
   const inicio_login = () => {
     localStorage.removeItem("usuario");
-    setAuth(false);
     window.location.href = "/login";
   };
 

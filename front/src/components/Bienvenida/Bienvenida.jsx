@@ -1,17 +1,15 @@
 // src/components/Bienvenida/Bienvenida.jsx
 "use client";
-import React, { useContext, useEffect, useState } from 'react';
-import './Bienvenida.css';
+import { Alert, Box, Grid, Paper, Typography } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../context/UserContext';
-import { Typography, Grid, Paper, Button, Alert, Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { contarClientes, crearUsuario } from '../../services/UserService';
 import BotonAccion from '../BotonAccion/BotonAccion';
 import { FormularioUsuario } from '../Usuarios/FormularioUsuario/FormularioUsuario';
+import './Bienvenida.css';
 
 export const Bienvenida = () => {
   const { usuario } = useContext(UserContext);
-  const navigate = useNavigate();
   const [totalClientes, setTotalClientes] = useState(0);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);

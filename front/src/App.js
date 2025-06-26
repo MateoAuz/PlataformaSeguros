@@ -1,15 +1,15 @@
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './App.css';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Pagina_inicio } from './pages/Pagina_inicio/index';
-import { Login } from './pages/Login/index';
-import { NOT_FOUND } from './pages/NOT_FOUND/index';
+import AuthGuard from './components/guards/AuthGuard';
+import { UserProvider } from './context/UserContext';
 import { DashboardAdmin } from './pages/admin/DashboardAdmin';
 import { DashboardAgente } from './pages/agente/DashboardAgente';
 import { DashboardCliente } from './pages/Cliente/DashboardCliente';
-import { UserProvider } from './context/UserContext';
-import AuthGuard from './components/guards/AuthGuard';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Login } from './pages/Login/index';
+import { NOT_FOUND } from './pages/NOT_FOUND/index';
+import { Pagina_inicio } from './pages/Pagina_inicio/index';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <BrowserRouter>
             <Routes>
-              <Route path='/' element={<Pagina_inicio />} />
+              <Route path='/' element={<Pagina_inicio/>} />
               <Route path='/login' element={<Login />} />
 
               {/* Rutas protegidas */}

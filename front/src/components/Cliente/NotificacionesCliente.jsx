@@ -1,8 +1,8 @@
 // src/components/Cliente/NotificacionesCliente.jsx
-import React, { useEffect, useState, useContext } from "react";
-import { Box, Typography, CircularProgress, Alert, Stack, Button, FormControl } from "@mui/material";
-import { getNotificaciones, clearNotificaciones } from '../../services/NotificacionService';
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from '../../context/UserContext';
+import { clearNotificaciones, getNotificaciones } from '../../services/NotificacionService';
 
 export const NotificacionesCliente = () => {
   const { usuario } = useContext(UserContext);
@@ -12,7 +12,7 @@ export const NotificacionesCliente = () => {
     // función para recargar la lista
   const fetchAll = () => {
     setLoading(true);
-    getNotificaciones(usuario.id_usuario)
+    getNotificaciones(usuario?.id_usuario)
       .then(res => setNotificaciones(res.data))
       .catch(() => setNotificaciones([]))
       .finally(() => setLoading(false));

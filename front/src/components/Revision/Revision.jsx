@@ -1,32 +1,32 @@
 // src/components/Revision/RevisionReembolso.jsx
-import React, { useState, useEffect } from 'react';
 import {
+  Alert,
   Box,
-  Typography,
+  Button,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
-  Snackbar, 
-  Alert
+  Typography
 } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { BotonVerArchivo } from '../../components/BotonVerArchivo';
 import {
-  getSolicitudesReembolsos,
-  getDetalleReembolso,
   aprobarReembolso,
+  getDetalleReembolso,
+  getSolicitudesReembolsos,
   rechazarReembolso
 } from '../../services/ReembolsoService';
-import { BotonVerArchivo } from '../../components/BotonVerArchivo';
 import { BaseUrl } from '../../shared/conexion';
 
 export const Revision = () => {
@@ -59,17 +59,6 @@ export const Revision = () => {
       setDialogOpen(true);
     } catch {
       alert('Error al cargar detalle');
-    }
-  };
-
-  const decidir = async (id, accion) => {
-    try {
-      if (accion === 'aprobar') await aprobarReembolso(id);
-      else await rechazarReembolso(id);
-      const res = await getSolicitudesReembolsos();
-      setSolicitudes(res.data);
-    } catch {
-      alert('Error al procesar decisión');
     }
   };
 

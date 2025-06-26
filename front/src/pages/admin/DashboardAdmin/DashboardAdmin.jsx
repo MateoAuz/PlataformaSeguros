@@ -1,21 +1,18 @@
 "use client";
-import React from 'react';
-import './DashboardAdmin.css';
-import PropTypes from 'prop-types';
-import { MenuAdmin } from '../../../components/MenuAdmin';
-import { useContext } from 'react';
-import { Routes, Route } from 'react-router-dom';
-import { Usuarios } from '../../../components/Usuarios/Usuarios';
+import { Route, Routes } from 'react-router-dom';
 import { Bienvenida } from '../../../components/Bienvenida';
-import { Seguros } from '../../../components/Seguros';
 import { Clientes } from '../../../components/Clientes';
 import { Contratacion } from '../../../components/Contratacion';
-import { Revision } from '../../../components/Revision';
-import { Reportes } from '../../../components/Reportes';
+import { MenuAdmin } from '../../../components/MenuAdmin';
 import { PerfilUsuario } from '../../../components/PerfilUsuario/PerfilUsuario';
+import { Reportes } from '../../../components/Reportes';
+import { Revision } from '../../../components/Revision';
+import { Seguros } from '../../../components/Seguros';
+import { Usuarios } from '../../../components/Usuarios/Usuarios';
+import './DashboardAdmin.css';
 
 
-export const DashboardAdmin = ({ }) => {
+export const DashboardAdmin = () => {
 	return (
 
 		<div className='dashboardadmin'>

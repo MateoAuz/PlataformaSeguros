@@ -189,7 +189,7 @@ export const Cliente = () => {
       <Box mt={6} display="flex" justifyContent="center">
         <Box
           component="img"
-          src="/Img/GifCliente.gif"
+          src="/GifCliente.gif"
           alt="Bienvenida visual"
           sx={{
             width: { xs: "100%", sm: "80%", md: "60%" },

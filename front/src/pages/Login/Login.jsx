@@ -49,7 +49,7 @@ export const Login = () => {
 			//console.log("Respuesta del backend:", data);
 
 			if (!res.ok) {
-				setError(data.error || 'Error al iniciar sesión');
+				setError(data.error || 'Error al iniciar sesion');
 				return;
 			}
 

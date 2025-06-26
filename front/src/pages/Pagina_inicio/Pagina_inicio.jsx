@@ -8,11 +8,11 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 const images = [
 	{
 		label: 'Seguro de Vida',
-		imgPath: '/img/seguro_vida.png',
+		imgPath: '/seguro_vida.png',
 	},
 	{
 		label: 'Seguro de Salud',
-		imgPath: '/img/seguro_salud.png',
+		imgPath: '/seguro_salud.png',
 	},
 ];
 

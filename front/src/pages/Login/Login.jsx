@@ -91,7 +91,7 @@ export const Login = () => {
 			<div
 				className="body-background"
 				style={{
-					backgroundImage: `url(${process.env.PUBLIC_URL}/img/fondo_login.jpg)`,
+					backgroundImage: `url(${process.env.PUBLIC_URL}/fondo_login.jpg)`,
 				}}>
 				<div className="box">
 					<img src="/logo.png" alt="Logo Seguros" className="logo-seguro" />

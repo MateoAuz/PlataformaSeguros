@@ -388,32 +388,42 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
 
           <Dialog
             open={mostrarModal}
-            onClose={() => setMostrarModal(false)}
+            onClose={() => {}}
             fullWidth
             maxWidth="md"
           >
-            <DialogTitle>Términos y Condiciones</DialogTitle>
-            <DialogContent dividers>
-              <Typography variant="body2" paragraph>
-                Al proceder con la contratación de un seguro a través de esta plataforma, el usuario declara que la información proporcionada es verídica y corresponde a su identidad personal.
-              </Typography>
-              <Typography variant="body2" paragraph>
-                La contratación debe ser realizada exclusivamente por el titular del documento de identificación ingresado. Cualquier intento de suplantación de identidad o falsificación de datos será considerado una falta grave y podría ser notificado a las autoridades pertinentes.
-              </Typography>
-              <Typography variant="body2" paragraph>
-                El usuario acepta que todos los documentos adjuntados tienen validez legal y han sido emitidos por las entidades correspondientes. Asimismo, se compromete a mantener actualizados sus datos y a no realizar contrataciones a nombre de terceros sin autorización expresa y comprobable.
-              </Typography>
-              <Typography variant="body2" paragraph>
-                Al aceptar estos términos, usted confirma que ha leído y comprendido las condiciones de contratación, y que asume total responsabilidad por el uso de esta plataforma.
-              </Typography>
-              <Typography variant="body2" paragraph>
-                Si tiene dudas sobre su identidad o desea delegar este trámite, por favor contáctese con un agente autorizado antes de continuar.
-              </Typography>
+            <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+              📄 Términos y Condiciones
+            </DialogTitle>
+
+            <DialogContent dividers sx={{ height: 600, p: 0 }}>
+              <iframe
+                src="/terminos_condiciones.pdf"
+                width="100%"
+                height="100%"
+                style={{ border: 'none' }}
+                onLoad={() => {
+                  setTimeout(() => {
+                    setTerminosVistos(true);
+                  }, 10000); // 10 segundos
+                }}
+              />
             </DialogContent>
+
             <DialogActions>
-              <Button onClick={() => { setMostrarModal(false); setTerminosVistos(true); }}>Cerrar</Button>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  setMostrarModal(false);
+                }}
+                disabled={!terminosVistos}
+              >
+                Acepto los términos
+              </Button>
             </DialogActions>
           </Dialog>
+
+
 
         </Box>
       </Box>

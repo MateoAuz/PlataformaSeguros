@@ -25,7 +25,8 @@ import {
   aprobarReembolso,
   getDetalleReembolso,
   getSolicitudesReembolsos,
-  rechazarReembolso
+  rechazarReembolso,
+  getReembolsosAprobados
 } from '../../services/ReembolsoService';
 import { BaseUrl } from '../../shared/conexion';
 
@@ -42,14 +43,21 @@ export const Revision = () => {
   message: '',
   severity: 'info'
 });
+const [aprobados,   setAprobados]   = useState([]);
 
 
 
   useEffect(() => {
-    getSolicitudesReembolsos()
-      .then(res => setSolicitudes(res.data))
-      .catch(() => alert('Error cargando solicitudes'))
-      .finally(() => setLoading(false));
+    Promise.all([
+    getSolicitudesReembolsos(),
+    getReembolsosAprobados()
+  ])
+    .then(([pend, apro]) => {
+      setSolicitudes(pend.data);
+      setAprobados(apro.data);
+    })
+    .catch(() => alert('Error cargando solicitudes y aprobados'))
+    .finally(() => setLoading(false));
   }, []);
 
   const verDetalle = async id => {
@@ -119,7 +127,7 @@ export const Revision = () => {
                           }
                         }}
                       >
-                        ACEPTAR
+                        DEVOLVER
                       </Button>
 
                       <Button
@@ -142,6 +150,51 @@ export const Revision = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* —– Tabla de APROBADOS —– */}
+   <Typography variant="h5" sx={{ mt: 4 }}>Reembolsos Aprobados</Typography>
+   {aprobados.length === 0
+     ? <Typography>No hay reembolsos aprobados.</Typography>
+     : (
+       <TableContainer component={Paper} sx={{ mt: 2 }}>
+         <Table>
+           <TableHead>
+             <TableRow>
+               <TableCell><strong>Cliente</strong></TableCell>
+               <TableCell><strong>Seguro</strong></TableCell>
+               <TableCell><strong>Motivo</strong></TableCell>
+               <TableCell><strong>Monto</strong></TableCell>
+               <TableCell><strong>Fecha</strong></TableCell>
+               <TableCell><strong>Docs</strong></TableCell>
+             </TableRow>
+           </TableHead>
+           <TableBody>
+             {aprobados.map(r => (
+               <TableRow key={r.id_reembolso}>
+                 <TableCell>{r.nombre_cliente} {r.apellido_cliente}</TableCell>
+                 <TableCell>{r.nombre_seguro}</TableCell>
+                 <TableCell>{r.motivo}</TableCell>
+                <TableCell>${parseFloat(r.monto).toFixed(2)}</TableCell>
+                 <TableCell>{r.fecha_solicitud}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => verDetalle(r.id_reembolso)}
+                    >
+                      VER DOCS
+                    </Button>
+                  </TableCell>
+              </TableRow>
+             ))}
+           </TableBody>
+         </Table>
+       </TableContainer>
+     )
+   }
+
+    {/* … resto del componente (diálogos, snackbar, etc.) … */}
+  
 
       {/* —————————— Diálogo de motivo de rechazo —————————— */}
 <Dialog open={rechazoOpen} onClose={() => setRechazoOpen(false)}>

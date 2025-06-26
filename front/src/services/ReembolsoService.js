@@ -55,3 +55,9 @@ export function getHistorialReembolsos(userId) {
 export function hasPendingReembolso(idUsSeg) {
   return axios.get(`${API_BASE}/reembolsos/pendiente/${idUsSeg}`);
 }
+
+/** Trae todos los reembolsos aprobados */
+export function getReembolsosAprobados() {
+  return axios.get(`${API_BASE}/reembolsos/aprobados`);
+}
+

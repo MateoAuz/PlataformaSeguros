@@ -44,6 +44,32 @@ router.get('/pendientes', (req, res) => {
   });
 });
 
+
+// GET /reembolsos/aprobados
+router.get('/aprobados', (req, res) => {
+  const sql = `
+    SELECT
+      r.id_reembolso,
+      u.nombre    AS nombre_cliente,
+      u.apellido  AS apellido_cliente,
+      s.nombre    AS nombre_seguro,
+      r.motivo,
+      r.monto_solicitado AS monto,
+      DATE_FORMAT(r.fecha_solicitud, '%Y-%m-%d') AS fecha_solicitud
+    FROM reembolso r
+    JOIN usuario_seguro us ON r.id_usuario_seguro = us.id_usuario_seguro
+    JOIN usuario u         ON us.id_usuario_per    = u.id_usuario
+    JOIN seguro s          ON us.id_seguro_per     = s.id_seguro
+    WHERE r.estado = 'DEVUELTO'
+    ORDER BY r.fecha_actualizacion DESC
+  `;
+  db.query(sql, (err, rows) => {
+    if (err) return res.status(500).send('Error interno');
+    res.json(rows);
+  });
+});
+
+
 // 1) Ruta para devolver la URL firmada de S3 de un documento
 router.get('/:id/documento/:docId', async (req, res) => {
   const { id, docId } = req.params;
@@ -280,7 +306,7 @@ router.put('/:id/aprobar', (req, res) => {
         }
         const idUsuario = rows[0].id_usuario;
         // 3) Inserto la notificación de aprobación
-        const texto = `¡Tu reembolso #${id} ha sido aprobado con éxito!`;
+        const texto = `¡Tu reembolso #${id} ha sido aprobado con éxito, pronto recibiras el dinero devuelto!`;
         db.query(
           `INSERT INTO notificacion (id_usuario, mensaje, fecha)
              VALUES (?, ?, NOW())`,

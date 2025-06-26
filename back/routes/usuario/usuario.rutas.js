@@ -134,4 +134,14 @@ router.get('/buscar', (req, res) => {
   });
 });
 
+// ✅ Contar contrataciones pendientes desde usuario_seguro
+router.get('/conteo/pendientes', (req, res) => {
+  const sql = 'SELECT COUNT(*) AS total FROM usuario_seguro WHERE estado = 0';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al contar contrataciones pendientes' });
+    res.json(results[0]);
+  });
+});
+
+
 module.exports = router;

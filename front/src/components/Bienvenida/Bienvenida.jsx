@@ -7,12 +7,19 @@ import { contarClientes, crearUsuario } from '../../services/UserService';
 import BotonAccion from '../BotonAccion/BotonAccion';
 import { FormularioUsuario } from '../Usuarios/FormularioUsuario/FormularioUsuario';
 import './Bienvenida.css';
+import { contarSegurosActivos } from '../../services/SeguroService';
+import { contarContratacionesPendientes } from '../../services/UserService';
+
 
 export const Bienvenida = () => {
   const { usuario } = useContext(UserContext);
   const [totalClientes, setTotalClientes] = useState(0);
+  const [totalSegurosActivos, setTotalSegurosActivos] = useState(0);
+  const [totalPendientes, setTotalPendientes] = useState(0);
   const [modalAbierto, setModalAbierto] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
+
+
 
   const fechaActual = new Date().toLocaleDateString();
   const horaActual = new Date().toLocaleTimeString();
@@ -27,8 +34,39 @@ export const Bienvenida = () => {
       }
     };
 
+    const obtenerSeguros = async () => {
+      try {
+        const res = await contarSegurosActivos();
+        setTotalSegurosActivos(res.data.total);
+      } catch (err) {
+        console.error('❌ Error al contar seguros activos:', err);
+      }
+    };
+
+    const obtenerPendientes = async () => {
+      try {
+        const res = await contarContratacionesPendientes();
+        setTotalPendientes(res.data.total);
+      } catch (err) {
+        console.error('❌ Error al contar contrataciones pendientes:', err);
+      }
+    };
+
+    // Ejecutar inicialmente
     obtenerClientes();
+    obtenerSeguros();
+    obtenerPendientes();
+
+    // Refrescar cada 60 segundos
+    const intervalo = setInterval(() => {
+      obtenerClientes();
+      obtenerSeguros();
+      obtenerPendientes();
+    }, 60000); // 60.000 ms = 60 segundos
+
+    return () => clearInterval(intervalo); // Limpiar al desmontar
   }, []);
+
 
   const handleAgregar = () => {
     setUsuarioSeleccionado(null);
@@ -62,7 +100,7 @@ export const Bienvenida = () => {
         <Grid item xs={12} sm={4}>
           <Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
             <Typography variant="h6" color="warning.main">Seguros activos</Typography>
-            <Typography variant="h4" color="text.primary">42</Typography>
+            <Typography variant="h4" color="text.primary">{totalSegurosActivos}</Typography>
           </Paper>
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -74,7 +112,7 @@ export const Bienvenida = () => {
         <Grid item xs={12} sm={4}>
           <Paper elevation={3} sx={{ p: 2, backgroundColor: '#FFF3E0' }}>
             <Typography variant="h6" color="warning.main">Contrataciones pendientes</Typography>
-            <Typography variant="h4" color="text.primary">5</Typography>
+            <Typography variant="h4" color="text.primary">{totalPendientes}</Typography>
           </Paper>
         </Grid>
       </Grid>
@@ -88,8 +126,9 @@ export const Bienvenida = () => {
       </Box>
 
       <Alert severity="info" sx={{ mt: 4 }}>
-        Tienes 5 contrataciones pendientes de revisión.
+        Tienes {totalPendientes} contrataciones pendientes de revisión.
       </Alert>
+
 
       <FormularioUsuario
         open={modalAbierto}

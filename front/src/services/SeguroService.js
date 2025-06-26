@@ -34,3 +34,5 @@ export const asociarBeneficios = (id_seguro, ids) =>
 export const asociarRequisitos = (id_seguro, ids) =>
   axios.post(`${API_BASE}/seguros/requisitos`, { id_seguro, ids });
 
+export const contarSegurosActivos = () =>
+  axios.get(`${BaseUrl.BASE_URL}/seguros/activos`);

@@ -221,5 +221,13 @@ router.get('/disponibles/:id_usuario', async (req, res) => {
   });
 });
 
+// ✅ Contar seguros activos
+router.get('/activos', (req, res) => {
+  const sql = 'SELECT COUNT(*) AS total FROM seguro WHERE estado = 1';
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al contar seguros activos' });
+    res.json(results[0]);
+  });
+});
 
 module.exports = router;

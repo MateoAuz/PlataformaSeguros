@@ -51,6 +51,9 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [mostrarModal, setMostrarModal] = useState(false);
   const [terminosVistos, setTerminosVistos] = useState(false);
+  const [openDialogEliminar, setOpenDialogEliminar] = useState(false);
+  const [beneficiarioAEliminar, setBeneficiarioAEliminar] = useState(null);
+
 
 
   
@@ -301,7 +304,16 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Button color="error" onClick={() => handleRemoveBeneficiario(i)}>Eliminar beneficiario</Button>
+                <Button
+                  color="error"
+                  onClick={() => {
+                    setBeneficiarioAEliminar(i);
+                    setOpenDialogEliminar(true);
+                  }}
+                >
+                  Eliminar beneficiario
+                </Button>
+
               </Grid>
             </Grid>
           ))}
@@ -427,6 +439,34 @@ const FormularioContratacion = ({ seguro, onVolver }) => {
 
         </Box>
       </Box>
+
+      <Dialog
+        open={openDialogEliminar}
+        onClose={() => setOpenDialogEliminar(false)}
+      >
+        <DialogTitle>¿Eliminar beneficiario?</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Esta acción eliminará permanentemente al beneficiario seleccionado. ¿Deseas continuar?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialogEliminar(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              handleRemoveBeneficiario(beneficiarioAEliminar);
+              setOpenDialogEliminar(false);
+            }}
+          >
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
 
       <Snackbar
         open={snackbar.open}

@@ -40,6 +40,8 @@ export const Usuarios = () => {
   const [tipoMensaje, setTipoMensaje] = useState("success");
   const [snackbarAbierto, setSnackbarAbierto] = useState(false);
 
+
+
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down("sm"));
 

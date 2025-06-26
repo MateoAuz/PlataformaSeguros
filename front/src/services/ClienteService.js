@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BaseUrl } from '../shared/conexion';
 
-const URL = `${BaseUrl.BASE_URL}cliente`;
+const URL = `${BaseUrl.BASE_URL}/cliente`;
 export const getClientes = () => axios.get(`${URL}/clientes`);
 
 

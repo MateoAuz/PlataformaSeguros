@@ -23,11 +23,11 @@ const PagosCliente = () => {
 
   useEffect(() => {
     if (usuario?.id_usuario) {
-      axios.get(`${BaseUrl.BASE_URL}contratos/mis-seguros/${usuario.id_usuario}`)
+      axios.get(`${BaseUrl.BASE_URL}/contratos/mis-seguros/${usuario.id_usuario}`)
         .then((res) => setSeguros(res.data))
         .catch((err) => console.error("Error cargando seguros:", err));
 
-      axios.get(`${BaseUrl.BASE_URL}pagos/cliente/${usuario.id_usuario}`)
+      axios.get(`${BaseUrl.BASE_URL}/pagos/cliente/${usuario.id_usuario}`)
         .then((res) => setPagos(res.data))
         .catch((err) => console.error("Error cargando pagos:", err));
     }
@@ -54,7 +54,7 @@ const PagosCliente = () => {
     formData.append("usuario", usuario.username || `user_${usuario.id_usuario}` || 'sin-usuario');
 
     try {
-      const res = await fetch(`${BaseUrl.BASE_URL}pagos`, {
+      const res = await fetch(`${BaseUrl.BASE_URL}/pagos`, {
         method: "POST",
         body: formData,
       });
@@ -66,10 +66,10 @@ const PagosCliente = () => {
         setArchivo(null);
         setContratoSeleccionado("");
 
-        axios.get(`${BaseUrl.BASE_URL}pagos/cliente/${usuario.id_usuario}`)
+        axios.get(`${BaseUrl.BASE_URL}/pagos/cliente/${usuario.id_usuario}`)
           .then((r) => setPagos(r.data));
 
-        axios.get(`${BaseUrl.BASE_URL}contratos/mis-seguros/${usuario.id_usuario}`)
+        axios.get(`${BaseUrl.BASE_URL}/contratos/mis-seguros/${usuario.id_usuario}`)
           .then((r) => setSeguros(r.data));
       } else {
         setMensaje(data.error || "Error al registrar pago");
@@ -184,7 +184,7 @@ const PagosCliente = () => {
                 <TableCell>
                   {pago.comprobante_pago ? (
                     <BotonVerArchivo
-                      rutaDescarga={`${BaseUrl.BASE_URL}pagos/descarga/${pago.id_pago_seguro}`}
+                      rutaDescarga={`${BaseUrl.BASE_URL}/pagos/descarga/${pago.id_pago_seguro}`}
                     />
                   ) : (
                     "Sin archivo"

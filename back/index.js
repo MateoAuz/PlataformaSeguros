@@ -11,7 +11,7 @@ const PORT = 3030;
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://3.148.251.168:3000',
+    origin: 'http://localhost:3000',
     credentials: true,
   })
 );

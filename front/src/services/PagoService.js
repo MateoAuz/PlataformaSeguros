@@ -11,10 +11,10 @@ export function confirmarDebito(idPago) {
 }
 
 export function getPagosPorContrato(idContrato) {
-  return axios.get(`${BaseUrl.BASE_URL}pagos/contrato/${idContrato}`);
+  return axios.get(`${BaseUrl.BASE_URL}/pagos/contrato/${idContrato}`);
 }
 
 export const denegarPago = (idPago) => {
-  return axios.patch(`${BaseUrl.BASE_URL}pagos/${idPago}/denegar`);
+  return axios.patch(`${BaseUrl.BASE_URL}/pagos/${idPago}/denegar`);
 };
 

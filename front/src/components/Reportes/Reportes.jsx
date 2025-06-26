@@ -160,7 +160,7 @@ export const Reportes = () => {
                                       <TableCell>
                                         {pago.comprobante_pago ? (
                                           <BotonVerArchivo
-                                            rutaDescarga={`${BaseUrl.BASE_URL}pagos/descarga/${pago.id_pago_seguro}`}
+                                            rutaDescarga={`${BaseUrl.BASE_URL}/pagos/descarga/${pago.id_pago_seguro}`}
                                           />
                                         ) : (
                                           "Sin archivo"
@@ -276,7 +276,7 @@ export const Reportes = () => {
         {r.nombre}:{" "}
         {r.archivo ? (
           <BotonVerArchivo
-  rutaDescarga={`${BaseUrl.BASE_URL}contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
+  rutaDescarga={`${BaseUrl.BASE_URL}/contratos/descarga/requisito-por-id/${detalleContrato.id_usuario_seguro}/${r.id_usuario_requisito}`}
 />
 
         ) : (

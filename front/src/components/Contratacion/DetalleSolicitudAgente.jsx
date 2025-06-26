@@ -57,7 +57,7 @@ const DetalleSolicitudAgente = ({ open, onClose, idContrato }) => {
                   <li key={i}>
                     {r.nombre}: {r.archivo ? (
                      <BotonVerArchivo
-  rutaDescarga={`${BaseUrl.BASE_URL}contratos/descarga/requisito-por-id/${idContrato}/${r.id_usuario_requisito}`}
+  rutaDescarga={`${BaseUrl.BASE_URL}/contratos/descarga/requisito-por-id/${idContrato}/${r.id_usuario_requisito}`}
 />
                     ) : (
                       <span>No cargado</span>

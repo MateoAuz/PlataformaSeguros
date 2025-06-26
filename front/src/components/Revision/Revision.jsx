@@ -215,7 +215,7 @@ export const Revision = () => {
                   </Typography>
                   {/* Botón de descarga */}
                   <BotonVerArchivo
-                    rutaDescarga={`${BaseUrl.BASE_URL}reembolsos/${detalle.id_reembolso}/documento/${d.id_documento}`}
+                    rutaDescarga={`${BaseUrl.BASE_URL}/reembolsos/${detalle.id_reembolso}/documento/${d.id_documento}`}
                   />
                 </Box>
               ))}

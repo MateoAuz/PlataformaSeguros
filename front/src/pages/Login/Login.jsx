@@ -39,7 +39,7 @@ export const Login = () => {
 		try {
 			console.log("Enviando:", { correo: username, password: password });
 
-			const res = await fetch(`${BaseUrl.BASE_URL}login`, {
+			const res = await fetch(`${BaseUrl.BASE_URL}/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ correo: username, password: password })

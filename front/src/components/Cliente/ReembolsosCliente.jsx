@@ -124,8 +124,8 @@ const ReembolsosCliente = () => {
       <Box component="form" onSubmit={handleSubmit} noValidate>
         {/* Selector de Seguro */}
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={2}>
-            <FormControl sx={{ width: 380 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', mt: 2 }}>
+            <FormControl sx={{ width: '100%', maxWidth: 800 }}>
               <InputLabel id="label-seguro">Seguro Contratado</InputLabel>
               <Select
                 labelId="label-seguro"
@@ -133,7 +133,7 @@ const ReembolsosCliente = () => {
                 value={formData.contrato}
                 onChange={handleChange}
                 label="Seguro Contratado"
-                sx={{ width: '200%', height: 56, borderRadius: 1 }}
+                sx={{ height: 56, borderRadius: 1 }}
               >
                 {seguros.length === 0 ? (
                   <MenuItem value="" disabled>No tienes seguros</MenuItem>
@@ -144,16 +144,14 @@ const ReembolsosCliente = () => {
                       value={s.id_usuario_seguro}
                       disabled={s.pendiente}
                     >
-                      
                       {s.nombre} {`- Cobertura: $${s.cobertura}`} {s.pendiente && '(Ya hay pendiente)'}
-                     
                     </MenuItem>
-
                   ))
                 )}
               </Select>
             </FormControl>
-          </Grid>
+          </Box>
+
         </Grid>
 
         {/* Motivo y Monto */}

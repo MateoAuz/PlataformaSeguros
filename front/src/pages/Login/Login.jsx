@@ -37,8 +37,6 @@ export const Login = () => {
 		}
 
 		try {
-			console.log("Enviando:", { correo: username, password: password });
-
 			const res = await fetch(`${BaseUrl.BASE_URL}/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -46,7 +44,6 @@ export const Login = () => {
 			});
 
 			const data = await res.json();
-			//console.log("Respuesta del backend:", data);
 
 			if (!res.ok) {
 				setError(data.error || 'Error al iniciar sesion');

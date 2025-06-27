@@ -19,7 +19,6 @@ const usuarios = [
 
     db.query(sql, values, (err) => {
       if (err) console.error('❌ Error:', err);
-      else console.log(`✅ Usuario insertado: ${u[1]}`);
     });
   }
 })();

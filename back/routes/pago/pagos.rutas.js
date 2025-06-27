@@ -400,7 +400,6 @@ router.get('/descarga/:id_pago_seguro', (req, res) => {
         key = key.replace('undefined/', '');
       }
 
-      console.log("Key solicitada a S3:", key);
 
       const url = await obtenerUrlArchivo(key);
       return res.json({ url });

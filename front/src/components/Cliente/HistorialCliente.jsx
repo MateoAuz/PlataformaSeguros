@@ -170,7 +170,6 @@ const HistorialCliente = () => {
               <Typography variant="h6" gutterBottom color="primary">
                 Documentos Requeridos Adjuntos
               </Typography>
-              {console.log("▶ requisitos:", detalleContrato.requisitos)}
               
               {detalleContrato.requisitos?.length ? (
                 <ul>

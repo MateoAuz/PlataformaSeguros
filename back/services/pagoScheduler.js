@@ -118,8 +118,6 @@ function iniciarPagoScheduler() {
                 db.query(sqlUpdateImpago, [idUsrSeg], (err4) => {
                   if (err4) {
                     console.error(`[pagoScheduler] Error al actualizar estado_pago=0 para contrato ${idUsrSeg}:`, err4);
-                  } else {
-                    console.log(`[pagoScheduler] Contrato ${idUsrSeg} marcado como impago (estado_pago=0).`);
                   }
                 });
               } else {

@@ -66,7 +66,6 @@ router.post('/', upload.any(), async (req, res) => {
     const documentos = {}; // { idRequisito: { path, originalName } }
 
     for (const file of req.files) {
-      console.log("📥 Recibido:", file.fieldname, "=>", file.originalname);
       if (file.fieldname === 'firma_pdf') {
         firmaArchivo = file;
       } else if (file.fieldname.startsWith('documentos[')) {

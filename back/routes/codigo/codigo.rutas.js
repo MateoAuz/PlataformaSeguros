@@ -26,7 +26,6 @@ router.post('/', async (req, res) => {
       text: `Tu código de verificación es: ${codigo}`
     });
 
-    console.log('📧 Correo enviado:', info.response);
     res.status(200).json({ ok: true, mensaje: 'Correo enviado con éxito' });
   } catch (error) {
     console.error('❌ Error al enviar correo:', error);

@@ -7,7 +7,6 @@ import {
 } from '@mui/material';
 
 export const FormularioCliente = ({ abierto, onCerrar, onGuardar, cliente }) => {
-  console.log("✅ cliente.rutas.js cargado correctamente");
 
   const [formData, setFormData] = useState({
     nombre: '', apellido: '', correo: '', username: '',

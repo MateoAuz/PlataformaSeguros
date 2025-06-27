@@ -24,10 +24,10 @@ export const MenuCliente = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleMenuUsuario = (event) => setAnchorElUsuario(event.currentTarget);
+  const handleMenuUsuario = (e) => setAnchorElUsuario(e.currentTarget);
   const handleCloseUsuario = () => setAnchorElUsuario(null);
 
-  const handleMenuNav = (event) => setAnchorElNav(event.currentTarget);
+  const handleMenuNav = (e) => setAnchorElNav(e.currentTarget);
   const handleCloseNav = () => setAnchorElNav(null);
 
   const inicio_login = () => {
@@ -35,36 +35,52 @@ export const MenuCliente = ({ children }) => {
     window.location.href = "/login";
   };
 
-  // Función genérica para navegar y cerrar menús
-  const irARuta = (ruta, cerrarUsuario = false, cerrarNav = false) => {
-    if (cerrarUsuario) handleCloseUsuario();
-    if (cerrarNav) handleCloseNav();
+  const irARuta = (ruta, cU = false, cN = false) => {
+    if (cU) handleCloseUsuario();
+    if (cN) handleCloseNav();
     navigate(ruta);
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" className="barra-navegacion">
-        <Toolbar className="barra-contenido">
-          {/* Bloque IZQUIERDA: icono Home + logo + título */}
-          <Box className="barra-izquierda">
+      <AppBar position="static" color="primary">
+        <Toolbar sx={{ px: { xs: 1, sm: 3 } }}>
+          {/* IZQUIERDA */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton color="inherit" onClick={() => navigate("/cliente")}>
-              <HomeIcon />
+              <HomeIcon fontSize={isMobile ? "small" : "medium"} />
             </IconButton>
-            <img src="/logo.png" alt="Logo" className="logo-barra" />
-            <Typography variant="h6" className="titulo">
-              SISTEMA DE SEGUROS "Vida Plena"
+
+            {/* Logo: se oculta texto en xs */}
+            <Box
+              component="img"
+              src="/logo.png"
+              alt="Logo"
+              sx={{
+                height: { xs: 30, sm: 40 },
+                width: { xs: 30, sm: 40 },
+                ml: 1,
+              }}
+            />
+            <Typography
+              variant={isMobile ? "subtitle1" : "h6"}
+              sx={{
+                ml: 1,
+                display: { xs: "none", sm: "block" },
+                fontWeight: 500,
+              }}
+            >
+              Vida Plena
             </Typography>
           </Box>
 
-          {/* Bloque CENTRO: botones o ícono de menú según tamaño */}
+          {/* CENTRO */}
           {isMobile ? (
             <>
               <IconButton
                 color="inherit"
-                edge="start"
-                onClick={handleMenuNav}
                 sx={{ ml: "auto" }}
+                onClick={handleMenuNav}
               >
                 <MenuIcon />
               </IconButton>
@@ -72,56 +88,56 @@ export const MenuCliente = ({ children }) => {
                 anchorEl={anchorElNav}
                 open={Boolean(anchorElNav)}
                 onClose={handleCloseNav}
-                anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={() => irARuta("/cliente/contratacion", false, true)}>
-                  CONTRATACIÓN
-                </MenuItem>
-                <MenuItem onClick={() => irARuta("/cliente/historial", false, true)}>
-                  HISTORIAL
-                </MenuItem>
-                <MenuItem onClick={() => irARuta("/cliente/reembolsos", false, true)}>
-                  REEMBOLSO
-                </MenuItem>
-                <MenuItem onClick={() => irARuta("/cliente/pagos", false, true)}>
-                  PAGOS
-                </MenuItem>
-                <MenuItem onClick={() => irARuta("/cliente/notificaciones", false, true)}>
-                  NOTIFICACIONES
-                </MenuItem>
+                {[
+                  { label: "Contratación", path: "/cliente/contratacion" },
+                  { label: "Historial", path: "/cliente/historial" },
+                  { label: "Reembolso", path: "/cliente/reembolsos" },
+                  { label: "Pagos", path: "/cliente/pagos" },
+                  { label: "Notificaciones", path: "/cliente/notificaciones" },
+                ].map((item) => (
+                  <MenuItem
+                    key={item.path}
+                    onClick={() => irARuta(item.path, false, true)}
+                  >
+                    {item.label}
+                  </MenuItem>
+                ))}
               </Menu>
             </>
           ) : (
-            <Box className="barra-centro" sx={{ ml: 2, flexGrow: 1 }}>
-              <Button onClick={() => navigate("/cliente/contratacion")} color="inherit">
-                CONTRATACIÓN
-              </Button>
-              <Button onClick={() => navigate("/cliente/historial")} color="inherit">
-                HISTORIAL
-              </Button>
-              <Button onClick={() => navigate("/cliente/reembolsos")} color="inherit">
-                REEMBOLSO
-              </Button>
-              <Button onClick={() => navigate("/cliente/pagos")} color="inherit">
-                PAGOS
-              </Button>
-              <Button onClick={() => navigate("/cliente/notificaciones")} color="inherit">
-                NOTIFICACIONES
-              </Button>
+            <Box sx={{ ml: 4, display: "flex", gap: 2 }}>
+              {[
+                { label: "Contratación", path: "/cliente/contratacion" },
+                { label: "Historial", path: "/cliente/historial" },
+                { label: "Reembolso", path: "/cliente/reembolsos" },
+                { label: "Pagos", path: "/cliente/pagos" },
+                { label: "Notificaciones", path: "/cliente/notificaciones" },
+              ].map((item) => (
+                <Button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  color="inherit"
+                  sx={{ fontSize: "0.9rem" }}
+                >
+                  {item.label.toUpperCase()}
+                </Button>
+              ))}
             </Box>
           )}
 
-          {/* Bloque DERECHA: ícono Usuario + menú */}
-          <Box className="barra-derecha" sx={{ ml: isMobile ? 0 : "auto" }}>
+          {/* DERECHA */}
+          <Box sx={{ ml: "auto" }}>
             <IconButton onClick={handleMenuUsuario} color="inherit">
-              <AccountCircle />
+              <AccountCircle fontSize={isMobile ? "small" : "medium"} />
             </IconButton>
             <Menu
               anchorEl={anchorElUsuario}
               open={Boolean(anchorElUsuario)}
               onClose={handleCloseUsuario}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               transformOrigin={{ vertical: "top", horizontal: "right" }}
             >
               <MenuItem onClick={() => irARuta("/cliente/perfil", true, false)}>
@@ -133,8 +149,15 @@ export const MenuCliente = ({ children }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Contenido de la página */}
-      <Box sx={{ backgroundColor: "#ffffff", minHeight: "100vh", p: 3 }}>
+      {/* CONTENIDO */}
+      <Box
+        component="main"
+        sx={{
+          p: { xs: 2, sm: 3 },
+          backgroundColor: "#fafafa",
+          minHeight: "calc(100vh - 64px)",
+        }}
+      >
         {children}
       </Box>
     </Box>

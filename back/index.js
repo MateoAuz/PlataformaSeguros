@@ -11,7 +11,7 @@ const PORT = 3030;
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://18.119.116.14:3000', //ip del front
     credentials: true,
   })
 );

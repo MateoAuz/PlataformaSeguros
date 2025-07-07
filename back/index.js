@@ -11,7 +11,7 @@ const PORT = 3030;
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://18.222.97.131:3000', //ip del front
+    origin: 'http://3.144.230.144:3000', //ip del front
     credentials: true,
   })
 );

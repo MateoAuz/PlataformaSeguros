@@ -1,3 +1,3 @@
 export const BaseUrl =  {
-    'BASE_URL':'http://18.222.168.144:3030' //ip del back
+    'BASE_URL':'http://3.147.55.194:3030' //ip del back
 }
